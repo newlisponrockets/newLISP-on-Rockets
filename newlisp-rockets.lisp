@@ -11,7 +11,12 @@
 ; 0.05 - 09/14/2012 - added (create-record) macro to add a new record to SQLite table
 ; 0.06 - 09/17/2012 - added (delete-record) macro to delete a record from SQLite table
 ;
-; Written 2012 by Jeremy Reimer
+; I have to give a HUGE acknowledgement to the Dragonfly framework at http://rundragonfly.com
+; written by Marc Hildmann and Greg Slepak and available for download at: http://code.google.com/p/dragonfly-newlisp/downloads/list
+; Without Dragonfly I would have been unable to do Rockets at all.  Some parts of Rockets contain
+; snippets of Dragonfly code.  Also thanks to Lutz Mueller, the author of newLISP at http://www.newlisp.org 
+;
+; Written 2012 by Rocket Man
 
 ; print headers
 (print "Content-type: text/html\n\n") 
