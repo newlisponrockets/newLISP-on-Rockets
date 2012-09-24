@@ -33,13 +33,8 @@
 	(println "<hr>")
 )
 
-(println "<h3>Post something...</h3>")
-(println "<form name='postsomething' METHOD='POST' action='rockets-post.lsp'>")
-(println "<input type='text' name='subjectline'>")
-(println "<p><textarea name='post' id='replybox' cols='50' rows='10'></textarea>")
-(println "<input type='submit' value='Post Message'>")
-
-(println "</form>")
+; print post entry box
+(print-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message")
 
 ; table structure:  ((0 "Id" "INTEGER" 0 nil 1) (1 "PosterId" "TEXT" 0 nil 0) (2 "PostDate" "DATE" 0 nil 0) (3 "PostSubject" "TEXT" 0 nil 0) (4 "PostContent" "TEXT" 0 nil 0))
 

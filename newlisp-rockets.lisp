@@ -1,7 +1,7 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.06 - first standalone framework
+; Version 0.07 
 ;
 ; Revision history:
 ; 0.01 - first standalone framework without Dragonfly
@@ -10,6 +10,7 @@
 ; 0.04 - 09/11/2012 - added SQLite database open/close and query functions
 ; 0.05 - 09/14/2012 - added (create-record) macro to add a new record to SQLite table
 ; 0.06 - 09/17/2012 - added (delete-record) macro to delete a record from SQLite table
+; 0.07 - 09/24/2012 - added ($COOKIES) key/value pair to read cookies, also added (print-post-box) function
 ;
 ; I have to give a HUGE acknowledgement to the Dragonfly framework at http://rundragonfly.com
 ; written by Marc Hildmann and Greg Slepak and available for download at: http://code.google.com/p/dragonfly-newlisp/downloads/list
@@ -23,7 +24,7 @@
 (print "<!DOCTYPE html>\n\n") 
 
 ;====== GLOBAL VARIABLES ========================================================
-(constant (global '$ROCKETS_VERSION) 0.06)    ; this is the current version of Rockets
+(constant (global '$ROCKETS_VERSION) 0.07)    ; this is the current version of Rockets
 (constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
 
 ;====== CONSTANTS ================================================================
@@ -80,6 +81,17 @@
 					(tree-to-add (rtemp 0) (url-decode (rtemp 1))))
 			))
 			)))
+
+;================================================================================
+;  ($COOKIES)
+;================================================================================
+; sets a global variable with all the cookies placed as key/value pairs
+(new Tree '$COOKIES)
+(when (env "HTTP_COOKIE")
+	(dolist (c (parse (env "HTTP_COOKIE") "; "))
+		(let (ctemp (parse c "="))
+		(if (> (length ctemp) 1) (begin
+			($COOKIES (first ctemp) (join (rest ctemp) "=")))))))
 
 ;================================================================================
 ;  ($GET)
@@ -197,6 +209,21 @@
 	(query temp-sql-query)
 	(delete 'DB) ; we're done, so delete all symbols in the DB context.
 )
+
+;----- Form functions----------------------------------------------------------
+
+;===============================================================================
+; PRINT-POST-BOX
+; Just a simple function to print a form for entering posts (subject and postbox)
+; (print-post-box Title FormName ActionPage SubjectLine PostboxID SubmitButton)
+;===============================================================================
+(define (print-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text)
+	(println "<h3>" str-title "</h3>")
+	(println "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
+	(println "<input type='text' name='" str-subject-line "'>")
+	(println "<p><textarea name='post' id='" str-postbox-id "' cols='50' rows='10'></textarea>")
+	(println "<input type='submit' value='" str-submit-button-text "'>")
+	(println "</form>"))
 
 ;===============================================================================
 ; !twitter functions (lifted from Dragonfly.. will rewrite later)
