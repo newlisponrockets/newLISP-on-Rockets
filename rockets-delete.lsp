@@ -15,8 +15,9 @@
 
 (set 'delete-query (string "DELETE FROM Posts WHERE Id=" (safe-for-sql post-to-delete) ";"))
 ;(println "QUERY: " delete-query)
-(println "<b>Sorry, post deleting is disabled for the moment until we get user logins working.</b>")
+(displayln "<b>Sorry, post deleting is disabled for the moment until we get user logins working.</b>")
 ;(query delete-query)
 
 ; this is temporary, and we also have to make a redirect.  Have to figure out how to do headers and stuff.
-(println "<a href='rockets-main.lsp'>Click here to return to the main page.</a>")
+(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>")
+(display-page)

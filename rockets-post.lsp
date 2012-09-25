@@ -8,9 +8,9 @@
 ; Posts!
 (open-database "ROCKETS-BLOG")
 (set 'max-posts (first (first (query "SELECT max(Id) from Posts"))))
-(println "<P>Max post id: " max-posts)
+(displayln "<P>Max post id: " max-posts)
 
-(println "<P>$POST data: " ($POST))
+(displayln "<P>$POST data: " ($POST))
 
 ; if we have a post in $POST, post it to the Posts table.  Tee hee!
 (set 'continue true)
@@ -23,8 +23,9 @@
 		(set 'PostContent ($POST "post"))
 		(set 'PostDate (date (date-value) 0 "%Y-%m-%d %H:%M:%S.000"))
 		(create-record "Posts" Id PosterId PostDate PostSubject PostContent) ; It's the C in CRUD!
-		;(println "<B>Posting disabled for the moment...</b>")
+		;(displayln "<B>Posting disabled for the moment...</b>")
 	)
 )
 ))
-(println "<a href='rockets-main.lsp'>Click here to return to the main page.</a>")
+(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>")
+(display-page)

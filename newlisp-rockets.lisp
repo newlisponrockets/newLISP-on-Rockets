@@ -1,7 +1,9 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.07 
+; Version 0.08
+;
+; For revision history, see revision-history.txt
 ;
 ; Revision history:
 ; 0.01 - first standalone framework without Dragonfly
@@ -11,6 +13,7 @@
 ; 0.05 - 09/14/2012 - added (create-record) macro to add a new record to SQLite table
 ; 0.06 - 09/17/2012 - added (delete-record) macro to delete a record from SQLite table
 ; 0.07 - 09/24/2012 - added ($COOKIES) key/value pair to read cookies, also added (print-post-box) function
+; 0.08 - 09/25/2012 - changed the way headers are printed to delay printing, replace (println) with (displayln), added (benchmark-result)
 ;
 ; I have to give a HUGE acknowledgement to the Dragonfly framework at http://rundragonfly.com
 ; written by Marc Hildmann and Greg Slepak and available for download at: http://code.google.com/p/dragonfly-newlisp/downloads/list
@@ -19,9 +22,7 @@
 ;
 ; Written 2012 by Rocket Man
 
-; print headers
-(print "Content-type: text/html\n\n") 
-(print "<!DOCTYPE html>\n\n") 
+;------------------------------------------------------------------------------------------------------------
 
 ;====== GLOBAL VARIABLES ========================================================
 (constant (global '$ROCKETS_VERSION) 0.07)    ; this is the current version of Rockets
@@ -31,17 +32,61 @@
 (constant 'REGEX_HTTP_SPECIAL_STR (regex-comp {([^.0-9a-z]+)} 1))
 (constant 'REGEX_HEX_ENCODED_CHAR (regex-comp {%([0-9A-F][0-9A-F])} 1))
 
+; This is the global buffer that Rockets writes to before printing the page out at the end
+(set 'STDOUT "")
+
+; Now we redefine (print) and (displayln) to store to the variable STDOUT
+(define (displayln)
+	(apply display (push "\n" (args) -1)))
+
+(define (display)
+	(extend STDOUT (apply string $args))
+	(last $args)) ; to behave the same way as print
+
+;; BENCHMARK STUFF===================================================================================
+;  this was taken from Dragonfly, but just too cool not to use!
+; ===================================================================================================
+
+(set 'microtime-start (time-of-day))
+
+(define (benchmark-result)
+
+        (set 'mem_cells_bytes (* (sys-info 0) 16))
+        (set 'mem_cells_kilobytes (/ mem_cells_bytes 1024))
+
+        (set 'mem_cells-constant_bytes (* (sys-info 1) 16))
+        (set 'mem_cells-constant_kilobytes (/ mem_cells-constant_bytes 1024))
+        (set 'mem_cells-constant_megabytes (/ mem_cells-constant_kilobytes 1024))
+
+        (set 'mem_symbols_bytes (* (sys-info 2) 32))
+        (set 'mem_symbols_kilobytes (/ mem_symbols_bytes 1024))
+
+    (set 'mem_total_usage (+ mem_cells_kilobytes mem_symbols_kilobytes))
+
+        (set 'microtime-end (time-of-day))
+        (set 'execution-time-milliseconds (- microtime-end microtime-start))
+        (set 'execution-time-seconds (div execution-time-milliseconds 1000))
+        (displayln "<div id='footer'>Rendered in " execution-time-milliseconds " milliseconds. Used " mem_total_usage " KB of memory, " mem_cells_kilobytes " KB for Lisp Cells."))
+
+;(constant (global 'sys-print) print)
+;(constant 'print print)
+;(constant (global 'sys-println) println)
+;(constant 'displayln println)
+
+
+
 ;====== HEADER ===================================================================
 (define (print-header)
-	(println "<html><head><meta charset=\"UTF-8\"></head><body>"))
+	(displayln "<html><head><meta charset=\"UTF-8\"></head><body>")
+)
 
 ;====== FOOTER ===================================================================
 (define (print-footer)
-	(println "</body></html>"))
+	(displayln "</body></html>"))
 
 ;====== PRINT-IMAGE ==============================================================
 (define (print-image str-image-to-print)
-	(println (string "<img src=images/" str-image-to-print ">")))
+	(displayln (string "<img src=images/" str-image-to-print ">")))
 
 ;====== URL-DECODE =================================================================
 ; this function takes encoded strings and returns them to human-readable
@@ -76,7 +121,7 @@
 			(let (rtemp (parse r "="))
 			(if (> (length rtemp) 1) (begin 
 				; if it's multi-value (last 2 chars end in []) AND this value exists in the tree already, add it to the list
-				(if (and (tree-to-add (rtemp 0)) (ends-with (rtemp 0) "[]"))
+ 				(if (and (tree-to-add (rtemp 0)) (ends-with (rtemp 0) "[]"))
 					(tree-to-add (rtemp 0) (flat (push (tree-to-add (rtemp 0)) (list (url-decode (rtemp 1))))))
 					(tree-to-add (rtemp 0) (url-decode (rtemp 1))))
 			))
@@ -108,12 +153,14 @@
 ; this is just for multipart form data sent via POST method right now
 ; will modify it for files and binary stuff later
 ; has some sort of weird random limit now unless you refresh, working on fixing that
+
 (new Tree '$POST)
 ;(when (> (peek (device)) 0)
 	(read (device) post-buffer $MAX_POST_LENGTH) ; grab all post data, put it in variable 'post-buffer'
 	(if post-buffer (begin
-		(println "POST BUFFER: " post-buffer " LENGTH: " (length post-buffer)) <- debugging
-		(parse-get-or-post post-buffer $POST)))
+		(displayln "POST BUFFER: " post-buffer " LENGTH: " (length post-buffer)) ; <- debugging
+		(parse-get-or-post post-buffer $POST)
+	))
 ;)
 
 ;=================================================================================
@@ -126,14 +173,14 @@
 ;; open a database
 (define (open-database sql-db-to-open)
 	(if (sql3:open sql-db-to-open)  
-		(println "")
-		(println "There was a problem opening the database " sql-db-to-open ": " (sql3:error))))
+		(displayln "")
+		(displayln "There was a problem opening the database " sql-db-to-open ": " (sql3:error))))
 
 ;; close the database
 (define (close-database)
 	(if (sql3:close)
-		(println "")
-		(println "There was a problem closing the database: " (sql3:error))))
+		(displayln "")
+		(displayln "There was a problem closing the database: " (sql3:error))))
 
 ;; function for doing queries
 (define (query sql-text)
@@ -141,7 +188,7 @@
  (if sqlarray
    (setq query-return sqlarray)
 		(if (sql3:error)
-			(println (sql3:error) " query problem ")
+			(displayln (sql3:error) " query problem ")
 			(setq query-return nil))))
 
 ;====== CREATE-RECORD ======================================================================================
@@ -155,7 +202,7 @@
 	; first save the values
 	(set 'temp-record-values nil)
 	(set 'temp-table-name (first (args)))
-	;(println "<BR>Arguments: " (args))
+	;(displayln "<BR>Arguments: " (args))
 	(dolist (s (rest (args))) (push (eval s) temp-record-values -1))
 	; now save the arguments as symbols under the context "DB"
 	(dolist (s (rest (args)))
@@ -164,9 +211,9 @@
 		(sym (string temp-index-num s) 'DB))
 	; now create the sql query 
 	(set 'temp-sql-query (string "INSERT INTO " temp-table-name " ("))
-	;(println "<P>TABLE NAME: " temp-table-name)
-	;(println "<P>SYMBOLS: " (symbols DB))
-	;(println "<BR>VALUES: " temp-record-values)
+	;(displayln "<P>TABLE NAME: " temp-table-name)
+	;(displayln "<P>SYMBOLS: " (symbols DB))
+	;(displayln "<BR>VALUES: " temp-record-values)
 	(dolist (d (symbols DB)) (extend temp-sql-query (rest (rest (rest (rest (rest (string d)))))) ", "))
 	(set 'temp-sql-query (chop (chop temp-sql-query)))
 	(extend temp-sql-query ") VALUES (")
@@ -177,8 +224,8 @@
 		(extend temp-sql-query ", ")) ; all values are sanitized to avoid SQL injection
 	(set 'temp-sql-query (chop (chop temp-sql-query)))
 	(extend temp-sql-query ");")
-	;(println "<p>***** SQL QUERY: " temp-sql-query)
-	(println (query temp-sql-query)) ; actually run the query against the database
+	;(displayln "<p>***** SQL QUERY: " temp-sql-query)
+	(displayln (query temp-sql-query)) ; actually run the query against the database
 	(delete 'DB) ; we're done, so delete all symbols in the DB context.
 )	
 
@@ -205,7 +252,7 @@
 		(extend temp-sql-query (string (safe-for-sql q)))
 		(if (string? q) (extend temp-sql-query "'"))) ; close quote if value is non-numeric
 	(extend temp-sql-query ";")
-	;(println "TEMP-DELETE-QUERY: " temp-sql-query)	
+	;(displayln "TEMP-DELETE-QUERY: " temp-sql-query)	
 	(query temp-sql-query)
 	(delete 'DB) ; we're done, so delete all symbols in the DB context.
 )
@@ -218,12 +265,12 @@
 ; (print-post-box Title FormName ActionPage SubjectLine PostboxID SubmitButton)
 ;===============================================================================
 (define (print-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text)
-	(println "<h3>" str-title "</h3>")
-	(println "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
-	(println "<input type='text' name='" str-subject-line "'>")
-	(println "<p><textarea name='post' id='" str-postbox-id "' cols='50' rows='10'></textarea>")
-	(println "<input type='submit' value='" str-submit-button-text "'>")
-	(println "</form>"))
+	(displayln "<h3>" str-title "</h3>")
+	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
+	(displayln "<input type='text' name='" str-subject-line "'>")
+	(displayln "<p><textarea name='post' id='" str-postbox-id "' cols='50' rows='10'></textarea>")
+	(displayln "<input type='submit' value='" str-submit-button-text "'>")
+	(displayln "</form>"))
 
 ;===============================================================================
 ; !twitter functions (lifted from Dragonfly.. will rewrite later)
@@ -240,13 +287,13 @@
 	(set 'sxml (xml-parse xml 31)) ; turn on SXML options
 	(set 'entry-index (ref-all '(entry *) sxml match))
 	(when (empty? entry-index)
-		(println "No entries found")
+		(displayln "No entries found")
 	)
 	(dolist (idx entry-index)
 		(set 'entry (sxml idx))
 		(set 'dateseconds (parse-date (lookup 'published entry) "%Y-%m-%dT%H:%M:%SZ")) ; convert string date to seconds
 		
-		(println
+		(displayln
 			"<div class='entry'>"
 			"<div class='headline'>" (lookup 'title entry) "</div><br/>"
 			"<div class='published'>" (date dateseconds 0 "%a %d %b %Y %H:%M:%S") "</div><div class='author'>By&nbsp;" (lookup '(author name) entry) "</div><br/>"
@@ -254,3 +301,16 @@
 		)
 	)
 )
+
+(define (display-page)
+	; Sending the page starts here-----------------------------------------------------------------------------
+	; print headers
+	(print "Content-type: text/html\n") 
+	; send cookies if they exist 
+	(print "Set-Cookie: name2=value2; Expires=Wed, 09-Jun-2021 10:18:14 GMT\n")
+	(print "\n")
+	(print "<!DOCTYPE html>") 	
+	(print STDOUT) ; the whole page gets put here
+)
+
+;(print "POST: " ($POST) " COOKIES: " ($COOKIES))
