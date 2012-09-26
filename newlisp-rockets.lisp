@@ -1,19 +1,9 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.08
+; Version 0.09
 ;
 ; For revision history, see revision-history.txt
-;
-; Revision history:
-; 0.01 - first standalone framework without Dragonfly
-; 0.02 - added ($GET) functionality
-; 0.03 - 09/10/2012 - added ($POST) functionality (multipart forms only)
-; 0.04 - 09/11/2012 - added SQLite database open/close and query functions
-; 0.05 - 09/14/2012 - added (create-record) macro to add a new record to SQLite table
-; 0.06 - 09/17/2012 - added (delete-record) macro to delete a record from SQLite table
-; 0.07 - 09/24/2012 - added ($COOKIES) key/value pair to read cookies, also added (print-post-box) function
-; 0.08 - 09/25/2012 - changed the way headers are printed to delay printing, replace (println) with (displayln), added (benchmark-result)
 ;
 ; I have to give a HUGE acknowledgement to the Dragonfly framework at http://rundragonfly.com
 ; written by Marc Hildmann and Greg Slepak and available for download at: http://code.google.com/p/dragonfly-newlisp/downloads/list
@@ -25,7 +15,7 @@
 ;------------------------------------------------------------------------------------------------------------
 
 ;====== GLOBAL VARIABLES ========================================================
-(constant (global '$ROCKETS_VERSION) 0.07)    ; this is the current version of Rockets
+(constant (global '$ROCKETS_VERSION) 0.09)    ; this is the current version of Rockets
 (constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
 
 ;====== CONSTANTS ================================================================
@@ -66,8 +56,11 @@
         (set 'microtime-end (time-of-day))
         (set 'execution-time-milliseconds (- microtime-end microtime-start))
         (set 'execution-time-seconds (div execution-time-milliseconds 1000))
-        (displayln "<div id='footer'>Rendered in " execution-time-milliseconds " milliseconds. Used " mem_total_usage " KB of memory, " mem_cells_kilobytes " KB for Lisp Cells."))
+        (displayln "Rendered in " execution-time-milliseconds " milliseconds. Used " mem_total_usage " KB of memory, " mem_cells_kilobytes " KB for Lisp Cells."))
 
+; note: I'm not overloading print and println for the moment, because it involves context switches
+; that seem overly complicated, so I'm using (display) and (displayln) as replacements instead. But
+; I might switch back, so that's why this code is here but commented out.
 ;(constant (global 'sys-print) print)
 ;(constant 'print print)
 ;(constant (global 'sys-println) println)
@@ -76,16 +69,65 @@
 
 
 ;====== HEADER ===================================================================
-(define (print-header)
-	(displayln "<html><head><meta charset=\"UTF-8\"></head><body>")
+(define (display-header)
+	(displayln "<html><head><meta charset=\"UTF-8\">")
+   (displayln "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
+	(displayln "<link href=\"css/bootstrap.css\" rel=\"stylesheet\">") ; loads Bootstrap CSS
+	(displayln "<link href=\"css/bootstrap-responsive.css\" rel=\"stylesheet\"></head><body>")
 )
 
+;====== NAVBAR =========================================================================
+; this is a Bootstrap navigation bar that stays at the top of the screen when you scroll
+; calling this function also sets up the main <div> container for the whole page.
+(define (display-navbar str-name list-menus)
+	(displayln "    <div class=\"navbar navbar-inverse navbar-fixed-top\">")
+	(displayln "      <div class=\"navbar-inner\">")
+	(displayln "        <div class=\"container\">")
+	(displayln "          <a class=\"btn btn-navbar\" data-toggle=\"collapse\" data-target=\".nav-collapse\">")
+	(displayln "            <span class=\"icon-bar\"></span>")
+	(displayln "            <span class=\"icon-bar\"></span>")
+	(displayln "            <span class=\"icon-bar\"></span>")
+	(displayln "          </a>")
+	(displayln "          <a class=\"brand\" href=\"#\">" str-name "</a>")
+	(displayln "          <div class=\"nav-collapse collapse\">")
+	(displayln "            <ul class=\"nav\">")
+	(displayln "              <li class=\"active\"><a href=\"#\">Home</a></li>")
+	(dolist (d list-menus)
+		(displayln "              <li><a href=\"#" (lower-case d) "\">" d "</a></li>")	)
+	(displayln "            </ul>")
+	(displayln "            <form class=\"navbar-form pull-right\">")
+	(displayln "              <input class=\"span2\" type=\"text\" placeholder=\"Email\">")
+	(displayln "              <input class=\"span2\" type=\"password\" placeholder=\"Password\">")
+	(displayln "              <button type=\"submit\" class=\"btn\">Sign in</button>")
+	(displayln "            </form>")
+	(displayln "          </div>")
+	(displayln "       </div>")
+   (displayln "     </div>")
+	(displayln "    </div>")
+	(displayln " <div class=\"container\">") ; start the main container for the page
+)
+
+
 ;====== FOOTER ===================================================================
-(define (print-footer)
+(define (display-footer str-company-name)
+	(displayln "<hr><footer><p>&copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year
+	(displayln "<script src=\"js/jquery-1.8.2.min.js\"></script>") ; Loads jQuery
+	(displayln "<script src=\"js/bootstrap.min.js\"></script>") ; Loads Bootstrap Javascript.
+	(displayln (benchmark-result) "</footer></div>") ; ends main container
 	(displayln "</body></html>"))
 
+;====== START-DIV ===================================================================
+; okay this is pretty simple, admittedly
+(define (start-div str-div-name)
+	(displayln "<div class=\"" str-div-name "\">"))
+
+;====== END-DIV ===================================================================
+; this might be more exciting in the future
+(define (end-div)
+	(displayln "</div>"))
+
 ;====== PRINT-IMAGE ==============================================================
-(define (print-image str-image-to-print)
+(define (display-image str-image-to-print)
 	(displayln (string "<img src=images/" str-image-to-print ">")))
 
 ;====== URL-DECODE =================================================================
@@ -95,16 +137,6 @@
 (define (url-decode str-to-decode)
 	(replace "+" str-to-decode " ")
 	(replace REGEX_HEX_ENCODED_CHAR str-to-decode (pack "b" (int $1 nil 16)) 0x10000))
-
-;====== SAFE-FOR-SQL ===============================================================
-; this function makes strings safe for inserting into SQL statements
-; to avoid SQL injection issues
-; it's simple right now but will add to it later
-;===================================================================================
-(define (safe-for-sql str-sql-query)
-	(if (string? str-sql-query) 
-		(replace "'" str-sql-query "&apos;"))
-		(set 'result str-sql-query))
 
 ;====== FORMAT-FOR-WEB =============================================================
 ; this is a simple function to take a post full of data including carriage return/lf
@@ -181,6 +213,16 @@
 	(if (sql3:close)
 		(displayln "")
 		(displayln "There was a problem closing the database: " (sql3:error))))
+
+;====== SAFE-FOR-SQL ===============================================================
+; this function makes strings safe for inserting into SQL statements
+; to avoid SQL injection issues
+; it's simple right now but will add to it later
+;===================================================================================
+(define (safe-for-sql str-sql-query)
+	(if (string? str-sql-query) 
+		(replace "'" str-sql-query "&apos;"))
+		(set 'result str-sql-query))
 
 ;; function for doing queries
 (define (query sql-text)
@@ -260,11 +302,11 @@
 ;----- Form functions----------------------------------------------------------
 
 ;===============================================================================
-; PRINT-POST-BOX
+; DISPLAY-POST-BOX
 ; Just a simple function to print a form for entering posts (subject and postbox)
 ; (print-post-box Title FormName ActionPage SubjectLine PostboxID SubmitButton)
 ;===============================================================================
-(define (print-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text)
+(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text)
 	(displayln "<h3>" str-title "</h3>")
 	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
 	(displayln "<input type='text' name='" str-subject-line "'>")

@@ -1,0 +1,12 @@
+newLISP on Rockets Revision History
+===================================
+
+0.01 - first standalone framework without Dragonfly 
+0.02 - added ($GET) functionality 
+0.03 - 09/10/2012 - added ($POST) functionality (multipart forms only) 
+0.04 - 09/11/2012 - added SQLite database open/close and query functions 
+0.05 - 09/14/2012 - added (create-record) macro to add a new record to SQLite table 
+0.06 - 09/17/2012 - added (delete-record) macro to delete a record from SQLite table 
+0.07 - 09/24/2012 - added ($COOKIES) key/value pair to read cookies, also added (print-post-box) function
+0.08 - 09/25/2012 - changed the way headers are printed to delay printing, replace (println) with (displayln), added (benchmark-result)
+0.09 - 09/25/2012 - added in jQuery and Bootstrap to make things look fancy
