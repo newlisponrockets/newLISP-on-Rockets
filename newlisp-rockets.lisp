@@ -1,7 +1,7 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.09
+; Version 0.10
 ;
 ; For revision history, see revision-history.txt
 ;
@@ -15,7 +15,7 @@
 ;------------------------------------------------------------------------------------------------------------
 
 ;====== GLOBAL VARIABLES ========================================================
-(constant (global '$ROCKETS_VERSION) 0.09)    ; this is the current version of Rockets
+(constant (global '$ROCKETS_VERSION) 0.10)    ; this is the current version of Rockets
 (constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
 
 ;====== CONSTANTS ================================================================
@@ -70,7 +70,7 @@
 
 ;====== HEADER ===================================================================
 (define (display-header)
-	(displayln "<html><head><meta charset=\"UTF-8\">")
+	(displayln "<html lang=\"en\"><head><meta charset=\"UTF-8\">")
    (displayln "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
 	(displayln "<link href=\"css/bootstrap.css\" rel=\"stylesheet\">") ; loads Bootstrap CSS
 	(displayln "<link href=\"css/bootstrap-responsive.css\" rel=\"stylesheet\"></head><body>")
@@ -88,12 +88,14 @@
 	(displayln "            <span class=\"icon-bar\"></span>")
 	(displayln "            <span class=\"icon-bar\"></span>")
 	(displayln "          </a>")
-	(displayln "          <a class=\"brand\" href=\"#\">" str-name "</a>")
+	(displayln "          <a class=\"brand\" href=\"\">" str-name "</a>")
 	(displayln "          <div class=\"nav-collapse collapse\">")
 	(displayln "            <ul class=\"nav\">")
-	(displayln "              <li class=\"active\"><a href=\"#\">Home</a></li>")
+	;(displayln "              <li class=\"active\"><a href=\"#\">Home</a></li>")
 	(dolist (d list-menus)
-		(displayln "              <li><a href=\"#" (lower-case d) "\">" d "</a></li>")	)
+		(display "              <li")
+		(if (= (length d) 3) (display " class=\"active\"")) ; for active menu
+		(displayln "><a href=\"" (d 1) ".lsp\"" (lower-case (d 0)) "\">" (d 0) "</a></li>"))
 	(displayln "            </ul>")
 	(displayln "            <form class=\"navbar-form pull-right\">")
 	(displayln "              <input class=\"span2\" type=\"text\" placeholder=\"Email\">")
@@ -169,6 +171,14 @@
 		(let (ctemp (parse c "="))
 		(if (> (length ctemp) 1) (begin
 			($COOKIES (first ctemp) (join (rest ctemp) "=")))))))
+
+;================================================================================
+;  (SET-COOKIE)
+;================================================================================
+; adds a new cookie to be set in the next page's HTTP header
+(define (set-cookie str-cookie-name str-cookie-value date-cookie-expire-date)
+ (push (string str-cookie-name "=" str-cookie-value "; Expires=" (date date-cookie-expire-date 0 "%a, %d-%b-%Y %H:%M:%S")) Rockets:cookielist -1)
+)
 
 ;================================================================================
 ;  ($GET)
@@ -311,7 +321,7 @@
 	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
 	(displayln "<input type='text' name='" str-subject-line "'>")
 	(displayln "<p><textarea name='post' id='" str-postbox-id "' cols='50' rows='10'></textarea>")
-	(displayln "<input type='submit' value='" str-submit-button-text "'>")
+	(displayln "<br><p><input type='submit' class='btn' value='" str-submit-button-text "'>")
 	(displayln "</form>"))
 
 ;===============================================================================
@@ -336,9 +346,9 @@
 		(set 'dateseconds (parse-date (lookup 'published entry) "%Y-%m-%dT%H:%M:%SZ")) ; convert string date to seconds
 		
 		(displayln
-			"<div class='entry'>"
-			"<div class='headline'>" (lookup 'title entry) "</div><br/>"
-			"<div class='published'>" (date dateseconds 0 "%a %d %b %Y %H:%M:%S") "</div><div class='author'>By&nbsp;" (lookup '(author name) entry) "</div><br/>"
+			"<div class='row-fluid'>"
+			"<h4>" (lookup 'title entry) "</h4><br/>"
+			"<div class='thumbnail'>" (date dateseconds 0 "%a %d %b %Y %H:%M:%S") "</div><div class='author'>By&nbsp;" (lookup '(author name) entry) "</div><br/>"
 			"</div>"
 		)
 	)
@@ -349,7 +359,9 @@
 	; print headers
 	(print "Content-type: text/html\n") 
 	; send cookies if they exist 
-	(print "Set-Cookie: name2=value2; Expires=Wed, 09-Jun-2021 10:18:14 GMT\n")
+	(if Rockets:cookielist (begin
+		(dolist (r Rockets:cookielist)
+			(print "Set-Cookie: " r "\n"))))
 	(print "\n")
 	(print "<!DOCTYPE html>") 	
 	(print STDOUT) ; the whole page gets put here
