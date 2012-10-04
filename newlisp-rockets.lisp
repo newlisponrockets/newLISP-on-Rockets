@@ -242,7 +242,7 @@
 
 ;; open a database
 (define (open-database sql-db-to-open)
-	(if (sql3:open sql-db-to-open)  
+	(if (sql3:open (string sql-db-to-open ".db"))  
 		(displayln "")
 		(displayln "There was a problem opening the database " sql-db-to-open ": " (sql3:error))))
 
