@@ -14,3 +14,5 @@ It's a very simple web application framework running on newLISP.  My goal is to 
 
 See newlisp-rockets.lisp for more information.
 
+Also, check out the code and the blog running at: http://newlisponrockets.com
+
