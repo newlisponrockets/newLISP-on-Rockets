@@ -5,10 +5,15 @@
 ; Rockets - Main Page
 ; 
 ; This is the first version of the self-hosted blog for newLISP on Rockets.
-; Version 0.01 (Rockets version shown on page)
+; The blog is designed to showcase how you would use Rockets for a real application.
+; 
+; Written 2012 by Rocket Man
 
 (display-header)
-(display-navbar "newLISP on Rockets" '(("Home" "rockets-main" "active") ("About" "rockets-about") ("Contact" "rockets-contact") ("Register" "rockets-register")))
+(open-database "ROCKETS-BLOG")
+(display-partial "rockets-checksignin") ; checks to see if user is signed in
+
+(display-navbar "newLISP on Rockets" '(("Home" "rockets-main" "active") ("About" "rockets-about") ("Contact" "rockets-contact") ("Register" "rockets-register")) "rockets-verify")
 (start-div "hero-unit")
 	(display-image "rockets.png")
 	(displayln "<h2>The newLISP on Rockets Blog</h2>")
@@ -18,14 +23,10 @@
 ; THIS IS TEMPORARY TAKE OUT AS SOON AS WE HAVE VALIDATION
 (define (author-name str-author-id)
 	(case str-author-id
-		("0" "Rocket Man")))+
+		("0" "Rocket Man")))
 
-(open-database "ROCKETS-BLOG")
-
-; set Rockets cookie name (will be from a file later)
-(set 'rocket-cookie-name "rockets-4dckq3-e4jcx-2wgxc")
-
-(displayln "Checking for user cookie:" ($COOKIES rocket-cookie-name)) ; this is the Rockets signin cookie.  Will be in external file or db at some point.
+;(set 'test-var "testy!")
+;(display-partial "test-partial")
 
 ; get all existing posts
 (set 'posts-query-sql (string "SELECT * from Posts;"))
@@ -46,11 +47,10 @@
 ;(displayln "<h3>Twitter searches containing: " twitter-term "</h3>")
 ;(twitter-search twitter-term 8)
 
-; set a cookie
-(set-cookie rocket-cookie-name "user=1" (date-value 2013 2 28))
-
 ; print post entry box
-(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message")
+(if (= Rockets:UserId 0) (begin
+	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message")
+)) ; only the site administrator may make new blog posts at the moment
 
 ; table structure:  ((0 "Id" "INTEGER" 0 nil 1) (1 "PosterId" "TEXT" 0 nil 0) (2 "PostDate" "DATE" 0 nil 0) (3 "PostSubject" "TEXT" 0 nil 0) (4 "PostContent" "TEXT" 0 nil 0))
 

@@ -17,6 +17,7 @@
 ;====== GLOBAL VARIABLES ========================================================
 (constant (global '$ROCKETS_VERSION) 0.10)    ; this is the current version of Rockets
 (constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
+(constant (global '$PARTIAL_PATH) "partials") ; this is the relative path for (display-partial) to use
 
 ;====== CONSTANTS ================================================================
 (constant 'REGEX_HTTP_SPECIAL_STR (regex-comp {([^.0-9a-z]+)} 1))
@@ -32,6 +33,12 @@
 (define (display)
 	(extend STDOUT (apply string $args))
 	(last $args)) ; to behave the same way as print
+
+(define (display-file str-filename)
+	(eval-string (read-file str-filename)))
+
+(define (display-partial partialname)
+  	(display-file (string $PARTIAL_PATH "/" partialname ".lsp")))
 
 ;; BENCHMARK STUFF===================================================================================
 ;  this was taken from Dragonfly, but just too cool not to use!
@@ -79,7 +86,7 @@
 ;====== NAVBAR =========================================================================
 ; this is a Bootstrap navigation bar that stays at the top of the screen when you scroll
 ; calling this function also sets up the main <div> container for the whole page.
-(define (display-navbar str-name list-menus)
+(define (display-navbar str-name list-menus str-signin)
 	(displayln "    <div class=\"navbar navbar-inverse navbar-fixed-top\">")
 	(displayln "      <div class=\"navbar-inner\">")
 	(displayln "        <div class=\"container\">")
@@ -91,17 +98,29 @@
 	(displayln "          <a class=\"brand\" href=\"\">" str-name "</a>")
 	(displayln "          <div class=\"nav-collapse collapse\">")
 	(displayln "            <ul class=\"nav\">")
-	;(displayln "              <li class=\"active\"><a href=\"#\">Home</a></li>")
 	(dolist (d list-menus)
 		(display "              <li")
 		(if (= (length d) 3) (display " class=\"active\"")) ; for active menu
 		(displayln "><a href=\"" (d 1) ".lsp\"" (lower-case (d 0)) "\">" (d 0) "</a></li>"))
 	(displayln "            </ul>")
-	(displayln "            <form class=\"navbar-form pull-right\">")
-	(displayln "              <input class=\"span2\" type=\"text\" placeholder=\"Email\">")
-	(displayln "              <input class=\"span2\" type=\"password\" placeholder=\"Password\">")
-	(displayln "              <button type=\"submit\" class=\"btn\">Sign in</button>")
-	(displayln "            </form>")
+	(if Rockets:UserId (begin 
+		(displayln "            <div style=\"display:inline-block\" class=\"pull-right\">")
+		(displayln "              <ul class=\"nav pull-right\">")
+		(displayln "                <li class=\"divider-vertical\"></li>")
+		(displayln "                <li class=\"dropdown\">")
+		(displayln "                  <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Welcome, " Rockets:UserName "&nbsp;<b class=\"caret\"></b></a>")
+		(displayln "                  <ul class=\"dropdown-menu\"><li><a href=\"#\">Edit Profile</a></li>")
+		(displayln "                                              <li><a href=\"#\">Sign Out</a></li></ul>")
+		(displayln "                </li>")
+		(displayln "              </ul>")
+		(displayln "            </div>")
+		) (begin
+		(displayln "            <form class=\"navbar-form pull-right\" method=\"post\" action=\"" str-signin ".lsp\">")
+		(displayln "              <input class=\"span2\" name=\"email\" id=\"email\" type=\"text\" placeholder=\"Email\">")
+		(displayln "              <input class=\"span2\" name=\"password\" id=\"password\" type=\"password\" placeholder=\"Password\">")
+		(displayln "              <button type=\"submit\" class=\"btn\">Sign in</button>")
+		(displayln "            </form>")
+	))
 	(displayln "          </div>")
 	(displayln "       </div>")
    (displayln "     </div>")
@@ -319,8 +338,8 @@
 (define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text)
 	(displayln "<h3>" str-title "</h3>")
 	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
-	(displayln "<input type='text' name='" str-subject-line "'>")
-	(displayln "<p><textarea name='post' id='" str-postbox-id "' cols='50' rows='10'></textarea>")
+	(displayln "<input type='text' class='field span5' name='" str-subject-line "'>")
+	(displayln "<p><textarea name='post' id='" str-postbox-id "' class='field span9' rows='12'></textarea>")
 	(displayln "<br><p><input type='submit' class='btn' value='" str-submit-button-text "'>")
 	(displayln "</form>"))
 
