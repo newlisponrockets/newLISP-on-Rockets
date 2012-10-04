@@ -1,7 +1,7 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.10
+; Version 0.11
 ;
 ; For revision history, see revision-history.txt
 ;
@@ -15,7 +15,7 @@
 ;------------------------------------------------------------------------------------------------------------
 
 ;====== GLOBAL VARIABLES ========================================================
-(constant (global '$ROCKETS_VERSION) 0.10)    ; this is the current version of Rockets
+(constant (global '$ROCKETS_VERSION) 0.11)    ; this is the current version of Rockets
 (constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
 (constant (global '$PARTIAL_PATH) "partials") ; this is the relative path for (display-partial) to use
 
@@ -110,7 +110,7 @@
 		(displayln "                <li class=\"dropdown\">")
 		(displayln "                  <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Welcome, " Rockets:UserName "&nbsp;<b class=\"caret\"></b></a>")
 		(displayln "                  <ul class=\"dropdown-menu\"><li><a href=\"#\">Edit Profile</a></li>")
-		(displayln "                                              <li><a href=\"#\">Sign Out</a></li></ul>")
+		(displayln "                                              <li><a href=\"rockets-signout.lsp\">Sign Out</a></li></ul>")
 		(displayln "                </li>")
 		(displayln "              </ul>")
 		(displayln "            </div>")
@@ -194,10 +194,19 @@
 ;================================================================================
 ;  (SET-COOKIE)
 ;================================================================================
-; adds a new cookie to be set in the next page's HTTP header
+; adds a new cookie to be set in the page's HTTP header (will take effect next page)
 (define (set-cookie str-cookie-name str-cookie-value date-cookie-expire-date)
  (push (string str-cookie-name "=" str-cookie-value "; Expires=" (date date-cookie-expire-date 0 "%a, %d-%b-%Y %H:%M:%S")) Rockets:cookielist -1)
 )
+
+;================================================================================
+;  (DELETE-COOKIE)
+;================================================================================
+; deletes a cookie so it will be removed in the page's HTTP header. (will take effect next page)
+(define (delete-cookie str-cookie-name)
+ (push (string str-cookie-name "=deleted; Expires=Thu, 01-Jan-1970 00:00:01") Rockets:cookielist -1)
+)
+
 
 ;================================================================================
 ;  ($GET)
