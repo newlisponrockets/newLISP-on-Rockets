@@ -33,7 +33,7 @@
 (set 'posts-result (reverse (query posts-query-sql))) ; reverse it so newest posts first
 ; print out all posts
 (dolist (x posts-result)
-	(displayln "<br><a href='rockets-delete.lsp?post=" (x 0) "'>Delete post</a>")
+	(if (= Rockets:UserId 0) (displayln "<br><a href='rockets-delete.lsp?post=" (x 0) "'>Delete post</a>"))
 	(displayln "<h4>" (x 3) "</h4>")
 	(displayln "<br><b>Post #:</b> " (x 0) )
 	(displayln "<BR><B>Date:</b> " (x 2) "")
