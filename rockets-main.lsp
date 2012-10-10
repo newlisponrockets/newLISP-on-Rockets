@@ -12,6 +12,7 @@
 (display-header)
 (open-database "ROCKETS-BLOG")
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
+(display-partial "rockets-common-functions") ; loads functions common to the blog but not part of Rockets
 
 (display-navbar "newLISP on Rockets" '(("Home" "rockets-main" "active") ("About" "rockets-about") ("Contact" "rockets-contact") ("Register" "rockets-register")) "rockets-verify")
 (start-div "hero-unit")
@@ -19,11 +20,6 @@
 	(displayln "<h2>The newLISP on Rockets Blog</h2>")
 	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
 (end-div)
-
-; THIS IS TEMPORARY TAKE OUT AS SOON AS WE HAVE VALIDATION
-(define (author-name str-author-id)
-	(case str-author-id
-		("0" "Rocket Man")))
 
 ;(set 'test-var "testy!")
 ;(display-partial "test-partial")
@@ -33,13 +29,7 @@
 (set 'posts-result (reverse (query posts-query-sql))) ; reverse it so newest posts first
 ; print out all posts
 (dolist (x posts-result)
-	(if (= Rockets:UserId 0) (displayln "<br><a href='rockets-delete.lsp?post=" (x 0) "'>Delete post</a>"))
-	(displayln "<h4>" (x 3) "</h4>")
-	(displayln "<br><b>Post #:</b> " (x 0) )
-	(displayln "<BR><B>Date:</b> " (x 2) "")
-	(displayln "<br><B>Author:</b> " (author-name (x 1)) "")
-	(displayln "<br><br><p>" (format-for-web (x 4)) "</p>")
-	(displayln "<hr>")
+	(display-individual-post x)
 )
 
 ; Twitter stuff

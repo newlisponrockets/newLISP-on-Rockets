@@ -1,7 +1,7 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.12
+; Version 0.13
 ;
 ; For revision history, see revision-history.txt
 ;
@@ -25,7 +25,7 @@
 ;------------------------------------------------------------------------------------------------------------
 
 ;====== GLOBAL VARIABLES ========================================================
-(constant (global '$ROCKETS_VERSION) 0.12)    ; this is the current version of Rockets
+(constant (global '$ROCKETS_VERSION) 0.13)    ; this is the current version of Rockets
 (constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
 (constant (global '$PARTIAL_PATH) "partials") ; this is the relative path for (display-partial) to use
 
@@ -87,7 +87,9 @@
 	(displayln "<html lang=\"en\"><head><meta charset=\"UTF-8\">")
    (displayln "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
 	(displayln "<link href=\"css/bootstrap.css\" rel=\"stylesheet\">") ; loads Bootstrap CSS
-	(displayln "<link href=\"css/bootstrap-responsive.css\" rel=\"stylesheet\"></head><body>")
+	(displayln "<link href=\"css/bootstrap-responsive.css\" rel=\"stylesheet\">")
+	(displayln "<style> body { padding-top: 60px; /* fixes the container spacing */   }</style>")
+	(displayln "</head><body>")
 )
 
 ;====== NAVBAR =========================================================================
@@ -105,10 +107,11 @@
 	(displayln "          <a class=\"brand\" href=\"\">" str-name "</a>")
 	(displayln "          <div class=\"nav-collapse collapse\">")
 	(displayln "            <ul class=\"nav\">")
-	(dolist (d list-menus)
-		(display "              <li")
-		(if (= (length d) 3) (display " class=\"active\"")) ; for active menu
-		(displayln "><a href=\"" (d 1) ".lsp\"" (lower-case (d 0)) "\">" (d 0) "</a></li>"))
+	(if list-menus (begin 
+		(dolist (d list-menus)
+			(display "              <li")
+			(if (= (length d) 3) (display " class=\"active\"")) ; for active menu
+			(displayln "><a href=\"" (d 1) ".lsp\"" (lower-case (d 0)) "\">" (d 0) "</a></li>"))))
 	(displayln "            </ul>")
 	(if Rockets:UserId (begin 
 		(displayln "            <div style=\"display:inline-block\" class=\"pull-right\">")
@@ -138,6 +141,7 @@
 
 ;====== FOOTER ===================================================================
 (define (display-footer str-company-name)
+	(if (nil? str-company-name) (set 'str-company-name ""))
 	(displayln "<hr><footer><p>&copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year
 	(displayln "<script src=\"js/jquery-1.8.2.min.js\"></script>") ; Loads jQuery
 	(displayln "<script src=\"js/bootstrap.min.js\"></script>") ; Loads Bootstrap Javascript.
@@ -340,6 +344,32 @@
 	;(displayln "TEMP-DELETE-QUERY: " temp-sql-query)	
 	(query temp-sql-query)
 	(delete 'DB) ; we're done, so delete all symbols in the DB context.
+)
+
+;====== GET-RECORD ======================================================================================
+; format: (get-record "TableName" ColumnVariable)
+; 
+; this gets all data for a certain record with a constraint that ColumnVariable=(value of ColumnVariable);
+; NOTE: Still thinking about parameterizing the SQL query somehow for further SQL injection projection
+;===========================================================================================================
+(define-macro (get-record)
+	(set 'temp-table-name (first (args)))
+	(set 'temp-record-values nil)
+	(dolist (s (rest (args))) (push (eval s) temp-record-values -1)) ; only one value for NOW...
+	(sym (first (rest (args))) 'DB) ; put the second argument (for now) into a symbol in the DB context
+												; this will have to be in a dolist loop of (rest (args)) when I add more
+	(set 'temp-sql-query (string "SELECT * FROM " temp-table-name " WHERE "))
+	(dolist (d (symbols DB)) (extend temp-sql-query (rest (rest (rest (string d))))))
+	(extend temp-sql-query "=")
+	; why am I doing a loop here?  There should be only one value, right?  But maybe for future extension...
+	(dolist (q temp-record-values)
+		(if (string? q) (extend temp-sql-query "'")) ; only quote if value is non-numeric
+		(extend temp-sql-query (string (safe-for-sql q)))
+		(if (string? q) (extend temp-sql-query "'"))) ; close quote if value is non-numeric
+	(extend temp-sql-query ";")
+	;(displayln "TEMP-GET-QUERY: " temp-sql-query)	
+	(delete 'DB) ; we're done, so delete all symbols in the DB context.
+	(set 'return-value (query temp-sql-query)) ; this returns a list of everything in the record
 )
 
 ;----- Form functions----------------------------------------------------------

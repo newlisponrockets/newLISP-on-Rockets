@@ -38,11 +38,6 @@
 (displayln "<br>Some sort of salt: " temp-salt)
 (displayln "<br>Some sort of hash: " temp-crypto)
 
-; let's set up the user database temporarily
-;(set 'sql-create-user-table "CREATE TABLE Users (UserId INTEGER PRIMARY KEY, UserEmail TEXT, UserPasswordHash TEXT, UserSalt TEXT, UserPosts INTEGER, UserAchievements TEXT, UserReadPosts TEXT)")
-;(set 'sql-display-table "Pragma table_info('Users');")
-;(set 'sql-drop-table "DROP TABLE Users;")
-;(set 'sql-create-user (string "INSERT INTO Users (UserID, UserEmail, UserPasswordHash, UserSalt, UserPosts) VALUES (0, 'newlisponrockets@newlisponrockets.com', '" temp-crypto  "', '" temp-salt "', 11);"))
 (set 'sql-show-users (string "SELECT * FROM Users WHERE UserEmail='" user-check "';"))
 ; a lot of this stuff is temporary until we figure out how to make this part of the framework
 (set 'sql-result (first (query sql-show-users)))
@@ -50,6 +45,7 @@
 (set 'sql-user-id (sql-result 0))
 (set 'sql-password-hash (sql-result 2))
 (set 'sql-password-salt (sql-result 3))
+(set 'sql-cookie-salt (sql-result 8))
 (set 'hash-combination (crypto:sha1 (string sql-password-salt user-password)))
 
 (displayln "<BR>User entered: " user-password)
@@ -59,8 +55,7 @@
 
 (if (= sql-password-hash hash-combination) (begin
 	(displayln "<BR><B>Password correct!</B>")
-	(set 'temp-uuid "32E933AC-3225-414D-9041-3328A919A66E") ; this will be stored somewhere in the DB 
-	(set 'temp-cookie-hash (string "user=" (string sql-user-id "|" temp-uuid)))
+	(set 'temp-cookie-hash (string "user=" (string sql-user-id "|" sql-cookie-salt)))
 	(displayln "<BR>Cookie set: " temp-cookie-hash)
 	; set a cookie
 	(set-cookie rocket-cookie-name temp-cookie-hash (date-value 2013 2 28))

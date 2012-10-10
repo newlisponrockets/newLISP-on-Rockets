@@ -13,3 +13,5 @@ newLISP on Rockets Revision History
 0.10 - 10/02/2012 - Added (set-cookie) function, cleaned up navbar
 0.11 - 10/04/2012 - Admin user can now sign in with cookie, navbar changes
 0.12 - 10/09/2012 - added (page-redirect), also added ABOUT page to blog.
+0.13 - 10/10/2012 - added (get-record) macro, fixed cookie salt, cosmetic changes, new item page
+

@@ -9,13 +9,12 @@
 
 (open-database "ROCKETS-BLOG")
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
-(set 'Id (integer ($GET "post")))		; security will come from authorization.. if user isn't logged in and isn't admin
-													; no amount of entering this URL will work.
-(if (= Rockets:UserId 0) 					; only an admin can delete posts
-	(delete-record "Posts" Id) ; this actually deletes the query.
-	(displayln "<p>Sorry, only users with admin access may delete posts.</p>"))
+(set 'Id (integer ($GET "post")))		
+													
+(if (= Rockets:UserId 0) 			; only an admin can delete posts
+	(delete-record "Posts" Id) 	; this actually deletes the query.
+	(displayln "")) 					; if the user tried to enter the URL manually it will just do nothing.
 
-; this is temporary, and we also have to make a redirect.  Have to figure out how to do headers and stuff.
-(displayln "<a href='rockets-main.lsp'>Post deleted. Click here to return to the main page.</a>")
+; Regardless, redirect back to main page.  
 (page-redirect "rockets-main.lsp")
-(display-page)
+
