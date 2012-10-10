@@ -1,7 +1,7 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.11
+; Version 0.12
 ;
 ; For revision history, see revision-history.txt
 ;
@@ -10,12 +10,22 @@
 ; Without Dragonfly I would have been unable to do Rockets at all.  Some parts of Rockets contain
 ; snippets of Dragonfly code.  Also thanks to Lutz Mueller, the author of newLISP at http://www.newlisp.org 
 ;
-; Written 2012 by Rocket Man
+; Copyright 2012 by Rocket Man
+;
+; This program is free software; you can redistribute it and/or
+; modify it under the terms of the GNU General Public License
+; as published by the Free Software Foundation; either version 2
+; of the License, or (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
 
 ;------------------------------------------------------------------------------------------------------------
 
 ;====== GLOBAL VARIABLES ========================================================
-(constant (global '$ROCKETS_VERSION) 0.11)    ; this is the current version of Rockets
+(constant (global '$ROCKETS_VERSION) 0.12)    ; this is the current version of Rockets
 (constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
 (constant (global '$PARTIAL_PATH) "partials") ; this is the relative path for (display-partial) to use
 
@@ -26,7 +36,7 @@
 ; This is the global buffer that Rockets writes to before printing the page out at the end
 (set 'STDOUT "")
 
-; Now we redefine (print) and (displayln) to store to the variable STDOUT
+; Now we define (display) and (displayln) to store to the variable STDOUT
 (define (displayln)
 	(apply display (push "\n" (args) -1)))
 
@@ -34,9 +44,11 @@
 	(extend STDOUT (apply string $args))
 	(last $args)) ; to behave the same way as print
 
+; This reads in any file as part of the calling page
 (define (display-file str-filename)
 	(eval-string (read-file str-filename)))
 
+; This is a shortcut to reading in files in the $PARTIAL_PATH subdirectory
 (define (display-partial partialname)
   	(display-file (string $PARTIAL_PATH "/" partialname ".lsp")))
 
@@ -47,19 +59,14 @@
 (set 'microtime-start (time-of-day))
 
 (define (benchmark-result)
-
         (set 'mem_cells_bytes (* (sys-info 0) 16))
         (set 'mem_cells_kilobytes (/ mem_cells_bytes 1024))
-
         (set 'mem_cells-constant_bytes (* (sys-info 1) 16))
         (set 'mem_cells-constant_kilobytes (/ mem_cells-constant_bytes 1024))
         (set 'mem_cells-constant_megabytes (/ mem_cells-constant_kilobytes 1024))
-
         (set 'mem_symbols_bytes (* (sys-info 2) 32))
         (set 'mem_symbols_kilobytes (/ mem_symbols_bytes 1024))
-
-    (set 'mem_total_usage (+ mem_cells_kilobytes mem_symbols_kilobytes))
-
+			(set 'mem_total_usage (+ mem_cells_kilobytes mem_symbols_kilobytes))
         (set 'microtime-end (time-of-day))
         (set 'execution-time-milliseconds (- microtime-end microtime-start))
         (set 'execution-time-seconds (div execution-time-milliseconds 1000))
@@ -75,7 +82,7 @@
 
 
 
-;====== HEADER ===================================================================
+;====== HTML HEADER ===================================================================
 (define (display-header)
 	(displayln "<html lang=\"en\"><head><meta charset=\"UTF-8\">")
    (displayln "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
@@ -154,7 +161,6 @@
 ;====== URL-DECODE =================================================================
 ; this function takes encoded strings and returns them to human-readable
 ; the regex and code were adapted from Dragonfly.  Basically %2B->"+", %27->"'", etc
-;===================================================================================
 (define (url-decode str-to-decode)
 	(replace "+" str-to-decode " ")
 	(replace REGEX_HEX_ENCODED_CHAR str-to-decode (pack "b" (int $1 nil 16)) 0x10000))
@@ -162,7 +168,6 @@
 ;====== FORMAT-FOR-WEB =============================================================
 ; this is a simple function to take a post full of data including carriage return/lf
 ; and make it print properly on the web
-;===================================================================================
 (define (format-for-web str-input-for-web)
 	(replace "\r\n" str-input-for-web "<BR>"))
 
@@ -353,13 +358,13 @@
 	(displayln "</form>"))
 
 ;===============================================================================
-; !twitter functions (lifted from Dragonfly.. will rewrite later)
+; Twitter functions (lifted from Dragonfly.. will rewrite later)
 ;===============================================================================
 
-;; @syntax (Dragonfly:twitter-search <keyword> <max-items>)
+;; @syntax (twitter-search <keyword> <max-items>)
 ;; @param <keyword> string containing the keyword for search
 ;; @param <max-items> INTEGER, maximum of items you want to show
-;; <p>Writes the results of a Twitter search.</p>
+;; Writes the results of a Twitter search.
 
 (define (twitter-search keyword max-items)
 	(set 'xml (get-url (string "http://search.twitter.com/search.atom?rpp="max-items"&q="keyword) ))
@@ -382,17 +387,66 @@
 	)
 )
 
+(set 'Rockets:status-codes
+  '((200 "OK")
+	(301 "Moved Permanently")
+	(302 "Found")
+	(400 "Bad Request")
+	(401 "Unauthorized")
+	(403 "Forbidden")
+	(404 "Not Found")
+	(410 "Gone")
+	(500 "Internal Error"))
+)
+
+;================================================================================
+;  (ADD-HEADER)
+;================================================================================
+; adds a new header (location, etc) to be set in the page's HTTP header (will take effect next page)
+(define (add-header str-header-name str-header-value)
+ (push (list str-header-name str-header-value) Rockets:headers -1)
+)
+
+;================================================================================
+;  (SEND-HEADERS)
+;================================================================================
+; this prints a bunch of HTTP headers, starting with status, then any other headers, then cookies.
+(define (send-headers)
+	(print "Status: " Rockets:statuscode " " (lookup Rockets:statuscode Rockets:status-codes) "\n")
+	; send cookies if they exist 
+	(if Rockets:headers (begin
+		(dolist (r Rockets:headers)
+			(print (first r) ": " (last r) "\n"))))
+	(if Rockets:cookielist (begin
+		(dolist (r Rockets:cookielist)
+			(print "Set-Cookie: " r "\n"))))
+)
+
+;================================================================================
+;  (PAGE-REDIRECT)
+;================================================================================
+; this redirects to another page
+(define (page-redirect str-url-to-redirect)
+	(print "Content-type: text/html\n") 
+	(set 'Rockets:statuscode 302) ; HTTP "FOUND" redirects to a new site
+   (add-header "Location" str-url-to-redirect)
+	(send-headers)
+	(print "\n")
+	(exit)
+)
+
+;================================================================================
+;  (DISPLAY-PAGE)
+;================================================================================
 (define (display-page)
 	; Sending the page starts here-----------------------------------------------------------------------------
 	; print headers
 	(print "Content-type: text/html\n") 
-	; send cookies if they exist 
-	(if Rockets:cookielist (begin
-		(dolist (r Rockets:cookielist)
-			(print "Set-Cookie: " r "\n"))))
+	(set 'Rockets:statuscode 200) ; everything is OK
+	(send-headers)
 	(print "\n")
 	(print "<!DOCTYPE html>") 	
 	(print STDOUT) ; the whole page gets put here
+	(exit)
 )
 
-;(print "POST: " ($POST) " COOKIES: " ($COOKIES))

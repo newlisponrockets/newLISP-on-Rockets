@@ -17,4 +17,5 @@
 
 ; this is temporary, and we also have to make a redirect.  Have to figure out how to do headers and stuff.
 (displayln "<a href='rockets-main.lsp'>Post deleted. Click here to return to the main page.</a>")
+(page-redirect "rockets-main.lsp")
 (display-page)

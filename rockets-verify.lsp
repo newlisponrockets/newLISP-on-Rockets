@@ -65,11 +65,13 @@
 	; set a cookie
 	(set-cookie rocket-cookie-name temp-cookie-hash (date-value 2013 2 28))
 	(displayln "<br>You have succesfully logged in! Click <a href='rockets-main.lsp'>here</a> to continue.")
-))
+	(page-redirect "rockets-main.lsp") 
+)
+	(displayln "<p><b>Sorry, your user email or your password were not recognized.  Please try again.</b></p>")
+)
 
 ;(displayln (env))
 
 (close-database)
 (display-footer "Rocket Man")
 (display-page) ; this is needed to actually display the page!
-(exit)

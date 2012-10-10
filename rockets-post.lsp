@@ -28,4 +28,5 @@
 )
 ))
 (displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>")
+(page-redirect "rockets-main.lsp")
 (display-page)
