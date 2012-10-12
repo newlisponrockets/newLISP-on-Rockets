@@ -1,7 +1,7 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.13
+; Version 0.14
 ;
 ; For revision history, see revision-history.txt
 ;
@@ -25,7 +25,7 @@
 ;------------------------------------------------------------------------------------------------------------
 
 ;====== GLOBAL VARIABLES ========================================================
-(constant (global '$ROCKETS_VERSION) 0.13)    ; this is the current version of Rockets
+(constant (global '$ROCKETS_VERSION) 0.14)    ; this is the current version of Rockets
 (constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
 (constant (global '$PARTIAL_PATH) "partials") ; this is the relative path for (display-partial) to use
 
@@ -83,8 +83,10 @@
 
 
 ;====== HTML HEADER ===================================================================
-(define (display-header)
+(define (display-header str-page-title)
+	(if (nil? str-page-title) (set 'str-page-title "newLISP on Rockets"))
 	(displayln "<html lang=\"en\"><head><meta charset=\"UTF-8\">")
+	(displayln "<title>" str-page-title "</title>")
    (displayln "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
 	(displayln "<link href=\"css/bootstrap.css\" rel=\"stylesheet\">") ; loads Bootstrap CSS
 	(displayln "<link href=\"css/bootstrap-responsive.css\" rel=\"stylesheet\">")
@@ -237,7 +239,7 @@
 ;(when (> (peek (device)) 0)
 	(read (device) post-buffer $MAX_POST_LENGTH) ; grab all post data, put it in variable 'post-buffer'
 	(if post-buffer (begin
-		(displayln "POST BUFFER: " post-buffer " LENGTH: " (length post-buffer)) ; <- debugging
+		;(displayln "POST BUFFER: " post-buffer " LENGTH: " (length post-buffer)) ; <- debugging
 		(parse-get-or-post post-buffer $POST)
 	))
 ;)

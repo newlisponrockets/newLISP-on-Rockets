@@ -10,7 +10,7 @@
 ; Written 2012 by Rocket Man
 
 (display-header)
-(display-navbar "newLISP on Rockets" '(("Home" "rockets-main") ("About" "rockets-about") ("Contact" "rockets-contact") ("Register" "rockets-register" "active")) "rockets-verify")
+(display-navbar "newLISP on Rockets" '(("Home" "rockets-main") ("About" "rockets-about") ("Why Rockets?" "rockets-why") ("Register" "rockets-register" "active")) "rockets-verify")
 
 (start-div "hero-unit")
 	(displayln "<h2>The newLISP on Rockets Blog</h2>")
@@ -19,14 +19,14 @@
 
 (module "crypto.lsp")
 
-(displayln "POST: " ($POST))
+;(displayln "POST: " ($POST))
 
 (open-database "ROCKETS-BLOG")
 
 ; set Rockets cookie name (will be from a file later)
 (set 'rocket-cookie-name "rockets-4dckq3-e4jcx-2wgxc")
 
-(displayln "Checking for user cookie:" ($COOKIES rocket-cookie-name)) 
+;(displayln "Checking for user cookie:" ($COOKIES rocket-cookie-name)) 
 
 (set 'temp-pw "rocket-horse-5")
 (seed (time-of-day))
@@ -35,23 +35,23 @@
 (set 'user-check ($POST "email"))
 (set 'user-password ($POST "password"))
 ;(displayln "<br>Some sort of thing: " temp-pw)
-(displayln "<br>Some sort of salt: " temp-salt)
-(displayln "<br>Some sort of hash: " temp-crypto)
+;(displayln "<br>Some sort of salt: " temp-salt)
+;(displayln "<br>Some sort of hash: " temp-crypto)
 
 (set 'sql-show-users (string "SELECT * FROM Users WHERE UserEmail='" user-check "';"))
 ; a lot of this stuff is temporary until we figure out how to make this part of the framework
 (set 'sql-result (first (query sql-show-users)))
-(displayln "<BR>SQL result: " sql-result)
+;(displayln "<BR>SQL result: " sql-result)
 (set 'sql-user-id (sql-result 0))
 (set 'sql-password-hash (sql-result 2))
 (set 'sql-password-salt (sql-result 3))
 (set 'sql-cookie-salt (sql-result 8))
 (set 'hash-combination (crypto:sha1 (string sql-password-salt user-password)))
 
-(displayln "<BR>User entered: " user-password)
-(displayln "<BR>Hashed pw: " sql-password-hash)
-(displayln "<BR>Combine with salt: " (string sql-password-salt user-password))
-(displayln "<BR>Hash that combination: " hash-combination)
+;(displayln "<BR>User entered: " user-password)
+;(displayln "<BR>Hashed pw: " sql-password-hash)
+;(displayln "<BR>Combine with salt: " (string sql-password-salt user-password))
+;(displayln "<BR>Hash that combination: " hash-combination)
 
 (if (= sql-password-hash hash-combination) (begin
 	(displayln "<BR><B>Password correct!</B>")

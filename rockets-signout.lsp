@@ -12,7 +12,7 @@
 (display-header)
 (open-database "ROCKETS-BLOG")
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
-(display-navbar "newLISP on Rockets" '(("Home" "rockets-main") ("About" "rockets-about") ("Contact" "rockets-contact") ("Register" "rockets-register" "active")) "rockets-verify")
+(display-navbar "newLISP on Rockets" '(("Home" "rockets-main") ("About" "rockets-about") ("Why Rockets?" "rockets-why") ("Register" "rockets-register" "active")) "rockets-verify")
 
 (start-div "hero-unit")
 	(displayln "<h2>The newLISP on Rockets Blog</h2>")

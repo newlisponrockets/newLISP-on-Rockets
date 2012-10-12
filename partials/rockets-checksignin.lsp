@@ -8,14 +8,15 @@
 (set 'rocket-cookie-name "rockets-4dckq3-e4jcx-2wgxc")
 
 (set 'cookie-check ($COOKIES rocket-cookie-name))
+
 ;(displayln "Checking for user cookie:" cookie-check) 
 ; okay first we have to find the appropriate cookie salt based on the user number
 (if cookie-check (begin 
 	(set 'cookie-user-number-full (first (parse cookie-check "|")))
 	(set 'cookie-user-number (last (parse cookie-user-number-full "=")))
-	(set 'rocket-cookie-salt (first (first (query (string "SELECT CookieSalt from Users WHERE UserId=" cookie-user-number)))))
-	
-	; now that we have the salt
+	(set 'rocket-cookie-salt (query (string "SELECT CookieSalt from Users WHERE UserId=" cookie-user-number)))
+	(if rocket-cookie-salt (set 'rocket-cookie-salt (first (first rocket-cookie-salt)))) ; fixes weird bug when you block cookies
+	; now that we have the salt, check if it exists in the cookie
 	(set 'correct-salt (find (string "|" rocket-cookie-salt) cookie-check))
 	(if correct-salt (begin
 		;(displayln "<BR>FOUND THE RIGHT SALT! MMmmmm")

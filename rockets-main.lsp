@@ -1,6 +1,6 @@
 #!/usr/bin/env newlisp
 
-(load "/var/www/newlisp-rockets.lisp") ; this is where the magic happens!
+(load "newlisp-rockets.lisp") ; this is where the magic happens!
 
 ; Rockets - Main Page
 ; 
@@ -9,12 +9,13 @@
 ; 
 ; Written 2012 by Rocket Man
 
-(display-header)
+(display-header "The newLISP on Rockets Blog")
 (open-database "ROCKETS-BLOG")
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (display-partial "rockets-common-functions") ; loads functions common to the blog but not part of Rockets
-
-(display-navbar "newLISP on Rockets" '(("Home" "rockets-main" "active") ("About" "rockets-about") ("Contact" "rockets-contact") ("Register" "rockets-register")) "rockets-verify")
+(set 'active-page "rockets-main")
+(display-partial "rockets-navbar")
+;(display-navbar "newLISP on Rockets" '(("Home" "rockets-main" "active") ("About" "rockets-about") ("Why Rockets?" "rockets-why") ("Register" "rockets-register")) "rockets-verify")
 (start-div "hero-unit")
 	(display-image "rockets.png")
 	(displayln "<h2>The newLISP on Rockets Blog</h2>")
