@@ -14,20 +14,19 @@
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (display-partial "rockets-common-functions") ; loads functions common to the blog but not part of Rockets
 (set 'active-page "rockets-main")
-(display-partial "rockets-navbar")
-;(display-navbar "newLISP on Rockets" '(("Home" "rockets-main" "active") ("About" "rockets-about") ("Why Rockets?" "rockets-why") ("Register" "rockets-register")) "rockets-verify")
+(display-partial "rockets-navbar") ; shows the navigation bar with Rockets blog menus
+
 (start-div "hero-unit")
 	(display-image "rockets.png")
 	(displayln "<h2>The newLISP on Rockets Blog</h2>")
 	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
 (end-div)
 
-;(set 'test-var "testy!")
-;(display-partial "test-partial")
-
 ; get all existing posts
-(set 'posts-query-sql (string "SELECT * from Posts;"))
-(set 'posts-result (reverse (query posts-query-sql))) ; reverse it so newest posts first
+(set 'posts-count (int (first (first (query (string "SELECT Count(*) FROM Posts"))))))
+(displayln "<p>Total posts: " posts-count)
+(set 'posts-query-sql (string "SELECT * from Posts ORDER BY Id DESC LIMIT " Blog:posts-per-page ";"))
+(set 'posts-result (query posts-query-sql))
 ; print out all posts
 (dolist (x posts-result)
 	(display-individual-post x)

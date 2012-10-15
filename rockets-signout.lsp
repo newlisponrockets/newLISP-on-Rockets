@@ -22,10 +22,12 @@
 (if Rockets:UserId
 	(begin
 		(delete-cookie rocket-cookie-name)
+		(page-redirect "rockets-signout")
+	)
+	(begin
 		(displayln "<P>You are now signed out of the newLISP on Rockets Blog.</p>")
 		(displayln "<br><br>Click <a href='rockets-main.lsp'>here</a> to return to the main page.")
 	)
-	(displayln "<P>You were not signed in.</p>")
 )
 
 (close-database)

@@ -13,16 +13,18 @@
 ; okay first we have to find the appropriate cookie salt based on the user number
 (if cookie-check (begin 
 	(set 'cookie-user-number-full (first (parse cookie-check "|")))
-	(set 'cookie-user-number (last (parse cookie-user-number-full "=")))
-	(set 'rocket-cookie-salt (query (string "SELECT CookieSalt from Users WHERE UserId=" cookie-user-number)))
+	(set 'UserId (last (parse cookie-user-number-full "=")))
+	;(set 'rocket-cookie-salt (get-record "Users" UserId "CookieSalt")) ; have to modify (get-record) first
+	(set 'rocket-cookie-salt (query (string "SELECT CookieSalt from Users WHERE UserId=" UserId)))
 	(if rocket-cookie-salt (set 'rocket-cookie-salt (first (first rocket-cookie-salt)))) ; fixes weird bug when you block cookies
 	; now that we have the salt, check if it exists in the cookie
 	(set 'correct-salt (find (string "|" rocket-cookie-salt) cookie-check))
 	(if correct-salt (begin
 		;(displayln "<BR>FOUND THE RIGHT SALT! MMmmmm")
-		(set 'user-part (last (parse (first (parse cookie-check "|")) "=")))
-		;(displayln "<BR> User: " user-part)
-		(set 'load-user-sql-data (first (query (string "SELECT * From Users WHERE UserId=" user-part))))
+		(set 'UserId (last (parse (first (parse cookie-check "|")) "=")))
+		;(displayln "<BR> User: " UserId)
+		(set 'load-user-sql-data (first (get-record "Users" UserId)))
+		;(set 'load-user-sql-data (first (query (string "SELECT * From Users WHERE UserId=" user-part))))
 		;(displayln "<BR> User data: " load-user-sql-data)
 		(set 'Rockets:UserId (load-user-sql-data 0))
 		(set 'Rockets:UserEmail (load-user-sql-data 1))

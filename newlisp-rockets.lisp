@@ -459,6 +459,8 @@
 ;================================================================================
 ; this redirects to another page
 (define (page-redirect str-url-to-redirect)
+	(if (!= (slice str-url-to-redirect (- (length str-url-to-redirect) 4) 4) ".lsp")
+		(extend str-url-to-redirect ".lsp")) ; add .lsp extension if not found
 	(print "Content-type: text/html\n") 
 	(set 'Rockets:statuscode 302) ; HTTP "FOUND" redirects to a new site
    (add-header "Location" str-url-to-redirect)

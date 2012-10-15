@@ -1,7 +1,10 @@
 ; rockets-common-functions.lsp
 ;
-; partial file with functions that are common to the blog but not to Rockets itself
+; partial file with global variables and functions that are common to the blog but not to Rockets itself
 ;
+
+; GLOBAL VARIABLES - under the context "Blog" to distinguish from framework context "Rockets"
+(set 'Blog:posts-per-page 10) ; number of posts per page
 
 ; this function displays an individual post with headers and the post itself
 (define (display-individual-post list-post-data)
