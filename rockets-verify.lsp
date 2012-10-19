@@ -26,26 +26,35 @@
 
 (set 'UserEmail ($POST "email"))
 (set 'UserPassword ($POST "password"))
+(set 'page-to-redirect ($POST "activepage"))
+; we might not get a redirect page value from the form, so set a default one if it doesn't exit
+(if (or (nil? page-to-redirect) (= page-to-redirect "nil")) (set 'page-to-redirect "rockets-main"))
 
 ; a lot of this stuff is temporary until we figure out how to make this part of the framework
-(set 'sql-result (first (get-record "Users" UserEmail)))
-(set 'sql-user-id (sql-result 0))
-(set 'sql-password-hash (sql-result 2))
-(set 'sql-password-salt (sql-result 3))
-(set 'sql-cookie-salt (sql-result 8))
-(set 'hash-combination (crypto:sha1 (string sql-password-salt UserPassword)))
+(set 'sql-result (get-record "Users" UserEmail))
+(if sql-result (begin
+	(set 'sql-result (first sql-result))
+	(set 'sql-user-id (sql-result 0))
+	(set 'sql-password-hash (sql-result 2))
+	(set 'sql-password-salt (sql-result 3))
+	(set 'sql-cookie-salt (sql-result 8))
+	(set 'hash-combination (crypto:sha1 (string sql-password-salt UserPassword)))
 
-(if (= sql-password-hash hash-combination) (begin
-	(displayln "<BR><B>Password correct!</B>")
-	(set 'temp-cookie-hash (string "user=" (string sql-user-id "|" sql-cookie-salt)))
-	(displayln "<BR>Cookie set: " temp-cookie-hash)
-	; set a cookie
-	(set-cookie rocket-cookie-name temp-cookie-hash (date-value 2013 2 28))
-	(displayln "<br>You have succesfully logged in! Click <a href='rockets-main.lsp'>here</a> to continue.")
-	(page-redirect "rockets-main") 
+	(if (= sql-password-hash hash-combination) (begin
+		(displayln "<BR><B>Password correct!</B>")
+		(set 'temp-cookie-hash (string "user=" (string sql-user-id "|" sql-cookie-salt)))
+		(displayln "<BR>Cookie set: " temp-cookie-hash)
+		; set a cookie
+		(set-cookie rocket-cookie-name temp-cookie-hash (date-value 2013 2 28))
+		(displayln "<br>You have succesfully logged in! Click <a href='rockets-main.lsp'>here</a> to continue.")
+		(page-redirect page-to-redirect) 
+	)
+		(displayln "<p><b>Sorry, your user email or your password were not recognized.  Please try again.</b></p>")
+	)
 )
-	(displayln "<p><b>Sorry, your user email or your password were not recognized.  Please try again.</b></p>")
-)
+(begin
+	(page-redirect page-to-redirect "e=signin") ; tell the application that the username was not recognized.
+))
 
 (close-database)
 (display-footer "Rocket Man")

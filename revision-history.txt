@@ -15,4 +15,4 @@ newLISP on Rockets Revision History
 0.12 - 10/09/2012 - added (page-redirect), also added ABOUT page to blog.
 0.13 - 10/10/2012 - added (get-record) macro, fixed cookie salt, cosmetic changes, new item page
 0.14 - 10/12/2012 - put navbar display in a partial, added rockets-why page, some cleanup
-
+0.15 - 10/19/2012 - added Documentation page, User registration, and comments on posts!

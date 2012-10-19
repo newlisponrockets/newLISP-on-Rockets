@@ -28,6 +28,7 @@
 		;(displayln "<BR> User data: " load-user-sql-data)
 		(set 'Rockets:UserId (load-user-sql-data 0))
 		(set 'Rockets:UserEmail (load-user-sql-data 1))
+		(set 'Rockets:UserSalt (load-user-sql-data 3))
 		(set 'Rockets:UserPosts (load-user-sql-data 4))
 		(set 'Rockets:UserName (load-user-sql-data 7))
 		(set 'Rockets:CookieSalt (load-user-sql-data 8))

@@ -12,7 +12,8 @@
 (display-header)
 (open-database "ROCKETS-BLOG")
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
-(display-navbar "newLISP on Rockets" '(("Home" "rockets-main") ("About" "rockets-about") ("Why Rockets?" "rockets-why") ("Register" "rockets-register" "active")) "rockets-verify")
+(set 'active-page "rockets-main")
+(display-partial "rockets-navbar") ; shows the navigation bar with Rockets blog menus
 
 (start-div "hero-unit")
 	(displayln "<h2>The newLISP on Rockets Blog</h2>")

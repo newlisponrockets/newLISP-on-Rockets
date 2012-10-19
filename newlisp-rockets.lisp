@@ -1,7 +1,7 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.14
+; Version 0.15
 ;
 ; For revision history, see revision-history.txt
 ;
@@ -25,7 +25,7 @@
 ;------------------------------------------------------------------------------------------------------------
 
 ;====== GLOBAL VARIABLES ========================================================
-(constant (global '$ROCKETS_VERSION) 0.14)    ; this is the current version of Rockets
+(constant (global '$ROCKETS_VERSION) 0.15)    ; this is the current version of Rockets
 (constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
 (constant (global '$PARTIAL_PATH) "partials") ; this is the relative path for (display-partial) to use
 
@@ -128,11 +128,12 @@
 		(displayln "            </div>")
 		) (begin
 		(displayln "            <form class=\"navbar-form pull-right\" method=\"post\" action=\"" str-signin ".lsp\">")
+		(displayln "              <input class=\"span2\" name=\"activepage\" id=\activepage\" type=\"hidden\" value=\"" active-page "\">")
 		(displayln "              <input class=\"span2\" name=\"email\" id=\"email\" type=\"text\" placeholder=\"Email\">")
 		(displayln "              <input class=\"span2\" name=\"password\" id=\"password\" type=\"password\" placeholder=\"Password\">")
 		(displayln "              <button type=\"submit\" class=\"btn\">Sign in</button>")
 		(displayln "            </form>")
-	))
+	)	)
 	(displayln "          </div>")
 	(displayln "       </div>")
    (displayln "     </div>")
@@ -356,19 +357,25 @@
 ;===========================================================================================================
 (define-macro (get-record)
 	(set 'temp-table-name (first (args)))
-	(set 'temp-record-values nil)
-	(dolist (s (rest (args))) (push (eval s) temp-record-values -1)) ; only one value for NOW...
-	(sym (first (rest (args))) 'DB) ; put the second argument (for now) into a symbol in the DB context
-												; this will have to be in a dolist loop of (rest (args)) when I add more
-	(set 'temp-sql-query (string "SELECT * FROM " temp-table-name " WHERE "))
-	(dolist (d (symbols DB)) (extend temp-sql-query (rest (rest (rest (string d))))))
-	(extend temp-sql-query "=")
-	; why am I doing a loop here?  There should be only one value, right?  But maybe for future extension...
-	(dolist (q temp-record-values)
-		(if (string? q) (extend temp-sql-query "'")) ; only quote if value is non-numeric
-		(extend temp-sql-query (string (safe-for-sql q)))
-		(if (string? q) (extend temp-sql-query "'"))) ; close quote if value is non-numeric
-	(extend temp-sql-query ";")
+	; if you have more arguments than just the table name, they become the elements of the WHERE clause
+	(if (> (length (args)) 1) (begin
+		(set 'temp-record-values nil)
+		(dolist (s (rest (args))) (push (eval s) temp-record-values -1)) ; only one value for NOW...
+		(sym (first (rest (args))) 'DB) ; put the second argument (for now) into a symbol in the DB context
+													; this will have to be in a dolist loop of (rest (args)) when I add more
+		(set 'temp-sql-query (string "SELECT * FROM " temp-table-name " WHERE "))
+		(dolist (d (symbols DB)) (extend temp-sql-query (rest (rest (rest (string d))))))
+		(extend temp-sql-query "=")
+		; why am I doing a loop here?  There should be only one value, right?  But maybe for future extension...
+		(dolist (q temp-record-values)
+			(if (string? q) (extend temp-sql-query "'")) ; only quote if value is non-numeric
+			(extend temp-sql-query (string (safe-for-sql q)))
+			(if (string? q) (extend temp-sql-query "'"))) ; close quote if value is non-numeric
+		(extend temp-sql-query ";")
+	)
+		; otherwise, just get everything in that table
+		(set 'temp-sql-query (string "SELECT * FROM " temp-table-name ";"))
+	)
 	;(displayln "TEMP-GET-QUERY: " temp-sql-query)	
 	(delete 'DB) ; we're done, so delete all symbols in the DB context.
 	(set 'return-value (query temp-sql-query)) ; this returns a list of everything in the record
@@ -381,13 +388,50 @@
 ; Just a simple function to print a form for entering posts (subject and postbox)
 ; (print-post-box Title FormName ActionPage SubjectLine PostboxID SubmitButton)
 ;===============================================================================
-(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text)
+(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id)
 	(displayln "<h3>" str-title "</h3>")
 	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
 	(displayln "<input type='text' class='field span5' name='" str-subject-line "'>")
 	(displayln "<p><textarea name='post' id='" str-postbox-id "' class='field span9' rows='12'></textarea>")
+	(if str-linkback-id (displayln "<input type='hidden' name='linkbackid' value='" str-linkback-id "'>"))
 	(displayln "<br><p><input type='submit' class='btn' value='" str-submit-button-text "'>")
 	(displayln "</form>"))
+
+;===============================================================================
+; DISPLAY-PAGING-LINKS
+; Displays a bunch of paging links
+;===============================================================================
+(define (display-paging-links int-start-page int-total-pages int-current-page str-page-url)
+	(start-div "pagination")
+	(display "<ul>")
+	(for (x int-start-page int-total-pages 1)
+	(display "<li")
+		(if (= x int-current-page) (display " class='active'"))
+		(displayln "><a href='" str-page-url ".lsp?p=" x "'>" x "</a></li>")
+	)
+	(display "</ul>")
+	(end-div)
+)
+
+;===============================================================================
+; DISPLAY-WARNING
+; displays a removable warning alert box
+;===============================================================================
+(define (display-warning str-warning-text)
+	(start-div "alert")
+		(displayln "<button type='button' class='close' data-dismiss='alert'>&times;</button>")
+		(displayln str-warning-text)
+	(end-div))
+
+;===============================================================================
+; DISPLAY-ERROR
+; displays a removable error alert box
+;===============================================================================
+(define (display-error str-error-text)
+	(start-div "alert alert-error")
+		(displayln "<button type='button' class='close' data-dismiss='alert'>&times;</button>")
+		(displayln str-error-text)
+	(end-div))
 
 ;===============================================================================
 ; Twitter functions (lifted from Dragonfly.. will rewrite later)
@@ -458,9 +502,15 @@
 ;  (PAGE-REDIRECT)
 ;================================================================================
 ; this redirects to another page
-(define (page-redirect str-url-to-redirect)
-	(if (!= (slice str-url-to-redirect (- (length str-url-to-redirect) 4) 4) ".lsp")
-		(extend str-url-to-redirect ".lsp")) ; add .lsp extension if not found
+(define (page-redirect str-url-to-redirect str-optional-parameters)
+	(if (not (find ".lsp" str-url-to-redirect))
+		(extend str-url-to-redirect ".lsp")) ; add .lsp extension if not already there
+	(if str-optional-parameters (begin
+		(if (find "?" strl-url-to-redirect)
+			(extend str-url-to-redirect (string "&" str-optional-parameters))
+			(extend str-url-to-redirect (string "?" str-optional-parameters)) ; if already has parameters, use &
+		)	
+	))
 	(print "Content-type: text/html\n") 
 	(set 'Rockets:statuscode 302) ; HTTP "FOUND" redirects to a new site
    (add-header "Location" str-url-to-redirect)

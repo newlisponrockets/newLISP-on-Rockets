@@ -22,15 +22,29 @@
 	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
 (end-div)
 
+; get current page from URL (if there is one)
+(set 'current-page ($GET "p"))
+(if current-page (set 'current-page (int current-page)) (set 'current-page 1))
+
 ; get all existing posts
-(set 'posts-count (int (first (first (query (string "SELECT Count(*) FROM Posts"))))))
-(displayln "<p>Total posts: " posts-count)
-(set 'posts-query-sql (string "SELECT * from Posts ORDER BY Id DESC LIMIT " Blog:posts-per-page ";"))
+(set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts"))))))
+
+(set 'total-pages (/ total-posts Blog:posts-per-page))
+(if (>= (mod (float total-posts) (float Blog:posts-per-page)) 1) (inc total-pages)) ; fix number of pages if not evenly divisible
+;(displayln "<p>Total posts: " total-posts " Number of pages: " total-pages)
+
+(display-paging-links 1 total-pages current-page active-page)
+
+(set 'start-post-num (- (* current-page Blog:posts-per-page) Blog:posts-per-page))
+(set 'posts-query-sql (string "SELECT * from Posts ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
+
 (set 'posts-result (query posts-query-sql))
 ; print out all posts
 (dolist (x posts-result)
 	(display-individual-post x)
 )
+
+(display-paging-links 1 total-pages current-page active-page) ; display them again
 
 ; Twitter stuff
 ;(set 'twitter-term "salesforce")

@@ -1,6 +1,6 @@
 #!/usr/bin/env newlisp
 
-(load "/var/www/newlisp-rockets.lisp") ; this is where the magic happens!
+(load "newlisp-rockets.lisp") ; this is where the magic happens!
 
 ; (rockets-verify.lsp) - Rockets - User verification page 
 ; 
@@ -24,7 +24,7 @@
 	(displayln "<p>Rockets is a framework written in newLISP that is designed for rapid prototyping of web-based applications.")
 	(displayln "It uses <a href='http://twitter.github.com/bootstrap/'>Bootstrap</a> for its user interface as well as <a href='http://jquery.com/'>jQuery</a>.  Database functions use <a href='http://sqlite.org'>SQLite</a>.")
 	(displayln "<p>The framework is open-source, licensed under the <a href='http://www.gnu.org/licenses/old-licenses/gpl-2.0.html'>GPL</a>.")
-	(displayln "The source code for both the framework and this blog are available at: <a href='https://github.com/newlisponrockets/newLISP-on-Rockets'>https://github.com/newlisponrockets/newLISP-on-Rockets</a>.</p>")
+	(displayln "The source code for both the framework and this blog are available <a href='https://github.com/newlisponrockets/newLISP-on-Rockets'>here</a>.</p>")
 	(displayln "<h3>How about a Hello World?</h3>")
 	(displayln "<p>Sure!  Here's one:</p>")
 	(displayln "<br>#!/usr/bin/env newlisp")
@@ -41,6 +41,11 @@
 (end-div)
 
 ;(displayln "<p>Debug stuff here...</p>")
+; this stuff is subject to change!
+;(set 'userlist (get-record "Users"))
+;(dolist (z userlist) (displayln "<br>" (z 0) " " (z 1) " " (z 7)))
+;(displayln "extend table: " (query "ALTER TABLE Posts ADD COLUMN PostComments INTEGER;"))
+(displayln "Posts table: " (query "pragma table_info('Posts');"))
 
 (close-database)
 (display-footer "Rocket Man")
