@@ -63,7 +63,16 @@
 ; set the cookie
 (set 'new-cookie (string UserId "|" CookieSalt))
 (set-cookie rocket-cookie-name new-cookie (date-value 2013 2 28))
-(page-redirect "rockets-main")
+
+; one last thing, send a nice email welcoming the new user!
+(set 'welcome-email "Thank you for registering.  If you have any questions, please don't hesitate to email me or post a comment on the blog.\n\nSincerely,\n\nRocket Man")
+(send-mail UserEmail "newlisponrockets@newlisponrockets.com" "Rocket Man" "Welcome to the newLISP on Rockets blog!" welcome-email)
+; and send a mail to me so that I know that a new user registered!
+(set 'new-user-registered-mail (string "A new user by the name of: " UserName " just registered with the email address " UserEmail "."))
+(send-mail "newlisponrockets@newlisponrockets.com" "newlisponrockets@newlisponrockets.com" "Rocket Man" "A new user has registered on the newLISP on Rockets blog" new-user-registered-mail)
+
+
+(page-redirect "rockets-main" "e=newuser")
 
 (display-footer) 
 (display-page)

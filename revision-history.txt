@@ -17,3 +17,4 @@ newLISP on Rockets Revision History
 0.14 - 10/12/2012 - put navbar display in a partial, added rockets-why page, some cleanup
 0.15 - 10/19/2012 - added Documentation page, User registration, and comments on posts!
 0.16 - 10/29/2012 - revised Documentation page, lots of little fixes
+0.17 - 10/29/2012 - (send-email) function added, auto-HTML links, some UBB code translation for bold, italics, etc

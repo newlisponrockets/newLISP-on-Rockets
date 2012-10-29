@@ -24,7 +24,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.16)    
+(constant (global '$ROCKETS_VERSION) 0.17)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 1048576) 
 ;;* $PARTIAL_PATH - the relative path for when using (display-partial)
@@ -64,10 +64,6 @@
 ; This reads in any file as part of the calling page
 (define (display-file str-filename)
 	(eval-string (read-file str-filename)))
-
-; This is a shortcut to reading in files in the $PARTIAL_PATH subdirectory
-(define (display-partial partialname)
-  	(display-file (string $PARTIAL_PATH "/" partialname ".lsp")))
 
 ; this function takes encoded strings and returns them to human-readable
 ; the regex and code were adapted from Dragonfly.  Basically %2B->"+", %27->"'", etc
@@ -154,10 +150,31 @@
 ;; Function: (format-for-web)
 ;; Usage: (format-for-web "string of text")
 ;; Returns: Takes a string of text, for example a post full of data including carriage returns and
-;; line feeds, and returns a string that can be used with (display) or (displayln)  
+;; line feeds, and returns a string that can be used with (display) or (displayln)
+;; Note: All HTML code is removed (< and > translated to &lg; and &gt; respectively) to avoid
+;; cross-site scripting issues.  URLs are transformed into clickable links.
 ;-----------------------------------------------------------------------------------------------------
 (define (format-for-web str-input-for-web)
-	(replace "\r\n" str-input-for-web "<BR>"))
+	; let's get rid of cross-site scripting, and for that matter all embedded HTML
+	(replace "<" str-input-for-web "&lt;")
+	(replace ">" str-input-for-web "&gt;")
+	; but we need a way to do bold and italics at least, so let's do that, and images
+	(set 'ubb-code-list '("i" "b" "u" "code"))
+	(dolist (u ubb-code-list)
+		(replace (string "[" u "]") str-input-for-web (string "<" u ">"))
+		(replace (string "[" (upper-case u) "]") str-input-for-web (string "<" u ">"))
+		(replace (string "[/" u "]") str-input-for-web (string "</" u ">"))
+		(replace (string "[/" (upper-case u) "]") str-input-for-web (string "</" u ">")))
+	(replace "[img]" str-input-for-web "<img src='")
+	(replace "[/img]" str-input-for-web "'>")
+	(replace "[IMG]" str-input-for-web "<img src='")
+	(replace "[/IMG]" str-input-for-web "'>")
+	; replace html links with clickable links
+  	(set 'h "(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
+  	(replace h str-input-for-web (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)
+	; replace line breaks with HTML line breaks
+	(replace "\r\n" str-input-for-web "<BR>")
+)
 
 ;! ===== DISPLAY FUNCTIONS ===========================================================================
 
@@ -227,6 +244,14 @@
 	(displayln " <div class=\"container\">") ; start the main container for the page
 )
 
+;; Function: (display-partial)
+;; Usage: (display-partial "partial-file-name")
+;; Returns: Loads the instructions in the file "partial-file-name" in the $PARTIAL_PATH subdirectory
+;; Note: The ".lsp" extension is added automatically.
+;-----------------------------------------------------------------------------------------------------
+(define (display-partial partialname)
+  	(display-file (string $PARTIAL_PATH "/" partialname ".lsp")))
+
 ;; Function: (display-footer)
 ;; Usage: (display-footer "Optional Company Name")
 ;; Returns: Prints the footer with benchmark result.  Also loads Javascript libraries.
@@ -240,7 +265,8 @@
 	(displayln "</body></html>"))
 
 ;; Function: (display-image)
-;; Usage: (display-image "imagename.jpg" 200 100)
+;; Usage: (display-image "imagename.jpg" int-width int-height)
+;; Example: (display-image "rocket.jpg" 200 100)
 ;; Returns: Displays an image from the default /images/ subdirectory.  Width and height are optional  
 ;-----------------------------------------------------------------------------------------------------
 (define (display-image str-image-to-print int-width int-height)
@@ -250,7 +276,8 @@
 	(displayln ">"))
 
 ;; Function: (display-paging-links)
-;; Usage: (display-paging-links 1 99 2 "page-url")
+;; Usage: (display-paging-links int-start-page int-total-pages int-current-page "page-url")
+;; Example: (display-paging-links 1 99 2 "rockets-main")
 ;; Returns: Displays a list of clickable paging links, in this example from page 1 to 99, current page 2
 ;; The "page-url" (.lsp extension added automatically) is the page that displays the content
 ;-----------------------------------------------------------------------------------------------------
@@ -265,6 +292,16 @@
 	(display "</ul>")
 	(end-div)
 )
+
+;; Function: (display-success)
+;; Usage: (display-success "Congratulations on your success!")
+;; Returns: Displays a success text in a light green box that can be dismissed by clicking the "X" button.
+;-----------------------------------------------------------------------------------------------------
+(define (display-success str-success-text)
+	(start-div "alert alert-success")
+		(displayln "<button type='button' class='close' data-dismiss='alert'>&times;</button>")
+		(displayln str-success-text)
+	(end-div))
 
 ;; Function: (display-warning)
 ;; Usage: (display-warning "Warning: this is warning text!")
@@ -287,7 +324,7 @@
 	(end-div))
 
 ;; Function: (display-page)
-;; Usage: (display-error)
+;; Usage: (display-page)
 ;; Returns: Displays the current page and exits.  This should normally be the last command on any page 
 ;; written in newLISP on Rockets.
 ;-----------------------------------------------------------------------------------------------------
@@ -307,8 +344,9 @@
 ;! ===== PAGE HANDLING ==========================================================
 
 ;; Function: (page-redirect)
-;; Usage: (page-redirect "page-to-redirect-to")
+;; Usage: (page-redirect "page-to-redirect-to" "p=optional-parameters")
 ;; Loads a new URL immediately when executed.  The current page will not be displayed to the user.
+;; Note: You can add optional parameters to the redirected page.
 ;; Note: The ".lsp" extension is optional and will be added automatically if not entered.
 ;-----------------------------------------------------------------------------------------------------
 (define (page-redirect str-url-to-redirect str-optional-parameters)
@@ -480,7 +518,7 @@
 ;; Usage: (delete-record "Table Name" ColumnName1)
 ;; Returns: true if deletion was successful, otherwise displays the SQL error
 ;; The variable ColumnName1 needs to be assigned a value that will be checked to qualify the deletion
-;; Example: (set 'Email "bob@bom.com") (delete-record "Posts" Email) will delete all records where
+;; Example: (set 'Email "bob@bob.com") (delete-record "Posts" Email) will delete all records where
 ;; the column name "Email" is equal to "bob@bob.com".  
 ;; Note: Variables need to be either integers or strings, depending on the type of column.
 ;; Note: Date columns need to be strings using the SQL Date format: "YYYY-MM-DD HH:MM:SS.000"
@@ -509,7 +547,7 @@
 ;; Usage: (get-record "Table Name" ColumnName1)
 ;; Returns: A list of all values for the record if successful, otherwise displays the SQL error
 ;; The variable ColumnName1 needs to be assigned a value that will be checked to qualify the deletion
-;; Example: (set 'Email "bob@bom.com") (get-record "Posts" Email) will retrieve all records where
+;; Example: (set 'Email "bob@bob.com") (get-record "Posts" Email) will retrieve all records where
 ;; the column name "Email" is equal to "bob@bob.com".  
 ;; Note: Variables need to be either integers or strings, depending on the type of column.
 ;; Note: Date columns need to be strings using the SQL Date format: "YYYY-MM-DD HH:MM:SS.000"
@@ -563,9 +601,8 @@
 	(displayln "</form>"))
 
 
-;! ===== SOCIAL MEDIA FUNCTIONS =====================================================
+;! ===== SOCIAL MEDIA AND EMAIL FUNCTIONS =====================================================
 ; Twitter functions (lifted from Dragonfly.. will rewrite later)
-;===============================================================================
 
 ;; Function: (twitter-search)
 ;; Usage: (twitter-search "Key words" 10)
@@ -593,4 +630,15 @@
 	)
 )
 
-
+;; Function: (send-mail)
+;; Usage: (send-mail "to@address.com" "from@address.com" "Real Sender Name" "Subject line" "Body text")
+;; Returns: Sends email to any address from any address.  To avoid getting caught in spam
+;; filters, use a valid From: email address with the same domain as your web site.
+;; Note: Using this function requires that sendmail is installed on your system.
+;; Install sendmail using the Linux (Ubuntu or Debian) command "sudo apt-get install sendmail"
+;; Note: This function sets the appropriate email headers automatically.
+;-----------------------------------------------------------------------------------------
+(define (send-mail to from realname subject body)
+   (exec (string "/usr/sbin/sendmail -t -f " from)
+    (format "To: %s\nFrom: %s <%s>\nSubject: %s\nContent-Type: text/html; charset=iso-8859-1\n\n%s"
+       to realname from subject body)))
