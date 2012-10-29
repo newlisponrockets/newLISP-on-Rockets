@@ -17,7 +17,7 @@
 (display-partial "rockets-navbar") ; shows the navigation bar with Rockets blog menus
 
 (start-div "hero-unit")
-	(display-image "rockets.png")
+	(display-image "rockets.png" 317 180)
 	(displayln "<h2>The newLISP on Rockets Blog</h2>")
 	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
 (end-div)
@@ -31,7 +31,6 @@
 
 (set 'total-pages (/ total-posts Blog:posts-per-page))
 (if (>= (mod (float total-posts) (float Blog:posts-per-page)) 1) (inc total-pages)) ; fix number of pages if not evenly divisible
-;(displayln "<p>Total posts: " total-posts " Number of pages: " total-pages)
 
 (display-paging-links 1 total-pages current-page active-page)
 

@@ -49,7 +49,9 @@
 		(displayln "<br>You have succesfully logged in! Click <a href='rockets-main.lsp'>here</a> to continue.")
 		(page-redirect page-to-redirect) 
 	)
-		(displayln "<p><b>Sorry, your user email or your password were not recognized.  Please try again.</b></p>")
+		(begin 
+		(page-redirect page-to-redirect "e=signin") ; tell the application that the username was not recognized.
+		)
 	)
 )
 (begin

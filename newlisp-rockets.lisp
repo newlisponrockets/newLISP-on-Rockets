@@ -1,9 +1,7 @@
 ; Newlisp on Rockets framework
 ; ----------------------------
 ;
-; Version 0.15
-;
-; For revision history, see revision-history.txt
+; For version number, see below.  For revision history, see revision-history.txt
 ;
 ; I have to give a HUGE acknowledgement to the Dragonfly framework at http://rundragonfly.com
 ; written by Marc Hildmann and Greg Slepak and available for download at: http://code.google.com/p/dragonfly-newlisp/downloads/list
@@ -24,19 +22,38 @@
 
 ;------------------------------------------------------------------------------------------------------------
 
-;====== GLOBAL VARIABLES ========================================================
-(constant (global '$ROCKETS_VERSION) 0.15)    ; this is the current version of Rockets
-(constant (global '$MAX_POST_LENGTH) 1048576) ; the maximum size data you can POST.
-(constant (global '$PARTIAL_PATH) "partials") ; this is the relative path for (display-partial) to use
+;!===== GLOBAL VARIABLES ========================================================
+;;* $ROCKETS_VERSION - current version of Rockets
+(constant (global '$ROCKETS_VERSION) 0.16)    
+;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
+(constant (global '$MAX_POST_LENGTH) 1048576) 
+;;* $PARTIAL_PATH - the relative path for when using (display-partial)
+(constant (global '$PARTIAL_PATH) "partials") 
 
 ;====== CONSTANTS ================================================================
 (constant 'REGEX_HTTP_SPECIAL_STR (regex-comp {([^.0-9a-z]+)} 1))
 (constant 'REGEX_HEX_ENCODED_CHAR (regex-comp {%([0-9A-F][0-9A-F])} 1))
 
+(set 'Rockets:status-codes
+  '((200 "OK")
+	(301 "Moved Permanently")
+	(302 "Found")
+	(400 "Bad Request")
+	(401 "Unauthorized")
+	(403 "Forbidden")
+	(404 "Not Found")
+	(410 "Gone")
+	(500 "Internal Error"))
+)
+
 ; This is the global buffer that Rockets writes to before printing the page out at the end
 (set 'STDOUT "")
 
-; Now we define (display) and (displayln) to store to the variable STDOUT
+;===== INTERNAL FUNCTIONS ==========================================================================
+; These should never normally be called directly.  They are not included in the documentation.
+
+; Printing stuff to the screen
+; define (display) and (displayln) to store to the variable STDOUT
 (define (displayln)
 	(apply display (push "\n" (args) -1)))
 
@@ -52,9 +69,49 @@
 (define (display-partial partialname)
   	(display-file (string $PARTIAL_PATH "/" partialname ".lsp")))
 
-;; BENCHMARK STUFF===================================================================================
-;  this was taken from Dragonfly, but just too cool not to use!
-; ===================================================================================================
+; this function takes encoded strings and returns them to human-readable
+; the regex and code were adapted from Dragonfly.  Basically %2B->"+", %27->"'", etc
+(define (url-decode str-to-decode)
+	(replace "+" str-to-decode " ")
+	(replace REGEX_HEX_ENCODED_CHAR str-to-decode (pack "b" (int $1 nil 16)) 0x10000))
+
+; this is a parsing function for both $GET and $POST, can be used for any other global tree
+; it parses input based on "&" as a separator, and if you have multiple items with "[]" at the end
+; it adds them to the same key in the tree, making life more convenient for everybody
+(define (parse-get-or-post thing-to-parse tree-to-add)
+		(dolist (r (parse thing-to-parse "&"))
+			(let (rtemp (parse r "="))
+			(if (> (length rtemp) 1) (begin 
+				; if it's multi-value (last 2 chars end in []) AND this value exists in the tree already, add it to the list
+ 				(if (and (tree-to-add (rtemp 0)) (ends-with (rtemp 0) "[]"))
+					(tree-to-add (rtemp 0) (flat (push (tree-to-add (rtemp 0)) (list (url-decode (rtemp 1))))))
+					(tree-to-add (rtemp 0) (url-decode (rtemp 1))))
+			))
+			)))
+
+; adds a new header (location, etc) to be set in the page's HTTP header (will take effect next page)
+(define (add-header str-header-name str-header-value)
+ (push (list str-header-name str-header-value) Rockets:headers -1)
+)
+
+; this prints a bunch of HTTP headers, starting with status, then any other headers, then cookies.
+(define (send-headers)
+	(print "Status: " Rockets:statuscode " " (lookup Rockets:statuscode Rockets:status-codes) "\n")
+	; send cookies if they exist 
+	(if Rockets:headers (begin
+		(dolist (r Rockets:headers)
+			(print (first r) ": " (last r) "\n"))))
+	(if Rockets:cookielist (begin
+		(dolist (r Rockets:cookielist)
+			(print "Set-Cookie: " r "\n"))))
+)
+
+;! ===== BASIC FUNCTIONS =============================================================================
+
+;; Function: (benchmark-result) 
+;; Usage: (benchmark-result)
+;; Returns: displays the text: "Rendered in ## milliseconds.  Used ## KB of memory, ## for LISP cells"
+;-----------------------------------------------------------------------------------------------------
 
 (set 'microtime-start (time-of-day))
 
@@ -80,23 +137,52 @@
 ;(constant (global 'sys-println) println)
 ;(constant 'displayln println)
 
+;; Function: (start-div)
+;; Usage: (start-div "Div class name")
+;; Returns: Starts an HTML <DIV> with a given class name
+;-----------------------------------------------------------------------------------------------------
+(define (start-div str-div-name)
+	(displayln "<div class=\"" str-div-name "\">"))
 
+;; Function: (end-div)
+;; Usage: (end-div)
+;; Returns: Closes off an HTML <DIV>
+;-----------------------------------------------------------------------------------------------------
+(define (end-div)
+	(displayln "</div>"))
 
-;====== HTML HEADER ===================================================================
-(define (display-header str-page-title)
+;; Function: (format-for-web)
+;; Usage: (format-for-web "string of text")
+;; Returns: Takes a string of text, for example a post full of data including carriage returns and
+;; line feeds, and returns a string that can be used with (display) or (displayln)  
+;-----------------------------------------------------------------------------------------------------
+(define (format-for-web str-input-for-web)
+	(replace "\r\n" str-input-for-web "<BR>"))
+
+;! ===== DISPLAY FUNCTIONS ===========================================================================
+
+;; Function: (display-header)
+;; Usage: (display-header "Optional page title" "optional-css-file")
+;; Returns: Prints all the opening page HTML, such as page title, meta tags, and CSS
+;; Note: Only one optional css file can be included for now.  The .css extension is not necessary.
+;-----------------------------------------------------------------------------------------------------
+(define (display-header str-page-title str-optional-css)
 	(if (nil? str-page-title) (set 'str-page-title "newLISP on Rockets"))
 	(displayln "<html lang=\"en\"><head><meta charset=\"UTF-8\">")
 	(displayln "<title>" str-page-title "</title>")
    (displayln "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
 	(displayln "<link href=\"css/bootstrap.css\" rel=\"stylesheet\">") ; loads Bootstrap CSS
 	(displayln "<link href=\"css/bootstrap-responsive.css\" rel=\"stylesheet\">")
+	(if str-optional-css (displayln "<link href=\"css/" str-optional-css ".css\" rel=\"stylesheet\">"))
 	(displayln "<style> body { padding-top: 60px; /* fixes the container spacing */   }</style>")
-	(displayln "</head><body>")
+	(displayln "</head><body data-spy=\"scroll\" data-target=\".bs-docs-sidebar\">")
 )
 
-;====== NAVBAR =========================================================================
-; this is a Bootstrap navigation bar that stays at the top of the screen when you scroll
+;; Function: (display-navbar)
+;; Usage: (display-header "Site name" '(list of menus) "page-to-go-for-signing-in")
+;; Returns: Prints the top navigation bar with menus and form for signing in. Also, 
 ; calling this function also sets up the main <div> container for the whole page.
+;-----------------------------------------------------------------------------------------------------
 (define (display-navbar str-name list-menus str-signin)
 	(displayln "    <div class=\"navbar navbar-inverse navbar-fixed-top\">")
 	(displayln "      <div class=\"navbar-inner\">")
@@ -141,8 +227,10 @@
 	(displayln " <div class=\"container\">") ; start the main container for the page
 )
 
-
-;====== FOOTER ===================================================================
+;; Function: (display-footer)
+;; Usage: (display-footer "Optional Company Name")
+;; Returns: Prints the footer with benchmark result.  Also loads Javascript libraries.
+;-----------------------------------------------------------------------------------------------------
 (define (display-footer str-company-name)
 	(if (nil? str-company-name) (set 'str-company-name ""))
 	(displayln "<hr><footer><p>&copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year
@@ -151,51 +239,102 @@
 	(displayln (benchmark-result) "</footer></div>") ; ends main container
 	(displayln "</body></html>"))
 
-;====== START-DIV ===================================================================
-; okay this is pretty simple, admittedly
-(define (start-div str-div-name)
-	(displayln "<div class=\"" str-div-name "\">"))
+;; Function: (display-image)
+;; Usage: (display-image "imagename.jpg" 200 100)
+;; Returns: Displays an image from the default /images/ subdirectory.  Width and height are optional  
+;-----------------------------------------------------------------------------------------------------
+(define (display-image str-image-to-print int-width int-height)
+	(display (string "<img src=images/" str-image-to-print))
+	(if int-width (display (string " width=" int-width)))
+	(if int-height (display (string " height=" int-height)))
+	(displayln ">"))
 
-;====== END-DIV ===================================================================
-; this might be more exciting in the future
-(define (end-div)
-	(displayln "</div>"))
+;; Function: (display-paging-links)
+;; Usage: (display-paging-links 1 99 2 "page-url")
+;; Returns: Displays a list of clickable paging links, in this example from page 1 to 99, current page 2
+;; The "page-url" (.lsp extension added automatically) is the page that displays the content
+;-----------------------------------------------------------------------------------------------------
+(define (display-paging-links int-start-page int-total-pages int-current-page str-page-url)
+	(start-div "pagination")
+	(display "<ul>")
+	(for (x int-start-page int-total-pages 1)
+	(display "<li")
+		(if (= x int-current-page) (display " class='active'"))
+		(displayln "><a href='" str-page-url ".lsp?p=" x "'>" x "</a></li>")
+	)
+	(display "</ul>")
+	(end-div)
+)
 
-;====== PRINT-IMAGE ==============================================================
-(define (display-image str-image-to-print)
-	(displayln (string "<img src=images/" str-image-to-print ">")))
+;; Function: (display-warning)
+;; Usage: (display-warning "Warning: this is warning text!")
+;; Returns: Displays a warning in a light yellow box that can be dismissed by clicking the "X" button.
+;-----------------------------------------------------------------------------------------------------
+(define (display-warning str-warning-text)
+	(start-div "alert")
+		(displayln "<button type='button' class='close' data-dismiss='alert'>&times;</button>")
+		(displayln str-warning-text)
+	(end-div))
 
-;====== URL-DECODE =================================================================
-; this function takes encoded strings and returns them to human-readable
-; the regex and code were adapted from Dragonfly.  Basically %2B->"+", %27->"'", etc
-(define (url-decode str-to-decode)
-	(replace "+" str-to-decode " ")
-	(replace REGEX_HEX_ENCODED_CHAR str-to-decode (pack "b" (int $1 nil 16)) 0x10000))
+;; Function: (display-error)
+;; Usage: (display-error "Error: this is error text!")
+;; Returns: Displays a warning in a light red box that can be dismissed by clicking the "X" button.
+;-----------------------------------------------------------------------------------------------------
+(define (display-error str-error-text)
+	(start-div "alert alert-error")
+		(displayln "<button type='button' class='close' data-dismiss='alert'>&times;</button>")
+		(displayln str-error-text)
+	(end-div))
 
-;====== FORMAT-FOR-WEB =============================================================
-; this is a simple function to take a post full of data including carriage return/lf
-; and make it print properly on the web
-(define (format-for-web str-input-for-web)
-	(replace "\r\n" str-input-for-web "<BR>"))
+;; Function: (display-page)
+;; Usage: (display-error)
+;; Returns: Displays the current page and exits.  This should normally be the last command on any page 
+;; written in newLISP on Rockets.
+;-----------------------------------------------------------------------------------------------------
+(define (display-page)
+	; Sending the page starts here-----------------------------------------------------------------------------
+	; print headers
+	(print "Content-type: text/html\n") 
+	(set 'Rockets:statuscode 200) ; everything is OK
+	(send-headers)
+	(print "\n")
+	(print "<!DOCTYPE html>") 	
+	(print STDOUT) ; the whole page gets put here
+	(exit)
+)
 
-; this is a parsing function for both $GET and $POST, can be used for any other global tree
-; it parses input based on "&" as a separator, and if you have multiple items with "[]" at the end
-; it adds them to the same key in the tree, making life more convenient for everybody
-(define (parse-get-or-post thing-to-parse tree-to-add)
-		(dolist (r (parse thing-to-parse "&"))
-			(let (rtemp (parse r "="))
-			(if (> (length rtemp) 1) (begin 
-				; if it's multi-value (last 2 chars end in []) AND this value exists in the tree already, add it to the list
- 				(if (and (tree-to-add (rtemp 0)) (ends-with (rtemp 0) "[]"))
-					(tree-to-add (rtemp 0) (flat (push (tree-to-add (rtemp 0)) (list (url-decode (rtemp 1))))))
-					(tree-to-add (rtemp 0) (url-decode (rtemp 1))))
-			))
-			)))
 
-;================================================================================
-;  ($COOKIES)
-;================================================================================
-; sets a global variable with all the cookies placed as key/value pairs
+;! ===== PAGE HANDLING ==========================================================
+
+;; Function: (page-redirect)
+;; Usage: (page-redirect "page-to-redirect-to")
+;; Loads a new URL immediately when executed.  The current page will not be displayed to the user.
+;; Note: The ".lsp" extension is optional and will be added automatically if not entered.
+;-----------------------------------------------------------------------------------------------------
+(define (page-redirect str-url-to-redirect str-optional-parameters)
+	(if (not (find ".lsp" str-url-to-redirect))
+		(extend str-url-to-redirect ".lsp")) ; add .lsp extension if not already there
+	(if str-optional-parameters (begin
+		(if (find "?" strl-url-to-redirect)
+			(extend str-url-to-redirect (string "&" str-optional-parameters))
+			(extend str-url-to-redirect (string "?" str-optional-parameters)) ; if already has parameters, use &
+		)	
+	))
+	(print "Content-type: text/html\n") 
+	(set 'Rockets:statuscode 302) ; HTTP "FOUND" redirects to a new site
+   (add-header "Location" str-url-to-redirect)
+	(send-headers)
+	(print "\n")
+	(exit)
+)
+
+;! ===== COOKIE HANDLING ========================================================
+
+;; Function: ($COOKIES)
+;; Usage: ($COOKIES "optional cookie name")
+;; Returns: With no argument, returns a list of all active cookies and their values in the environment.
+;; When "optional cookie name" is specified, returns the value of that cookie. 
+;-----------------------------------------------------------------------------------------------------
 (new Tree '$COOKIES)
 (when (env "HTTP_COOKIE")
 	(dolist (c (parse (env "HTTP_COOKIE") "; "))
@@ -203,39 +342,46 @@
 		(if (> (length ctemp) 1) (begin
 			($COOKIES (first ctemp) (join (rest ctemp) "=")))))))
 
-;================================================================================
-;  (SET-COOKIE)
-;================================================================================
-; adds a new cookie to be set in the page's HTTP header (will take effect next page)
+;; Function: (set-cookie)
+;; Usage: (set-cookie "cookie name" "cookie value" cookie-expiry-date)
+;; Returns: Sets a cookie.  Due to the nature of HTML, it will not actually take effect until
+;; the next page is loaded.  Cookie expiry date should be in the format of a newLISP numeric 
+;; date value, so to pass in a human-readable date, use something like: (date-value 2013 2 28) 
+;; for cookie-expiry-date
+;-----------------------------------------------------------------------------------------------------
 (define (set-cookie str-cookie-name str-cookie-value date-cookie-expire-date)
  (push (string str-cookie-name "=" str-cookie-value "; Expires=" (date date-cookie-expire-date 0 "%a, %d-%b-%Y %H:%M:%S")) Rockets:cookielist -1)
 )
 
-;================================================================================
-;  (DELETE-COOKIE)
-;================================================================================
-; deletes a cookie so it will be removed in the page's HTTP header. (will take effect next page)
+;; Function: (delete-cookie)
+;; Usage: (delete-cookie "cookie name")
+;; Returns: Deletes a cookie.  Due to the nature of HTML, it will not actually take effect until
+;; the next page is loaded.  
+;-----------------------------------------------------------------------------------------------------
 (define (delete-cookie str-cookie-name)
  (push (string str-cookie-name "=deleted; Expires=Thu, 01-Jan-1970 00:00:01") Rockets:cookielist -1)
 )
 
+;! ===== GET AND POST FUNCTIONS =================================================
 
-;================================================================================
-;  ($GET)
-;================================================================================
-; takes anything on the URL line and adds it to some sort of global GET hash
-; works for single value and multivalue with [] 
+;; Function: ($GET)
+;; Usage: ($GET "optional key name")
+;; Returns: ($GET) on its own returns a list of all key/value pairs from the current URL.
+;; Optional: ($GET "key name") returns the value for that particular key name.
+;; Note: You can retrieve multiple values for the same key name by appending [] to the key name.
+;; Example: URL is "page.lsp?name[]=a&name[]=b", calling ($GET "name[]") will return ("a" "b")
+;-----------------------------------------------------------------------------------------------------
 (new Tree '$GET)
 (when (env "QUERY_STRING")
 		(parse-get-or-post (env "QUERY_STRING") $GET))
 
-;================================================================================
-;  ($POST)
-;================================================================================
-; this is just for multipart form data sent via POST method right now
-; will modify it for files and binary stuff later
-; has some sort of weird random limit now unless you refresh, working on fixing that
-
+;; Function: ($POST)
+;; Usage: ($POST "optional key name")
+;; Returns: ($POST) on its own returns a list of all key/value pairs from the page's POST data.
+;; Optional: ($POST "key name") returns the value for that particular key name.
+;; Note: You can retrieve multiple values for the same key name by appending [] to the key name.
+;; Example: POST data contains "name[]=a name[]=b", calling ($POST "name[]") will return ("a" "b")
+;-----------------------------------------------------------------------------------------------------
 (new Tree '$POST)
 ;(when (> (peek (device)) 0)
 	(read (device) post-buffer $MAX_POST_LENGTH) ; grab all post data, put it in variable 'post-buffer'
@@ -245,20 +391,24 @@
 	))
 ;)
 
-;=================================================================================
-;  SQLITE 3 DATABASE FUNCTIONS BELOW
-;; just loads sqlite module and defines functions
-;=================================================================================
+;! ===== DATABASE FUNCTIONS ======================================================
 
-(module "sqlite3.lsp") ; load up the database
+(module "sqlite3.lsp") ; loads the SQLite3 database module
 
-;; open a database
+;; Function: (open-database)
+;; Usage: (open-database "database name")
+;; Returns: Opens a SQLite3 database.  A ".db" extension will be added automatically to the name.
+;; Note: Only one database can be open at a time.  You will need to close one database to open another.
+;-----------------------------------------------------------------------------------------------------
 (define (open-database sql-db-to-open)
 	(if (sql3:open (string sql-db-to-open ".db"))  
 		(displayln "")
 		(displayln "There was a problem opening the database " sql-db-to-open ": " (sql3:error))))
 
-;; close the database
+;; Function: (close-database)
+;; Usage: (open-database)
+;; Returns: Closes the currently open database.
+;-----------------------------------------------------------------------------------------------------
 (define (close-database)
 	(if (sql3:close)
 		(displayln "")
@@ -274,7 +424,9 @@
 		(replace "'" str-sql-query "&apos;"))
 		(set 'result str-sql-query))
 
-;; function for doing queries
+;; Function: (query)
+;; Usage: (query "SQL text")
+;; This function sends a straight SQL query to the currently open database
 (define (query sql-text)
  (set 'sqlarray (sql3:sql sql-text))    ; results of query
  (if sqlarray
@@ -283,13 +435,16 @@
 			(displayln (sql3:error) " query problem ")
 			(setq query-return nil))))
 
-;====== CREATE-RECORD ======================================================================================
-;;  create record! The C in CRUD!  It's a little bit janky (like I can't call a macro with a macro)
-;;  but I think it's neat. The idea is that your variable NAMES are in fact the same as the field names
-;;  in the database.  These names are converted to symbols so we can reference both the names and values
-;;  when constructing the SQL statement.  Also, all entries are run through (safe-for-sql) to make them safe
-;;  from SQL injection hacks.
-;===========================================================================================================
+;; Function: (create-record) 
+;; Usage: (create-record "Table Name" ColumnName1 ColumnName2 ColumnName3 ...)
+;; Returns: true if creation was successful, otherwise displays the SQL error
+;; The way this works it that your variable names need to be the same as the column names
+;; in the database.  Enforcing this makes the code simpler and easier to read.  Set the values
+;; before calling (create-record).  When it is called, the values of each column will be set in a 
+;; new record in the database.
+;; Note: Variables need to be either integers or strings, depending on the type of column.
+;; Note: Date columns need to be strings using the SQL Date format: "YYYY-MM-DD HH:MM:SS.000"
+;-----------------------------------------------------------------------------------------------------
 (define-macro (create-record)
 	; first save the values
 	(set 'temp-record-values nil)
@@ -321,14 +476,15 @@
 	(delete 'DB) ; we're done, so delete all symbols in the DB context.
 )	
 
-;====== DELETE-RECORD ======================================================================================
-; format: (delete-record "TableName" ColumnVariable)
-; 
-; obviously this is for a very limited subset of deleting, but it may be extended later
-; NOTE: Since the variable name is the same as the column name, you have to make sure to make it
-; integer if the column is integer, otherwise the SQL WHERE query will look for a string, and it will
-; fail.  Since newLISP has dynamic typing, we can't enforce the right type 
-;===========================================================================================================
+;; Function: (delete-record) 
+;; Usage: (delete-record "Table Name" ColumnName1)
+;; Returns: true if deletion was successful, otherwise displays the SQL error
+;; The variable ColumnName1 needs to be assigned a value that will be checked to qualify the deletion
+;; Example: (set 'Email "bob@bom.com") (delete-record "Posts" Email) will delete all records where
+;; the column name "Email" is equal to "bob@bob.com".  
+;; Note: Variables need to be either integers or strings, depending on the type of column.
+;; Note: Date columns need to be strings using the SQL Date format: "YYYY-MM-DD HH:MM:SS.000"
+;-----------------------------------------------------------------------------------------------------
 (define-macro (delete-record)
 	(set 'temp-table-name (first (args)))
 	(set 'temp-record-values nil)
@@ -349,12 +505,15 @@
 	(delete 'DB) ; we're done, so delete all symbols in the DB context.
 )
 
-;====== GET-RECORD ======================================================================================
-; format: (get-record "TableName" ColumnVariable)
-; 
-; this gets all data for a certain record with a constraint that ColumnVariable=(value of ColumnVariable);
-; NOTE: Still thinking about parameterizing the SQL query somehow for further SQL injection projection
-;===========================================================================================================
+;; Function: (get-record) 
+;; Usage: (get-record "Table Name" ColumnName1)
+;; Returns: A list of all values for the record if successful, otherwise displays the SQL error
+;; The variable ColumnName1 needs to be assigned a value that will be checked to qualify the deletion
+;; Example: (set 'Email "bob@bom.com") (get-record "Posts" Email) will retrieve all records where
+;; the column name "Email" is equal to "bob@bob.com".  
+;; Note: Variables need to be either integers or strings, depending on the type of column.
+;; Note: Date columns need to be strings using the SQL Date format: "YYYY-MM-DD HH:MM:SS.000"
+;-----------------------------------------------------------------------------------------------------
 (define-macro (get-record)
 	(set 'temp-table-name (first (args)))
 	; if you have more arguments than just the table name, they become the elements of the WHERE clause
@@ -381,67 +540,38 @@
 	(set 'return-value (query temp-sql-query)) ; this returns a list of everything in the record
 )
 
-;----- Form functions----------------------------------------------------------
+;! ===== FORM FUNCTIONS =========================================================================
 
-;===============================================================================
-; DISPLAY-POST-BOX
-; Just a simple function to print a form for entering posts (subject and postbox)
-; (print-post-box Title FormName ActionPage SubjectLine PostboxID SubmitButton)
-;===============================================================================
+;; Function: (display-post-box)
+;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line" "Postbox ID" "Submit Button Text")
+;; Returns: Displays a form with a subject line and a text box, and a submit button.  
+;; The form will enter information into POST and redirect to "page-to-submit.lsp" when Submit is clicked.
+;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically.
+;; Note: You can hide the Subject Line text box by simply entering nil (no quotes) as the subject line.
+;-----------------------------------------------------------------------------------------------------
 (define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id)
 	(displayln "<h3>" str-title "</h3>")
+	(if (not (find ".lsp" str-action-page)) (extend str-action-page ".lsp"))
 	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
-	(displayln "<input type='text' class='field span5' name='" str-subject-line "'>")
+	; can either show or hide subject line if you enter a value for str-subject-line
+	(if str-subject-line 
+		(displayln "<input type='text' class='field span5' name='" str-subject-line "'>")
+		(displayln "<input type='hidden' class='field span5' name='subjectline' value='no subject'>"))
 	(displayln "<p><textarea name='post' id='" str-postbox-id "' class='field span9' rows='12'></textarea>")
 	(if str-linkback-id (displayln "<input type='hidden' name='linkbackid' value='" str-linkback-id "'>"))
 	(displayln "<br><p><input type='submit' class='btn' value='" str-submit-button-text "'>")
 	(displayln "</form>"))
 
-;===============================================================================
-; DISPLAY-PAGING-LINKS
-; Displays a bunch of paging links
-;===============================================================================
-(define (display-paging-links int-start-page int-total-pages int-current-page str-page-url)
-	(start-div "pagination")
-	(display "<ul>")
-	(for (x int-start-page int-total-pages 1)
-	(display "<li")
-		(if (= x int-current-page) (display " class='active'"))
-		(displayln "><a href='" str-page-url ".lsp?p=" x "'>" x "</a></li>")
-	)
-	(display "</ul>")
-	(end-div)
-)
 
-;===============================================================================
-; DISPLAY-WARNING
-; displays a removable warning alert box
-;===============================================================================
-(define (display-warning str-warning-text)
-	(start-div "alert")
-		(displayln "<button type='button' class='close' data-dismiss='alert'>&times;</button>")
-		(displayln str-warning-text)
-	(end-div))
-
-;===============================================================================
-; DISPLAY-ERROR
-; displays a removable error alert box
-;===============================================================================
-(define (display-error str-error-text)
-	(start-div "alert alert-error")
-		(displayln "<button type='button' class='close' data-dismiss='alert'>&times;</button>")
-		(displayln str-error-text)
-	(end-div))
-
-;===============================================================================
+;! ===== SOCIAL MEDIA FUNCTIONS =====================================================
 ; Twitter functions (lifted from Dragonfly.. will rewrite later)
 ;===============================================================================
 
-;; @syntax (twitter-search <keyword> <max-items>)
-;; @param <keyword> string containing the keyword for search
-;; @param <max-items> INTEGER, maximum of items you want to show
-;; Writes the results of a Twitter search.
-
+;; Function: (twitter-search)
+;; Usage: (twitter-search "Key words" 10)
+;; Returns: Displays the results of a Twitter search for the key words or phrases entered.
+;; Optional: Add an integer to specify the maximum number of items to show
+;-----------------------------------------------------------------------------------------
 (define (twitter-search keyword max-items)
 	(set 'xml (get-url (string "http://search.twitter.com/search.atom?rpp="max-items"&q="keyword) ))
 	(xml-type-tags nil nil nil nil) ; no extra tags
@@ -463,74 +593,4 @@
 	)
 )
 
-(set 'Rockets:status-codes
-  '((200 "OK")
-	(301 "Moved Permanently")
-	(302 "Found")
-	(400 "Bad Request")
-	(401 "Unauthorized")
-	(403 "Forbidden")
-	(404 "Not Found")
-	(410 "Gone")
-	(500 "Internal Error"))
-)
-
-;================================================================================
-;  (ADD-HEADER)
-;================================================================================
-; adds a new header (location, etc) to be set in the page's HTTP header (will take effect next page)
-(define (add-header str-header-name str-header-value)
- (push (list str-header-name str-header-value) Rockets:headers -1)
-)
-
-;================================================================================
-;  (SEND-HEADERS)
-;================================================================================
-; this prints a bunch of HTTP headers, starting with status, then any other headers, then cookies.
-(define (send-headers)
-	(print "Status: " Rockets:statuscode " " (lookup Rockets:statuscode Rockets:status-codes) "\n")
-	; send cookies if they exist 
-	(if Rockets:headers (begin
-		(dolist (r Rockets:headers)
-			(print (first r) ": " (last r) "\n"))))
-	(if Rockets:cookielist (begin
-		(dolist (r Rockets:cookielist)
-			(print "Set-Cookie: " r "\n"))))
-)
-
-;================================================================================
-;  (PAGE-REDIRECT)
-;================================================================================
-; this redirects to another page
-(define (page-redirect str-url-to-redirect str-optional-parameters)
-	(if (not (find ".lsp" str-url-to-redirect))
-		(extend str-url-to-redirect ".lsp")) ; add .lsp extension if not already there
-	(if str-optional-parameters (begin
-		(if (find "?" strl-url-to-redirect)
-			(extend str-url-to-redirect (string "&" str-optional-parameters))
-			(extend str-url-to-redirect (string "?" str-optional-parameters)) ; if already has parameters, use &
-		)	
-	))
-	(print "Content-type: text/html\n") 
-	(set 'Rockets:statuscode 302) ; HTTP "FOUND" redirects to a new site
-   (add-header "Location" str-url-to-redirect)
-	(send-headers)
-	(print "\n")
-	(exit)
-)
-
-;================================================================================
-;  (DISPLAY-PAGE)
-;================================================================================
-(define (display-page)
-	; Sending the page starts here-----------------------------------------------------------------------------
-	; print headers
-	(print "Content-type: text/html\n") 
-	(set 'Rockets:statuscode 200) ; everything is OK
-	(send-headers)
-	(print "\n")
-	(print "<!DOCTYPE html>") 	
-	(print STDOUT) ; the whole page gets put here
-	(exit)
-)
 
