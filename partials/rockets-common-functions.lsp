@@ -15,6 +15,7 @@
 	(displayln "<br><B>Author:</b> " (author-name (list-post-data 1)) "")
 	(displayln "<br><br><p>" (format-for-web (list-post-data 4)) "</p>")
 	(if (= Rockets:UserId 0) (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete post</a>"))
+	(if (= Rockets:UserId 0) (displayln "<a class='btn btn-info' href='rockets-item.lsp?p=" (list-post-data 0) "&edit=yes#edit'>Edit post</a>"))
 	; print reply button if we're not on main page and if valid account is logged in
 	(if (and Rockets:UserId (not bool-show-comments)) (begin
 		(displayln "<a class='btn btn-primary' href='rockets-item.lsp?p=" (list-post-data 0) "&r=1#reply'>Reply to post</a>")))

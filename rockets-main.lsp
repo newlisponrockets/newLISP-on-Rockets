@@ -23,7 +23,7 @@
 (end-div)
 
 ; get current page from URL (if there is one)
-(set 'current-page ($GET "p"))
+(set 'current-page (force-parameters 1 ($GET "p"))) ; we only need the first part, ignore anything else
 (if current-page (set 'current-page (int current-page)) (set 'current-page 1))
 
 ; get all existing posts

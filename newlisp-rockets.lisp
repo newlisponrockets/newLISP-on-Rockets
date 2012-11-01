@@ -151,8 +151,9 @@
 ;; Usage: (format-for-web "string of text")
 ;; Returns: Takes a string of text, for example a post full of data including carriage returns and
 ;; line feeds, and returns a string that can be used with (display) or (displayln)
-;; Note: All HTML code is removed (< and > translated to &lg; and &gt; respectively) to avoid
-;; cross-site scripting issues.  URLs are transformed into clickable links.
+;; Note: All HTML code is removed (< and > translated to & lt ; and & gt ; respectively) to avoid
+;; cross-site scripting issues.  URLs are transformed into clickable links.  Some UBB code is also
+;; translated, for example bold, italic, underline, and code tags.
 ;-----------------------------------------------------------------------------------------------------
 (define (format-for-web str-input-for-web)
 	; let's get rid of cross-site scripting, and for that matter all embedded HTML
@@ -176,6 +177,22 @@
 	(replace "\r\n" str-input-for-web "<BR>")
 )
 
+;; Function: (force-parameters)
+;; Usage: (force-parameters int-number-of-parameters "string containing spaces")
+;; Example: (force-parameters 1 "First Word Only Returned)
+;; Returns: Takes a string containing spaces and returns only the number of parameters provided
+;; Use this in conjunction with ($GET) and ($POST) to eliminate SQL injection attempts
+;-----------------------------------------------------------------------------------------------------
+(define (force-parameters int-num-of-parameters str-to-parameterize)
+	(if str-to-parameterize 
+		(begin 
+			(set 'tmp-to-parameterize (slice (parse str-to-parameterize " ") 0 int-num-of-parameters))
+			(set 'return-result (join tmp-to-parameterize " ")))
+		(set 'return-result nil)		
+	)
+)
+		
+
 ;! ===== DISPLAY FUNCTIONS ===========================================================================
 
 ;; Function: (display-header)
@@ -198,7 +215,8 @@
 ;; Function: (display-navbar)
 ;; Usage: (display-header "Site name" '(list of menus) "page-to-go-for-signing-in")
 ;; Returns: Prints the top navigation bar with menus and form for signing in. Also, 
-; calling this function also sets up the main <div> container for the whole page.
+;; calling this function also sets up the main <div> container for the whole page.
+;; Note: The .lsp extension is added automatically to page-to-go-for-signing-in
 ;-----------------------------------------------------------------------------------------------------
 (define (display-navbar str-name list-menus str-signin)
 	(displayln "    <div class=\"navbar navbar-inverse navbar-fixed-top\">")
@@ -224,7 +242,7 @@
 		(displayln "                <li class=\"divider-vertical\"></li>")
 		(displayln "                <li class=\"dropdown\">")
 		(displayln "                  <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Welcome, " Rockets:UserName "&nbsp;<b class=\"caret\"></b></a>")
-		(displayln "                  <ul class=\"dropdown-menu\"><li><a href=\"#\">Edit Profile</a></li>")
+		(displayln "                  <ul class=\"dropdown-menu\"><li><a href=\"rockets-profile.lsp\">Edit Profile</a></li>")
 		(displayln "                                              <li><a href=\"rockets-signout.lsp\">Sign Out</a></li></ul>")
 		(displayln "                </li>")
 		(displayln "              </ul>")
@@ -458,8 +476,11 @@
 ; it's simple right now but will add to it later
 ;===================================================================================
 (define (safe-for-sql str-sql-query)
-	(if (string? str-sql-query) 
-		(replace "'" str-sql-query "&apos;"))
+	(if (string? str-sql-query) (begin
+		(replace "&" str-sql-query "&amp;")
+		(replace "'" str-sql-query "&apos;")
+		(replace "\"" str-sql-query "&quot;")
+		))
 		(set 'result str-sql-query))
 
 ;; Function: (query)
@@ -509,6 +530,59 @@
 		(extend temp-sql-query ", ")) ; all values are sanitized to avoid SQL injection
 	(set 'temp-sql-query (chop (chop temp-sql-query)))
 	(extend temp-sql-query ");")
+	;(displayln "<p>***** SQL QUERY: " temp-sql-query)
+	(displayln (query temp-sql-query)) ; actually run the query against the database
+	(delete 'DB) ; we're done, so delete all symbols in the DB context.
+)	
+
+;; Function: (update-record) 
+;; Usage: (update-record "Table Name" ConditionColumn ColumnName1 ColumnName2 ColumnName3 ...)
+;; Returns: true if update was successful, otherwise displays the SQL error
+;; The way this works it that your variable names need to be the same as the column names
+;; in the database.  Enforcing this makes the code simpler and easier to read.  Set the values
+;; before calling (update-record).  When it is called, the values of each column will be set to those values.
+;; Note: The variable "ConditionColumn" will check to see if the column equals that value
+;; Example: (update-record "Posts" Id Subject Content) will update the Subject and Content columns
+;; for all records where Id is equal to the value of the variable Id.
+;; Note: Variables need to be either integers or strings, depending on the type of column.
+;; Note: Date columns need to be strings using the SQL Date format: "YYYY-MM-DD HH:MM:SS.000"
+;-----------------------------------------------------------------------------------------------------
+(define-macro (update-record)
+	; first save the values
+	(set 'temp-record-values nil)
+	(set 'temp-table-name (first (args)))
+	;(displayln "<BR>Arguments: " (args))
+	(dolist (s (rest (args))) (push (eval s) temp-record-values -1))
+	; now save the arguments as symbols under the context "DB"
+	(dolist (s (rest (args)))
+		(set 'temp-index-num (string $idx)) ; we need to number the symbols to keep them in the correct order
+		(if (= (length temp-index-num) 1) (set 'temp-index-num (string "0" temp-index-num))) ; leading 0 keeps the max at 100.
+		(sym (string temp-index-num s) 'DB))
+	; now create the sql query 
+	(set 'temp-sql-query (string "UPDATE " temp-table-name " SET "))
+	;(displayln "<P>TABLE NAME: " temp-table-name)
+	;(displayln "<P>SYMBOLS: " (symbols DB))
+	;(displayln "<BR>VALUES: " temp-record-values)
+	(dolist (d (rest (symbols DB))) ; ignore the first argument, as it will be the ConditionColumn for later
+		(extend temp-sql-query (rest (rest (rest (rest (rest (string d)))))) "=")
+		(set 'q (temp-record-values (+ $idx 1)))
+		(if (string? q) (extend temp-sql-query "'")) ; only quote if value is non-numeric
+		(extend temp-sql-query (string (safe-for-sql q)))
+		(if (string? q) (extend temp-sql-query "'")) ; close quote if value is non-numeric
+		(extend temp-sql-query ", ") ; all values are sanitized to avoid SQL injection
+	)	
+	(set 'temp-sql-query (chop (chop temp-sql-query)))
+	; okay now add the ConditionColumn value
+	(extend temp-sql-query (string " WHERE " (rest (rest (rest (rest (rest (string (first (symbols DB)))))))) "="))
+	(if (string? (first temp-record-values)) (extend temp-sql-query "'"))
+	(extend temp-sql-query (string (safe-for-sql (first temp-record-values))))
+	(if (string? (first temp-record-values)) (extend temp-sql-query "'"))
+	;(dolist (q temp-record-values)
+	;	(if (string? q) (extend temp-sql-query "'")) ; only quote if value is non-numeric
+	;	(extend temp-sql-query (string (safe-for-sql q)))
+	;	(if (string? q) (extend temp-sql-query "'")) ; close quote if value is non-numeric
+	;	(extend temp-sql-query ", ")) ; all values are sanitized to avoid SQL injection
+	(extend temp-sql-query ";")
 	;(displayln "<p>***** SQL QUERY: " temp-sql-query)
 	(displayln (query temp-sql-query)) ; actually run the query against the database
 	(delete 'DB) ; we're done, so delete all symbols in the DB context.
@@ -581,21 +655,30 @@
 ;! ===== FORM FUNCTIONS =========================================================================
 
 ;; Function: (display-post-box)
-;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line" "Postbox ID" "Submit Button Text")
+;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box")
 ;; Returns: Displays a form with a subject line and a text box, and a submit button.  
 ;; The form will enter information into POST and redirect to "page-to-submit.lsp" when Submit is clicked.
 ;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically.
+;; Note: You can pre-populate the post box (for example, for editing an existing post) by adding the last two optional parameters.
 ;; Note: You can hide the Subject Line text box by simply entering nil (no quotes) as the subject line.
+;; Note: The "optional linkback value" parameter sets a hidden field named "linkbackid" in the form and sets it to that value.
+;; This is useful for when you want the page that is called via the submit button to remember the Id # of, for example,
+;; which post you were editing or just added.
 ;-----------------------------------------------------------------------------------------------------
-(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id)
+(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id str-optional-subject-value str-optional-post-value)
 	(displayln "<h3>" str-title "</h3>")
 	(if (not (find ".lsp" str-action-page)) (extend str-action-page ".lsp"))
 	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
 	; can either show or hide subject line if you enter a value for str-subject-line
 	(if str-subject-line 
-		(displayln "<input type='text' class='field span5' name='" str-subject-line "'>")
-		(displayln "<input type='hidden' class='field span5' name='subjectline' value='no subject'>"))
-	(displayln "<p><textarea name='post' id='" str-postbox-id "' class='field span9' rows='12'></textarea>")
+		(display "<input type='text' class='field span5' name='" str-subject-line "' ")
+		(display "<input type='hidden' class='field span5' name='subjectline' "))
+	(if str-optional-subject-value 
+		(display "value='" str-optional-subject-value "'>")
+		(display "value=''>"))
+	(display "<p><textarea name='post' id='" str-postbox-id "' class='field span9' rows='12'>")
+	(if str-optional-post-value (display str-optional-post-value))
+	(displayln "</textarea>")
 	(if str-linkback-id (displayln "<input type='hidden' name='linkbackid' value='" str-linkback-id "'>"))
 	(displayln "<br><p><input type='submit' class='btn' value='" str-submit-button-text "'>")
 	(displayln "</form>"))
