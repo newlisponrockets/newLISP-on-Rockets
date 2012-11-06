@@ -24,7 +24,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.17)    
+(constant (global '$ROCKETS_VERSION) 0.18)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 1048576) 
 ;;* $PARTIAL_PATH - the relative path for when using (display-partial)
@@ -160,7 +160,7 @@
 	(replace "<" str-input-for-web "&lt;")
 	(replace ">" str-input-for-web "&gt;")
 	; but we need a way to do bold and italics at least, so let's do that, and images
-	(set 'ubb-code-list '("i" "b" "u" "code"))
+	(set 'ubb-code-list '("i" "b" "u" "code" "pre"))
 	(dolist (u ubb-code-list)
 		(replace (string "[" u "]") str-input-for-web (string "<" u ">"))
 		(replace (string "[" (upper-case u) "]") str-input-for-web (string "<" u ">"))
@@ -173,13 +173,18 @@
 	; replace html links with clickable links
   	(set 'h "(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
   	(replace h str-input-for-web (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)
+	; replace youtube links
+	(replace "[youtube]" str-input-for-web "<iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/")
+	(replace "[YOUTUBE]" str-input-for-web "<iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/")
+	(replace "[/youtube]" str-input-for-web "\" frameborder=\"0\" allowfullscreen></iframe>")
+	(replace "[/YOUTUBE]" str-input-for-web "\" frameborder=\"0\" allowfullscreen></iframe>")
 	; replace line breaks with HTML line breaks
 	(replace "\r\n" str-input-for-web "<BR>")
 )
 
 ;; Function: (force-parameters)
 ;; Usage: (force-parameters int-number-of-parameters "string containing spaces")
-;; Example: (force-parameters 1 "First Word Only Returned)
+;; Example: (force-parameters 1 "First Word Only Returned")
 ;; Returns: Takes a string containing spaces and returns only the number of parameters provided
 ;; Use this in conjunction with ($GET) and ($POST) to eliminate SQL injection attempts
 ;-----------------------------------------------------------------------------------------------------
@@ -551,19 +556,23 @@
 	; first save the values
 	(set 'temp-record-values nil)
 	(set 'temp-table-name (first (args)))
-	;(displayln "<BR>Arguments: " (args))
+	(displayln "<BR>Arguments: " (args))
+	(set 'continue true) ; debugging
 	(dolist (s (rest (args))) (push (eval s) temp-record-values -1))
-	; now save the arguments as symbols under the context "DB"
-	(dolist (s (rest (args)))
+	; now save the arguments as symbols under the context "D2"
+	(dolist (st (rest (args)))
 		(set 'temp-index-num (string $idx)) ; we need to number the symbols to keep them in the correct order
 		(if (= (length temp-index-num) 1) (set 'temp-index-num (string "0" temp-index-num))) ; leading 0 keeps the max at 100.
-		(sym (string temp-index-num s) 'DB))
+		;(displayln "<br>SYMBOL>>>>" (string temp-index-num st) "<<<") ; debugging
+		(sym (string temp-index-num st) 'D2)
+	)
+	(if continue (begin ; --- temporary debugging
 	; now create the sql query 
 	(set 'temp-sql-query (string "UPDATE " temp-table-name " SET "))
 	;(displayln "<P>TABLE NAME: " temp-table-name)
-	;(displayln "<P>SYMBOLS: " (symbols DB))
+	;(displayln "<P>SYMBOLS: " (symbols D2))
 	;(displayln "<BR>VALUES: " temp-record-values)
-	(dolist (d (rest (symbols DB))) ; ignore the first argument, as it will be the ConditionColumn for later
+	(dolist (d (rest (symbols D2))) ; ignore the first argument, as it will be the ConditionColumn for later
 		(extend temp-sql-query (rest (rest (rest (rest (rest (string d)))))) "=")
 		(set 'q (temp-record-values (+ $idx 1)))
 		(if (string? q) (extend temp-sql-query "'")) ; only quote if value is non-numeric
@@ -573,19 +582,15 @@
 	)	
 	(set 'temp-sql-query (chop (chop temp-sql-query)))
 	; okay now add the ConditionColumn value
-	(extend temp-sql-query (string " WHERE " (rest (rest (rest (rest (rest (string (first (symbols DB)))))))) "="))
+	(extend temp-sql-query (string " WHERE " (rest (rest (rest (rest (rest (string (first (symbols D2)))))))) "="))
 	(if (string? (first temp-record-values)) (extend temp-sql-query "'"))
 	(extend temp-sql-query (string (safe-for-sql (first temp-record-values))))
 	(if (string? (first temp-record-values)) (extend temp-sql-query "'"))
-	;(dolist (q temp-record-values)
-	;	(if (string? q) (extend temp-sql-query "'")) ; only quote if value is non-numeric
-	;	(extend temp-sql-query (string (safe-for-sql q)))
-	;	(if (string? q) (extend temp-sql-query "'")) ; close quote if value is non-numeric
-	;	(extend temp-sql-query ", ")) ; all values are sanitized to avoid SQL injection
 	(extend temp-sql-query ";")
 	;(displayln "<p>***** SQL QUERY: " temp-sql-query)
 	(displayln (query temp-sql-query)) ; actually run the query against the database
-	(delete 'DB) ; we're done, so delete all symbols in the DB context.
+	(delete 'D2) ; we're done, so delete all symbols in the DB context.
+	)) ; --- end temporary debugging
 )	
 
 ;; Function: (delete-record) 
@@ -652,20 +657,22 @@
 	(set 'return-value (query temp-sql-query)) ; this returns a list of everything in the record
 )
 
-;! ===== FORM FUNCTIONS =========================================================================
+;! ===== FORM AND TABLE FUNCTIONS =========================================================================
 
 ;; Function: (display-post-box)
-;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box")
+;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box" "optional hidden value")
 ;; Returns: Displays a form with a subject line and a text box, and a submit button.  
 ;; The form will enter information into POST and redirect to "page-to-submit.lsp" when Submit is clicked.
 ;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically.
 ;; Note: You can pre-populate the post box (for example, for editing an existing post) by adding the last two optional parameters.
 ;; Note: You can hide the Subject Line text box by simply entering nil (no quotes) as the subject line.
 ;; Note: The "optional linkback value" parameter sets a hidden field named "linkbackid" in the form and sets it to that value.
+;; Note: I've added another "optional hidden value" that sets a hidden field named "optionalhidden" in the form and sets it to that value.
+;; If this becomes a trend, I might just turn hidden values into a list, which would be cleaner, but we'll leave it for now.
 ;; This is useful for when you want the page that is called via the submit button to remember the Id # of, for example,
 ;; which post you were editing or just added.
 ;-----------------------------------------------------------------------------------------------------
-(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id str-optional-subject-value str-optional-post-value)
+(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id str-optional-subject-value str-optional-post-value str-optional-hidden-value)
 	(displayln "<h3>" str-title "</h3>")
 	(if (not (find ".lsp" str-action-page)) (extend str-action-page ".lsp"))
 	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
@@ -679,9 +686,42 @@
 	(display "<p><textarea name='post' id='" str-postbox-id "' class='field span9' rows='12'>")
 	(if str-optional-post-value (display str-optional-post-value))
 	(displayln "</textarea>")
+	; now add the two hidden values, if they exist
 	(if str-linkback-id (displayln "<input type='hidden' name='linkbackid' value='" str-linkback-id "'>"))
+	(if str-optional-hidden-value (displayln "<input type='hidden' name='optionalhidden' value='" str-optional-hidden-value "'>"))
 	(displayln "<br><p><input type='submit' class='btn' value='" str-submit-button-text "'>")
 	(displayln "</form>"))
+
+;; Function: (display-table)
+;; Usage: (display-table list-of-headers nested-list-of-data "optional form styling")
+;; Example: (display-table '("First" "Last" "Email") '(("Joe" "McBain" "joe@joe.com") ("Bob" "McBain" "bob@bob.com")) "striped")
+;; Returns: Displays a table with headers.  If no headers are provided (entered as nil) they will not display  
+;; Note: Styling options are as follows:
+;; striped - alternates rows in grey
+;; bordered - adds borders and rounded corners to the table
+;; hover - enables hover state on table rows when mousing over
+;; condensed - more condensed style of table
+(define (display-table list-of-headers nested-list-of-data str-optional-styling)
+	(display "<table class=\"table")
+	(if str-optional-styling (display " table-" str-optional-styling))
+	(displayln "\">")
+	(if list-of-headers (begin
+		(displayln "<thead>")
+		(displayln "<tr>")
+		(dolist (th list-of-headers) 
+			(displayln "<th>" th "</th>"))
+		(displayln "</tr>")
+		(displayln "</thead>")))
+	(displayln "<tbody>")
+	(if nested-list-of-data (begin
+		(dolist (tr nested-list-of-data)
+			(displayln "<tr>")
+			(dolist (td tr)
+				(displayln "<td>" td "</td>"))
+			(displayln "</tr>"))))
+	(displayln "</tbody>")
+	(displayln "</table>")
+)
 
 
 ;! ===== SOCIAL MEDIA AND EMAIL FUNCTIONS =====================================================

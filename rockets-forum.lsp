@@ -13,12 +13,12 @@
 (open-database "ROCKETS-BLOG")
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (display-partial "rockets-common-functions") ; loads functions common to the blog but not part of Rockets
-(set 'active-page "rockets-main")
+(set 'active-page "rockets-forum")
 (display-partial "rockets-navbar") ; shows the navigation bar with Rockets blog menus
 
 (start-div "hero-unit")
 	(display-image "rockets.png" 317 180)
-	(displayln "<h2>The newLISP on Rockets Blog</h2>")
+	(displayln "<h2>The newLISP on Rockets Discussion Forum</h2>")
 	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
 (end-div)
 
@@ -27,7 +27,7 @@
 (if current-page (set 'current-page (int current-page)) (set 'current-page 1))
 
 ; get all existing posts
-(set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts WHERE PostType='Blog post'"))))))
+(set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts"))))))
 
 (set 'total-pages (/ total-posts Blog:posts-per-page))
 (if (>= (mod (float total-posts) (float Blog:posts-per-page)) 1) (inc total-pages)) ; fix number of pages if not evenly divisible
@@ -35,20 +35,31 @@
 (display-paging-links 1 total-pages current-page active-page)
 
 (set 'start-post-num (- (* current-page Blog:posts-per-page) Blog:posts-per-page))
-(set 'posts-query-sql (string "SELECT * from Posts WHERE PostType='Blog post' ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
+(set 'posts-query-sql (string "SELECT * from Posts ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
 
 (set 'posts-result (query posts-query-sql))
+
 ; print out all posts
 (dolist (x posts-result)
-	(display-individual-post x)
+	(set 'post-num (x 0))
+	(set 'post-author (author-name (x 1)))
+	(set 'post-avatar (author-avatar (x 1)))
+	(set 'post-date (x 2))
+	(set 'post-subject (x 3))
+	(set 'post-content (x 4))
+	(set 'post-replies (x 5)) (if (nil? post-replies) (set 'post-replies "None"))
+	(set 'post-type (x 6))
+	(push (list post-subject post-type post-author post-replies) forum-post-table -1)
 )
+
+(display-table '("Topic Subject" "Post Type" "Post Author" "Replies") forum-post-table "striped")
 
 (display-paging-links 1 total-pages current-page active-page) ; display them again
 
 ; print post entry box
-(if (= Rockets:UserId 0) (begin
-	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message")
-)) ; only the site administrator may make new blog posts at the moment
+(if Rockets:UserId (begin
+	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil "Forum")
+)) ; any registered user may make a forum post
 
 (close-database)
 (display-footer "Rocket Man")

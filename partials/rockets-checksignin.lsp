@@ -32,6 +32,7 @@
 		(set 'Rockets:UserPosts (load-user-sql-data 4))
 		(set 'Rockets:UserName (load-user-sql-data 7))
 		(set 'Rockets:CookieSalt (load-user-sql-data 8))
-	
+		(set 'Rockets:UserAvatar (load-user-sql-data 9))
+		(if (nil? Rockets:UserAvatar) (set 'Rockets:UserAvatar "unknown.png"))
 	))
 ))
