@@ -15,23 +15,17 @@
 (set 'max-comments (first (first (query "SELECT max(Id) from Comments"))))
 (displayln "<P>Max comment id: " max-comments)
 
-(displayln "<p>It's coming... be patient. :P")
-
 (displayln "<P>$POST data: " ($POST))
-
-(displayln "<br>Posts table: " (query "pragma table_info('Posts');"))
-;(displayln "<br>Create table: "(query "CREATE TABLE Comments (Id INTEGER PRIMARY KEY, PostId INTEGER, CommenterId INTEGER, CommentDate DATE, CommentSubject TEXT, CommentContent TEXT);"))
-;(displayln "<br> Drop table: " (query "DROP TABLE Comments;"))
-(displayln "<br>Comments table: " (query "pragma table_info('Comments');"))
 
 (if (and ($POST "post") ($POST "subjectline") ($POST "linkbackid"))
 	(begin
 		(if (nil? max-comments) (set 'Id 1) (set 'Id (+ max-comments 1)))
-		(set 'CommenterId Rockets:UserId) ; ONLY I MAY POST FOR NOW
+		(set 'CommenterId Rockets:UserId) ; any registered user may add a comment
 		(set 'PostId (int ($POST "linkbackid")))
 		(set 'CommentSubject ($POST "subjectline"))
 		(set 'CommentContent ($POST "post"))
 		(set 'CommentDate (date (date-value) 0 "%Y-%m-%d %H:%M:%S.000"))
+		(set 'forum-view-post ($POST "optionalhidden")) ; this indicates whether we were in forum or blog mode
 		(displayln "<Br>Post: " CommentId " from: " CommenterId " : " CommentSubject " " CommentContent " " CommentDate)
 		(create-record "Comments" Id PostId CommenterId CommentDate CommentSubject CommentContent) ; It's the C in CRUD!
 		(displayln "<B>Posting disabled for the moment...</b>")
@@ -43,10 +37,12 @@
 	)
 )
 
-;(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>")
-(page-redirect "rockets-item.lsp" (string "p=" PostId "#reply"))
+;	(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>")
+	(if forum-view-post
+		(page-redirect "rockets-item.lsp" (string "p=" PostId "&f=true#reply")) ; go back to forum view if came from forum
+		(page-redirect "rockets-item.lsp" (string "p=" PostId "#reply")))
 )
-	(displayln "<p>Why are you here?")
+(displayln "<p>Why are you here?")
 )
 
 (display-page)

@@ -29,13 +29,13 @@
 ; get all existing posts
 (set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts"))))))
 
-(set 'total-pages (/ total-posts Blog:posts-per-page))
-(if (>= (mod (float total-posts) (float Blog:posts-per-page)) 1) (inc total-pages)) ; fix number of pages if not evenly divisible
+(set 'total-pages (/ total-posts Blog:forum-posts-per-page))
+(if (>= (mod (float total-posts) (float Blog:forum-posts-per-page)) 1) (inc total-pages)) ; fix number of pages if not evenly divisible
 
 (display-paging-links 1 total-pages current-page active-page)
 
-(set 'start-post-num (- (* current-page Blog:posts-per-page) Blog:posts-per-page))
-(set 'posts-query-sql (string "SELECT * from Posts ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
+(set 'start-post-num (- (* current-page Blog:forum-posts-per-page) Blog:forum-posts-per-page))
+(set 'posts-query-sql (string "SELECT * from Posts ORDER BY Id DESC LIMIT " start-post-num "," Blog:forum-posts-per-page ";"))
 
 (set 'posts-result (query posts-query-sql))
 
@@ -47,12 +47,13 @@
 	(set 'post-date (x 2))
 	(set 'post-subject (x 3))
 	(set 'post-content (x 4))
-	(set 'post-replies (x 5)) (if (nil? post-replies) (set 'post-replies "None"))
+	(set 'post-replies (x 5)) (if (nil? post-replies) (set 'post-replies "0"))
 	(set 'post-type (x 6))
 	(push (list post-subject post-type post-author post-replies) forum-post-table -1)
+	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil) forum-links-table -1)
 )
 
-(display-table '("Topic Subject" "Post Type" "Post Author" "Replies") forum-post-table "striped")
+(display-table '("Topic Subject" "Post Type" "Post Author" "Replies") forum-post-table "striped" forum-links-table)
 
 (display-paging-links 1 total-pages current-page active-page) ; display them again
 

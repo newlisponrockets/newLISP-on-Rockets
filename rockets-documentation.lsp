@@ -7,15 +7,14 @@
 (set 'active-page "rockets-documentation")
 (display-partial "rockets-navbar") ; shows the navigation bar with Rockets blog menus
 
-(displayln "<h1>Documentation</h1>")
-(displayln "<p>These are the basic functions of newLISP on Rockets.  Additional documentation and tutorials are coming soon.</p>")
 (set 'documentation-list (parse (read-file "newlisp-rockets.lisp") "\n"))
 
 ; print headers and links
 
 (start-div "row")
 (start-div "span3 bs-docs-sidebar")
-(displayln "<ul class='nav nav-list bs-docs-sidenav'>")
+
+(displayln "<ul class='nav nav-list bs-docs-sidenav affix'>")
 
 (dolist (h documentation-list)
 	(set 'line h)
@@ -33,6 +32,11 @@
 (end-div)
 
 (start-div "span9")
+
+(start-div "hero-unit")
+(displayln "<h2>Documentation</h2>")
+(displayln "<p>These are the basic functions of newLISP on Rockets.  Additional documentation and tutorials are coming soon.</p>")
+(end-div)
 
 (dolist (d documentation-list)
 	(set 'line d)

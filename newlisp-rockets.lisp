@@ -213,8 +213,8 @@
 	(displayln "<link href=\"css/bootstrap.css\" rel=\"stylesheet\">") ; loads Bootstrap CSS
 	(displayln "<link href=\"css/bootstrap-responsive.css\" rel=\"stylesheet\">")
 	(if str-optional-css (displayln "<link href=\"css/" str-optional-css ".css\" rel=\"stylesheet\">"))
-	(displayln "<style> body { padding-top: 60px; /* fixes the container spacing */   }</style>")
-	(displayln "</head><body data-spy=\"scroll\" data-target=\".bs-docs-sidebar\">")
+	;(displayln "<style> body { padding-top: 60px; /* fixes the container spacing */   }</style>")
+	(displayln "</head><body data-spy=\"scroll\" data-target=\".bs-docs-sidebar\" data-twittr-rendered=\"true\">")
 )
 
 ;; Function: (display-navbar)
@@ -264,7 +264,7 @@
 	(displayln "       </div>")
    (displayln "     </div>")
 	(displayln "    </div>")
-	(displayln " <div class=\"container\">") ; start the main container for the page
+	(displayln " <div class=\"container\" style=\"padding-top: 50px;\">") ; start the main container for the page, add padding
 )
 
 ;; Function: (display-partial)
@@ -444,12 +444,16 @@
 ;; Example: POST data contains "name[]=a name[]=b", calling ($POST "name[]") will return ("a" "b")
 ;-----------------------------------------------------------------------------------------------------
 (new Tree '$POST)
+(let ((buffer "") (post-buffer ""))
+	(unless (zero? (peek (device)))
+		(while (read (device) buffer $MAX_POST_LENGTH)
+			(write post-buffer buffer))
+		(parse-get-or-post post-buffer $POST)))
+; below is the old code that had a bug that truncated long posts.  Leaving it in for now for reference.
 ;(when (> (peek (device)) 0)
-	(read (device) post-buffer $MAX_POST_LENGTH) ; grab all post data, put it in variable 'post-buffer'
-	(if post-buffer (begin
-		;(displayln "POST BUFFER: " post-buffer " LENGTH: " (length post-buffer)) ; <- debugging
-		(parse-get-or-post post-buffer $POST)
-	))
+;	(if (and (read (device) post-buffer $MAX_POST_LENGTH) post-buffer) ; grab all post data, put it in variable 'post-buffer'
+;		(parse-get-or-post post-buffer $POST)
+;	)
 ;)
 
 ;! ===== DATABASE FUNCTIONS ======================================================
@@ -693,7 +697,7 @@
 	(displayln "</form>"))
 
 ;; Function: (display-table)
-;; Usage: (display-table list-of-headers nested-list-of-data "optional form styling")
+;; Usage: (display-table list-of-headers nested-list-of-data "optional form styling" '((optional) (nested) (list) (of) (links)))
 ;; Example: (display-table '("First" "Last" "Email") '(("Joe" "McBain" "joe@joe.com") ("Bob" "McBain" "bob@bob.com")) "striped")
 ;; Returns: Displays a table with headers.  If no headers are provided (entered as nil) they will not display  
 ;; Note: Styling options are as follows:
@@ -701,7 +705,7 @@
 ;; bordered - adds borders and rounded corners to the table
 ;; hover - enables hover state on table rows when mousing over
 ;; condensed - more condensed style of table
-(define (display-table list-of-headers nested-list-of-data str-optional-styling)
+(define (display-table list-of-headers nested-list-of-data str-optional-styling list-optional-links)
 	(display "<table class=\"table")
 	(if str-optional-styling (display " table-" str-optional-styling))
 	(displayln "\">")
@@ -715,9 +719,20 @@
 	(displayln "<tbody>")
 	(if nested-list-of-data (begin
 		(dolist (tr nested-list-of-data)
+			(set 'temp-row-num $idx)
 			(displayln "<tr>")
 			(dolist (td tr)
-				(displayln "<td>" td "</td>"))
+				(display "<td>")
+				(if list-optional-links (begin
+					(if (list-optional-links temp-row-num) (begin ; this is in case there is an entire row of 'nil' in the list
+						(if (list-optional-links temp-row-num $idx) (begin
+							(display "<a href='" (list-optional-links temp-row-num $idx) "'>" td "</a>"))
+							(display td))
+						) ; -- end row of nil case
+						(display td)
+					)) ; -- end optional links existing case
+					(display td))
+				(displayln "</td>"))
 			(displayln "</tr>"))))
 	(displayln "</tbody>")
 	(displayln "</table>")
