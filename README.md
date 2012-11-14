@@ -1,11 +1,13 @@
 newLISP-on-Rockets
 ==================
 
-Source code for both the newLISP on Rockets framework and the blog it is hosted on.
+Source code for both the newLISP on Rockets framework and an example application, a blog that runs on Rockets.
 
-NOTE: This is a VERY early version of the code.  Forget pre-alpha, this is basically pre-pre-pre-pre-pre-pre-alpha.
+NOTE: This is a very early version of the code.  To get the blog to work would require creating a database with various tables (Users, Posts, etc).  At the moment I do not have any installation scripts to create such a thing.  They will be coming later on, once the framework matures.
 
-As such it should in no way be used for anything, ever.  That's the disclaimer.
+Please check the blog for updates on the status of the project.
+
+DISCLAIMER: In no way should this software be used to control actual rockets.  
 
 What is newLISP-on-Rockets?
 ---------------------------
