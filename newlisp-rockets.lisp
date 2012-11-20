@@ -24,9 +24,9 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.18)    
+(constant (global '$ROCKETS_VERSION) 0.20)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
-(constant (global '$MAX_POST_LENGTH) 1048576) 
+(constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $PARTIAL_PATH - the relative path for when using (display-partial)
 (constant (global '$PARTIAL_PATH) "partials") 
 
@@ -436,6 +436,52 @@
 (when (env "QUERY_STRING")
 		(parse-get-or-post (env "QUERY_STRING") $GET))
 
+(new Tree '$POST)
+(define (handle-multipart-data)
+	; first we have to find the boundary string
+	(set 'boundary-start (+ (length "boundary=") (find "boundary=" (env "CONTENT_TYPE"))))
+	(set 'boundary (slice (env "CONTENT_TYPE") boundary-start 99))
+	(let ((buffer "") (binary-buffer "") (found-variables nil))
+		(while (read (device) buffer $MAX_POST_LENGTH)
+			(write binary-buffer buffer) ; write all the data to binary-buffer, we'll chop the rest out later
+			(if (and (find "Content-Disposition:" buffer) (not found-variables)) (begin
+				(set 'temp-variables (parse buffer ";"))
+				(dolist (t temp-variables)
+					(set 'temp-temp-name (parse t "="))					
+					(if (> (length temp-temp-name) 1) (begin
+						(set 'temp-name (trim (first temp-temp-name)))
+						(set 'temp-value (trim (first (parse (temp-temp-name 1) "\r\n")) "\""))
+						(push (list temp-name temp-value) temp-form-variable-names -1)
+						(displayln "<BR>*******************NAME:" temp-name)
+						(displayln "<BR>*******************VALUE:" temp-value)
+					))
+				)			
+				(set 'found-variables true) ; we only need the first bit
+				(displayln "<BR>**** TEMP VARIABLES: " temp-form-variable-names)
+			))
+		)
+		(set 'buffer-length (length binary-buffer))
+		; okay now we have to get rid of the headers
+		(if (find boundary binary-buffer) (begin ; get rid of headers
+				(set 'header-end (find "\r\n\r\n" binary-buffer 0 (find boundary binary-buffer)))
+				(set 'binary-buffer (slice binary-buffer (+ header-end 4) (- buffer-length (+ header-end 4)))) ; chop off headers
+		))
+		; now we have to get rid of everything after the SECOND boundary
+		(if (find boundary binary-buffer 0 header-end) (begin
+			(set 'second-boundary (find boundary binary-buffer 0 header-end))
+			(set 'binary-buffer (slice binary-buffer 0 (- second-boundary 4)))
+		))
+		; parse the other field names into ($POST)
+		(if temp-form-variable-names (begin
+			(dolist (t temp-form-variable-names)
+				($POST (t 0) (t 1)))))
+		(if binary-buffer
+			($POST "binary-data" binary-buffer)) ; adding file's binary data to $POST.
+		;(write-file "test2.jpg" binary-buffer)) ; testing
+	) ; end (let) - temporary variables expire
+
+)
+
 ;; Function: ($POST)
 ;; Usage: ($POST "optional key name")
 ;; Returns: ($POST) on its own returns a list of all key/value pairs from the page's POST data.
@@ -443,12 +489,14 @@
 ;; Note: You can retrieve multiple values for the same key name by appending [] to the key name.
 ;; Example: POST data contains "name[]=a name[]=b", calling ($POST "name[]") will return ("a" "b")
 ;-----------------------------------------------------------------------------------------------------
-(new Tree '$POST)
-(let ((buffer "") (post-buffer ""))
-	(unless (zero? (peek (device)))
-		(while (read (device) buffer $MAX_POST_LENGTH)
-			(write post-buffer buffer))
-		(parse-get-or-post post-buffer $POST)))
+(if (and (env "CONTENT_TYPE") (starts-with (env "CONTENT_TYPE") "multipart/form-data"))
+	(handle-multipart-data) ; this is for file uploads, a special case
+	(let ((buffer "") (post-buffer "")) ; this is for regular forms
+		(unless (zero? (peek (device)))
+			(while (read (device) buffer $MAX_POST_LENGTH)
+				(write post-buffer buffer))
+			(parse-get-or-post post-buffer $POST)))
+)
 ; below is the old code that had a bug that truncated long posts.  Leaving it in for now for reference.
 ;(when (> (peek (device)) 0)
 ;	(if (and (read (device) post-buffer $MAX_POST_LENGTH) post-buffer) ; grab all post data, put it in variable 'post-buffer'
