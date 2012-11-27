@@ -24,7 +24,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.20)    
+(constant (global '$ROCKETS_VERSION) 0.22)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $PARTIAL_PATH - the relative path for when using (display-partial)
@@ -212,6 +212,7 @@
    (displayln "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
 	(displayln "<link href=\"css/bootstrap.css\" rel=\"stylesheet\">") ; loads Bootstrap CSS
 	(displayln "<link href=\"css/bootstrap-responsive.css\" rel=\"stylesheet\">")
+	(displayln "<link href=\"css/datepicker.css\" rel=\"stylesheet\">") ; loads date picker
 	(if str-optional-css (displayln "<link href=\"css/" str-optional-css ".css\" rel=\"stylesheet\">"))
 	;(displayln "<style> body { padding-top: 60px; /* fixes the container spacing */   }</style>")
 	(displayln "</head><body data-spy=\"scroll\" data-target=\".bs-docs-sidebar\" data-twittr-rendered=\"true\">")
@@ -281,9 +282,15 @@
 ;-----------------------------------------------------------------------------------------------------
 (define (display-footer str-company-name)
 	(if (nil? str-company-name) (set 'str-company-name ""))
-	(displayln "<hr><footer><p>&copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year
+	(display "<hr><footer><p>")
+	(display-image "poweredby.png")
+	(displayln "&copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year
 	(displayln "<script src=\"js/jquery-1.8.2.min.js\"></script>") ; Loads jQuery
 	(displayln "<script src=\"js/bootstrap.min.js\"></script>") ; Loads Bootstrap Javascript.
+	(displayln "<script src=\"js/bootstrap-datepicker.js\"></script>") ; Loads Bootstrap datepicker Javascript.
+	(if $FORM-DATEPICKER (begin
+		(displayln "<script> $(function(){	$('#" $FORM-DATEPICKER "').datepicker({format: 'mm-dd-yyyy'}); });</script>")
+	))
 	(displayln (benchmark-result) "</footer></div>") ; ends main container
 	(displayln "</body></html>"))
 
@@ -608,7 +615,6 @@
 	; first save the values
 	(set 'temp-record-values nil)
 	(set 'temp-table-name (first (args)))
-	(displayln "<BR>Arguments: " (args))
 	(set 'continue true) ; debugging
 	(dolist (s (rest (args))) (push (eval s) temp-record-values -1))
 	; now save the arguments as symbols under the context "D2"
@@ -640,7 +646,7 @@
 	(if (string? (first temp-record-values)) (extend temp-sql-query "'"))
 	(extend temp-sql-query ";")
 	;(displayln "<p>***** SQL QUERY: " temp-sql-query)
-	(displayln (query temp-sql-query)) ; actually run the query against the database
+	(query temp-sql-query) ; actually run the query against the database
 	(delete 'D2) ; we're done, so delete all symbols in the DB context.
 	)) ; --- end temporary debugging
 )	
@@ -744,6 +750,17 @@
 	(displayln "<br><p><input type='submit' class='btn' value='" str-submit-button-text "'>")
 	(displayln "</form>"))
 
+;; Function: (form-datepicker)
+;; Usage: (form-datepicker "Description text" "form-item-name" "form-initial-value" "form-id")
+;; Example: (form-datepicker "Enter a date" "date" "03-16-2072" "dp1")
+;; Returns: Displays a date field with a dropdown calendar when the user clicks on the field.
+;; Note: Requires js/boostrap-datepicker.js and css/datepicker.css to work
+;-----------------------------------------------------------------------------------------------------
+(define (form-datepicker form-text form-item-name form-initial-value form-id)
+	(displayln "<p>" form-text ": <input type='text' class='span2' name='" form-item-name "' value='" form-initial-value "' id='" form-id "'>")
+	(set '$FORM-DATEPICKER form-id) ; this is a global variable needed to load the appropriate jQuery at the end
+)
+
 ;; Function: (display-table)
 ;; Usage: (display-table list-of-headers nested-list-of-data "optional form styling" '((optional) (nested) (list) (of) (links)))
 ;; Example: (display-table '("First" "Last" "Email") '(("Joe" "McBain" "joe@joe.com") ("Bob" "McBain" "bob@bob.com")) "striped")
@@ -753,6 +770,7 @@
 ;; bordered - adds borders and rounded corners to the table
 ;; hover - enables hover state on table rows when mousing over
 ;; condensed - more condensed style of table
+;-----------------------------------------------------------------------------------------------------
 (define (display-table list-of-headers nested-list-of-data str-optional-styling list-optional-links)
 	(display "<table class=\"table")
 	(if str-optional-styling (display " table-" str-optional-styling))
