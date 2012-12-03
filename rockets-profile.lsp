@@ -46,7 +46,7 @@
 		(set 'userlist (get-record "Users"))
 		(display-table '("User Id" "User Email" "Password Hash" "Salt" "Posts" "Achievements" "Read Posts" "User Name" "Cookie Salt" "User Avatar") userlist "hover")			
 	))
-	)
+	) ; -- end section that shows if the user is signed in
 	(displayln "<p>You must be signed in to view your user profile.</p>")
 )
 

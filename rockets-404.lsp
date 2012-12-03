@@ -18,7 +18,7 @@
 (start-div "hero-unit")
 	(displayln "<h2>Sorry, I couldn't find that page...</h2>")
 	(displayln "<p>I tried my best, I really did!  But at the end of the day, I'm just a script running on a web server.</p>")
-	(displayln "<p>I can only do so much.  Try starting back at the <a href='rockets-main.lsp'>home page</a>.")
+	(displayln "<p>I can only do so much.  Try starting back at the <a href='" $BASE_PATH "rockets-main.lsp'>home page</a>.")
 (end-div)
 
 ;(displayln "<p>Debug stuff here...</p>")

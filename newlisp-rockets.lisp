@@ -22,12 +22,22 @@
 
 ;------------------------------------------------------------------------------------------------------------
 
+;!===== DEPENDENCIES ============================================================
+;;* css/boostrap.css - Bootstrap framework CSS file
+;;* css/bootstrap-responsive.css - Bootstrap responsive framework (for mobile devices)
+;;* css/datepicker.css - For calendar dropdowns
+;;* js/jquery-1.8.2.min.js - jQuery (minimum version required)
+;;* js/bootstrap.min.js - Bootstrap Javascript
+;;* js/boostrap-datepicker.js - For calendar dropdowns
+
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
 (constant (global '$ROCKETS_VERSION) 0.22)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
-;;* $PARTIAL_PATH - the relative path for when using (display-partial)
+;;* $BASE_PATH - the absolute path for the installation (default is /)
+(constant (global '$BASE_PATH) "/") 
+;;* $PARTIAL_PATH - the relative path for when using (display-partial) (default is "partials")
 (constant (global '$PARTIAL_PATH) "partials") 
 
 ;====== CONSTANTS ================================================================
@@ -210,10 +220,10 @@
 	(displayln "<html lang=\"en\"><head><meta charset=\"UTF-8\">")
 	(displayln "<title>" str-page-title "</title>")
    (displayln "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">")
-	(displayln "<link href=\"css/bootstrap.css\" rel=\"stylesheet\">") ; loads Bootstrap CSS
-	(displayln "<link href=\"css/bootstrap-responsive.css\" rel=\"stylesheet\">")
-	(displayln "<link href=\"css/datepicker.css\" rel=\"stylesheet\">") ; loads date picker
-	(if str-optional-css (displayln "<link href=\"css/" str-optional-css ".css\" rel=\"stylesheet\">"))
+	(displayln "<link href=\"" $BASE_PATH "css/bootstrap.css\" rel=\"stylesheet\">") ; loads Bootstrap CSS
+	(displayln "<link href=\"" $BASE_PATH "css/bootstrap-responsive.css\" rel=\"stylesheet\">")
+	(displayln "<link href=\"" $BASE_PATH "css/datepicker.css\" rel=\"stylesheet\">") ; loads date picker
+	(if str-optional-css (displayln "<link href=\"" $BASE_PATH "css/" str-optional-css ".css\" rel=\"stylesheet\">"))
 	;(displayln "<style> body { padding-top: 60px; /* fixes the container spacing */   }</style>")
 	(displayln "</head><body data-spy=\"scroll\" data-target=\".bs-docs-sidebar\" data-twittr-rendered=\"true\">")
 )
@@ -285,11 +295,12 @@
 	(display "<hr><footer><p>")
 	(display-image "poweredby.png")
 	(displayln "&copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year
-	(displayln "<script src=\"js/jquery-1.8.2.min.js\"></script>") ; Loads jQuery
-	(displayln "<script src=\"js/bootstrap.min.js\"></script>") ; Loads Bootstrap Javascript.
-	(displayln "<script src=\"js/bootstrap-datepicker.js\"></script>") ; Loads Bootstrap datepicker Javascript.
-	(if $FORM-DATEPICKER (begin
-		(displayln "<script> $(function(){	$('#" $FORM-DATEPICKER "').datepicker({format: 'mm-dd-yyyy'}); });</script>")
+	(displayln "<script src=\"" $BASE_PATH "js/jquery-1.8.2.min.js\"></script>") ; Loads jQuery
+	(displayln "<script src=\"" $BASE_PATH "js/bootstrap.min.js\"></script>") ; Loads Bootstrap Javascript.
+	(displayln "<script src=\"" $BASE_PATH "js/bootstrap-datepicker.js\"></script>") ; Loads Bootstrap datepicker Javascript.
+	(if $FORM-DATEPICKER (begin ; add jQuery triggers for calendar datepickers if present
+		(dolist (f $FORM-DATEPICKER)
+			(displayln "<script> $(function(){	$('#" f "').datepicker({format: 'mm-dd-yyyy'}); });</script>"))
 	))
 	(displayln (benchmark-result) "</footer></div>") ; ends main container
 	(displayln "</body></html>"))
@@ -300,7 +311,7 @@
 ;; Returns: Displays an image from the default /images/ subdirectory.  Width and height are optional  
 ;-----------------------------------------------------------------------------------------------------
 (define (display-image str-image-to-print int-width int-height)
-	(display (string "<img src=images/" str-image-to-print))
+	(display (string "<img src=" $BASE_PATH "images/" str-image-to-print))
 	(if int-width (display (string " width=" int-width)))
 	(if int-height (display (string " height=" int-height)))
 	(displayln ">"))
@@ -758,7 +769,7 @@
 ;-----------------------------------------------------------------------------------------------------
 (define (form-datepicker form-text form-item-name form-initial-value form-id)
 	(displayln "<p>" form-text ": <input type='text' class='span2' name='" form-item-name "' value='" form-initial-value "' id='" form-id "'>")
-	(set '$FORM-DATEPICKER form-id) ; this is a global variable needed to load the appropriate jQuery at the end
+	(push form-id $FORM-DATEPICKER -1) ; this is a global list needed to load the appropriate jQuery at the end
 )
 
 ;; Function: (display-table)

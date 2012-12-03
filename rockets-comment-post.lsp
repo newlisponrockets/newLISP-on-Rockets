@@ -34,6 +34,10 @@
 		(if comment-count (displayln "a comment") (displayln "no comment"))
 		(display "Current comment count: " comment-count)
 		(displayln (query (string "UPDATE Posts SET PostComments=" comment-count " WHERE Id=" PostId ";")))
+		; now update the user's postcount! postcount++!!
+		(set 'UserId Rockets:UserId)
+		(set 'UserPosts (++ Rockets:UserPosts))
+		(update-record "Users" UserId UserPosts)
 	)
 )
 

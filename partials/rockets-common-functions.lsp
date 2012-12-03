@@ -11,20 +11,20 @@
 ; also shows comments if bool-show-comments is true, and allows a logged-in user to reply
 ; also allows post to be shown in forum view if forum-view-post=true
 (define (display-individual-post list-post-data bool-show-comments str-linkback-id)
-	(if forum-view-post (begin
+	(if forum-view-post (begin ; ---- begin forum view of post + comments
 		(displayln "<h3>" (list-post-data 3) "</h3>")
 		(set 'header-list '("Author" "Message"))
-		(set 'post-data (list (string "<img src='images/avatars/" (author-avatar (list-post-data 1)) "'><br>" (author-name (list-post-data 1))) (format-for-web (list-post-data 4))))
+		(set 'post-data (list (string "<img src='images/avatars/" (author-avatar (list-post-data 1)) "' width=64 height=64><br>" (author-name (list-post-data 1)) "<h6>Posts: " (author-posts (list-post-data 1)) "</h6>") (format-for-web (list-post-data 4))))
 		(set 'PostId (int (list-post-data 0)))
 		(set 'post-data (list post-data)) ; okay these two lines of code are duplicated... I can live with it for now
 		(set 'post-comments (get-record "Comments" PostId))
 		(if post-comments (begin
 			(dolist (p post-comments)
-				(push (list (string "<img src='images/avatars/" (author-avatar (p 2)) "'><br>"(author-name (p 2))) (format-for-web (p 5))) post-data -1)) ; add each comment to the thread
+				(push (list (string "<img src='images/avatars/" (author-avatar (p 2)) "' width=64 height=64><br>"(author-name (p 2)) "<h6>Posts: " (author-posts (p 2)) "</h6>") (format-for-web (p 5))) post-data -1)) ; add each comment to the thread
 		))
 		(display-table header-list post-data "striped") 
 	)
-	(begin
+	(begin ;  ------ begin blog view of post + comments
 		(displayln "<h4><a href='rockets-item.lsp?p=" (list-post-data 0) "'>" (list-post-data 3) "</a></h4>")
 		(displayln "<br><b>Post #:</b> " (list-post-data 0) )
 		(displayln "<BR><B>Date:</b> " (list-post-data 2) "")
@@ -79,6 +79,15 @@
 		(set 'result-name (string "<span class='text-error'>" (first (first get-user-name-query)) "</span>")) ; red names for admin.  It's funny that admin gets error styled text!
 		(set 'result-name (string "<span class='text-info'>" (first (first get-user-name-query)) "</span>")) ; blue names for everyone else (at the moment)
 	)
+)
+
+; Get the user's postcount given the user Id
+(define (author-posts str-author-id)
+	(set 'str-author-id (int str-author-id))
+	(set 'get-user-posts-query (query (string "SELECT UserPosts FROM Users WHERE UserId=" str-author-id ";")))
+	(if (nil? get-user-posts-query)
+		(set 'result-name "0"))
+	(set 'result-name (first (first get-user-posts-query)))	
 )
 
 ; Get the user's avatar given the user Id

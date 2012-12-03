@@ -31,7 +31,10 @@
 				(set 'PostType "Forum post")
 				(set 'PostType "Blog post"))
 			(create-record "Posts" Id PosterId PostDate PostSubject PostContent PostType) ; It's the C in CRUD!
-			;(displayln "<B>Posting disabled for the moment...</b>")
+			; now update the user's postcount! postcount++!!
+			(set 'UserId Rockets:UserId)
+			(set 'UserPosts (++ Rockets:UserPosts))
+			(update-record "Users" UserId UserPosts)
 		)
 	)
 	))
