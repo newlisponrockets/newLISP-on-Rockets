@@ -45,7 +45,7 @@
 		(set 'temp-cookie-hash (string "user=" (string sql-user-id "|" sql-cookie-salt)))
 		(displayln "<BR>Cookie set: " temp-cookie-hash)
 		; set a cookie
-		(set-cookie rocket-cookie-name temp-cookie-hash (date-value 2013 2 28))
+		(set-cookie rocket-cookie-name temp-cookie-hash (+ (date-value) (* 60 60 24 365))) ; set cookie expiry to one year from now
 		(displayln "<br>You have succesfully logged in! Click <a href='rockets-main.lsp'>here</a> to continue.")
 		(page-redirect page-to-redirect) 
 	)

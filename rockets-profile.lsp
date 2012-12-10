@@ -45,6 +45,17 @@
 		(displayln "<p>User list:")
 		(set 'userlist (get-record "Users"))
 		(display-table '("User Id" "User Email" "Password Hash" "Salt" "Posts" "Achievements" "Read Posts" "User Name" "Cookie Salt" "User Avatar") userlist "hover")			
+		; show some table stuff
+		(displayln "<p><b>TABLES: ") (dolist (x (query "SELECT * from SQLITE_MASTER;")) (displayln "<br>* " x))
+		; TESTING FLUID LAYOUT THINGIES
+		(start-div "row-fluid")
+			(start-div "span4")
+				(displayln "Testing Column 1 ....................")
+			(end-div)
+			(start-div "span8")
+				(displayln "Testing Column 2 ....................")
+			(end-div)
+		(end-div)
 	))
 	) ; -- end section that shows if the user is signed in
 	(displayln "<p>You must be signed in to view your user profile.</p>")
