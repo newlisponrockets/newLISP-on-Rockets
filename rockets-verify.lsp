@@ -20,9 +20,10 @@
 (module "crypto.lsp")
 
 (open-database "ROCKETS-BLOG")
+(display-partial "rockets-common-functions")
 
-; set Rockets cookie name (will be from a file later)
-(set 'rocket-cookie-name "rockets-4dckq3-e4jcx-2wgxc")
+; set Rockets cookie name (from common functions)
+(set 'rocket-cookie-name Blog:rocket-cookie-name)
 
 (set 'UserEmail ($POST "email"))
 (set 'UserPassword ($POST "password"))

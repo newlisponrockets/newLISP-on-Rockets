@@ -6,6 +6,7 @@
 ; GLOBAL VARIABLES - under the context "Blog" to distinguish from framework context "Rockets"
 (set 'Blog:posts-per-page 10) ; number of posts per page
 (set 'Blog:forum-posts-per-page 20) ; number of posts per page on the forums
+(set 'Blog:rocket-cookie-name "rockets-4dckq3-e4jcx-2wgxc")
 
 ; this function displays an individual post with headers and the post itself
 ; also shows comments if bool-show-comments is true, and allows a logged-in user to reply
