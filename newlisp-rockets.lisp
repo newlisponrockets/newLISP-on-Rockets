@@ -244,8 +244,8 @@
 	(displayln "            <span class=\"icon-bar\"></span>")
 	(displayln "          </a>")
 	(if (or (find ".png" str-name) (find ".jpg" str-name) (find ".gif" str-name)) ; name can be an image
-		(displayln "          <a class=\"brand\" href=\"\"><img src=images/" str-name "></a>")
-		(displayln "          <a class=\"brand\" href=\"\">" str-name "</a>"))
+		(displayln "          <a class=\"brand\" href=\"/\"><img src=images/" str-name "></a>")
+		(displayln "          <a class=\"brand\" href=\"/\">" str-name "</a>"))
 	(displayln "          <div class=\"nav-collapse collapse\">")
 	(displayln "            <ul class=\"nav\">")
 	(if list-menus (begin 

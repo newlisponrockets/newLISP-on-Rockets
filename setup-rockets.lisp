@@ -10,6 +10,11 @@
 		(displayln "")
 		(displayln "There was a problem opening the database " sql-db-to-open ": " (sql3:error))))
 
+(define (close-database)
+	(if (sql3:close)
+		(displayln "")
+		(displayln "There was a problem closing the database: " (sql3:error))))
+
 (define (query sql-text)
  (set 'sqlarray (sql3:sql sql-text))    ; results of query
  (if sqlarray
@@ -72,8 +77,8 @@
 (println "Now creating database...")
 ;(open-database database-name)
 (println "Now setting up Posts, Users, and Comments tables...")
-(print "Enter a database name: ")
-(set 'database-name (upper-case (read-line)))
+(print "Enter a database name (.db extension added automatically): ")
+(set 'database-name (upper-case (read-line)))s
 (print "Enter a user name for the ADMIN user (case sensitive): ")
 (set 'UserName (read-line))
 (print "Enter an email for the ADMIN user (case sensitive): ")
@@ -111,5 +116,5 @@
 ; check to see if it worked!
 (set 'user-table (query "select * from Users"))
 (println "User data: " user-table)
-
+(close-database)
 (exit)
