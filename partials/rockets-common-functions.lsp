@@ -7,6 +7,7 @@
 (set 'Blog:posts-per-page 10) ; number of posts per page
 (set 'Blog:forum-posts-per-page 20) ; number of posts per page on the forums
 (set 'Blog:rocket-cookie-name "rockets-4dckq3-e4jcx-2wgxc")
+(set 'Blog:rocket-database-name "ROCKETS-BLOG")
 
 ; this function displays an individual post with headers and the post itself
 ; also shows comments if bool-show-comments is true, and allows a logged-in user to reply
@@ -57,10 +58,17 @@
 					)
 			))		
 		))
-		(displayln "<hr>")
+		;(displayln "<hr>")
 		(if bool-show-comments (displayln "<a class='btn btn-primary' href='rockets-item.lsp?p=" (list-post-data 0) "&f=true'>View this post in the forums</a>"))
 	))
 			; the following parts are common to both forum and blog view
+			; first, bump the post views
+			(set 'PostViews (list-post-data 7))
+			(if (nil? PostViews) (set 'PostViews 0) (set 'PostViews (int PostViews)))
+			(++ PostViews)
+			; but we only should bump the database if we are in forum or blog view
+			(if (or bool-show-comments forum-view-post) (update-record "Posts" Id PostViews))
+			(displayln "<br><br><p>Views: " PostViews "</p><hr>")
 			(if bool-show-comments (begin				; but don't show it on the main page
 				(if Rockets:UserId (begin					; show the comment reply box if a user is logged in
 					(displayln "<a name='reply'></a>") 	; display an html anchor so we can jump to it

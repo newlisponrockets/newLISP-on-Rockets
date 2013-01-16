@@ -56,6 +56,9 @@
 				(displayln "Testing Column 2 ....................")
 			(end-div)
 		(end-div)
+		;(displayln "Adding PostViews column to Posts table")
+		;(displayln (query "ALTER TABLE Posts ADD COLUMN PostViews TEXT"))
+		; --end admin-only section
 	))
 	) ; -- end section that shows if the user is signed in
 	(displayln "<p>You must be signed in to view your user profile.</p>")

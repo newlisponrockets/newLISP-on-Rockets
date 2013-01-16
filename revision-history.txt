@@ -23,3 +23,4 @@ newLISP on Rockets Revision History
 0.20 - 11/20/2012 - Avatar uploads added, minor cleanup, basic blog functionality complete!
 0.22 - 11/27/2012 - Added (form-datepicker) function to select dates with a calendar
 0.23 - 12/12/2012 - Some minor bugfixes, added setup-rockets.lisp script to create database
+0.24 - 01/14/2013 - Changed blog database to add PostViews, updated setup-rockets.lisp script

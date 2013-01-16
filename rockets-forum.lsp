@@ -49,11 +49,13 @@
 	(set 'post-content (x 4))
 	(set 'post-replies (x 5)) (if (nil? post-replies) (set 'post-replies "0"))
 	(set 'post-type (x 6))
-	(push (list post-subject post-type post-author post-replies) forum-post-table -1)
-	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil) forum-links-table -1)
+	(set 'post-views (x 7))
+	(if (nil? post-views) (set 'post-views 0)) ; needed because views was a late addition
+	(push (list post-subject post-type post-author post-views post-replies) forum-post-table -1)
+	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil nil) forum-links-table -1)
 )
 
-(display-table '("Topic Subject" "Post Type" "Post Author" "Replies") forum-post-table "striped" forum-links-table)
+(display-table '("Topic Subject" "Post Type" "Post Author" "Views" "Replies") forum-post-table "striped" forum-links-table)
 
 (display-paging-links 1 total-pages current-page active-page) ; display them again
 
