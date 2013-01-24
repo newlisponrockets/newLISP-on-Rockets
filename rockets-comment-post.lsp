@@ -38,6 +38,15 @@
 		(set 'UserId Rockets:UserId)
 		(set 'UserPosts (++ Rockets:UserPosts))
 		(update-record "Users" UserId UserPosts)
+		; now we have to loop through all users read lists to remove the post from that list, since a new comment was added
+		(set 'readlist-all (query "SELECT UserID, UserReadPosts FROM Users")) ; everyone's read list!  EVERYONE'S!
+		(dolist (q readlist-all)
+			(set 'user-tmp (q 0))
+			(set 'readlist-tmp (q 1))
+			(if (find (string PostId "-") readlist-tmp)
+			(and (replace (string PostId "-") readlist-tmp "")
+				  (query (append "UPDATE Users SET UserReadPosts='" readlist-tmp "' WHERE UserID=" (string user-tmp) ";"))))
+		)
 	)
 )
 

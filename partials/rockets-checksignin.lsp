@@ -30,6 +30,8 @@
 		(set 'Rockets:UserEmail (load-user-sql-data 1))
 		(set 'Rockets:UserSalt (load-user-sql-data 3))
 		(set 'Rockets:UserPosts (load-user-sql-data 4))
+		(set 'Rockets:UserReadPosts (load-user-sql-data 6))
+		(if (nil? Rockets:UserReadPosts) (set 'Rockets:UserReadPosts "")) ; set blank if no data for read posts
 		(set 'Rockets:UserName (load-user-sql-data 7))
 		(set 'Rockets:CookieSalt (load-user-sql-data 8))
 		(set 'Rockets:UserAvatar (load-user-sql-data 9))

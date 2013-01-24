@@ -22,6 +22,18 @@
 	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
 (end-div)
 
+; If user has selected "Mark All As Read" then, well, mark all as read!
+(set 'mark-all ($GET "markall"))
+(if (and mark-all Rockets:UserId) (begin ; but you have to be logged in of course
+	(set 'all-posts (query "SELECT Id from Posts")) ; put all posts ids into a list
+	(set 'read-posts-line "")
+	(dolist (r all-posts) (extend read-posts-line (string (first r) "-")))
+	(set 'UserId Rockets:UserId)
+	(set 'UserReadPosts read-posts-line)
+	(update-record "Users" UserId UserReadPosts)
+	(page-redirect "rockets-forum") ; we have to do a redirect to refresh the page
+))
+
 ; get current page from URL (if there is one)
 (set 'current-page (force-parameters 1 ($GET "p"))) ; we only need the first part, ignore anything else
 (if current-page (set 'current-page (int current-page)) (set 'current-page 1))
@@ -51,13 +63,20 @@
 	(set 'post-type (x 6))
 	(set 'post-views (x 7))
 	(if (nil? post-views) (set 'post-views 0)) ; needed because views was a late addition
-	(push (list post-subject post-type post-author post-views post-replies) forum-post-table -1)
+	(if (or (find (string post-num "-") Rockets:UserReadPosts) (nil? Rockets:UserId)) ; if you're not logged in OR if you are, and you've read the post
+		(set 'post-read " ")
+		(set 'post-read (string " <img src=images/new-icon.png>")))
+	(push (list (string post-subject post-read) post-type post-author post-views post-replies) forum-post-table -1)
 	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil nil) forum-links-table -1)
 )
 
 (display-table '("Topic Subject" "Post Type" "Post Author" "Views" "Replies") forum-post-table "striped" forum-links-table)
 
 (display-paging-links 1 total-pages current-page active-page) ; display them again
+
+; add "Mark all posts as read" button
+(if Rockets:UserId
+	(displayln "<a class='btn btn-primary' href='rockets-forum.lsp?markall=1'>Mark all posts as read</a>"))
 
 ; print post entry box
 (if Rockets:UserId (begin

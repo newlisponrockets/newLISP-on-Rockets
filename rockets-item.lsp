@@ -15,10 +15,19 @@
 (if Id (begin
 	(set 'post-content (get-record "Posts" Id))
 	(if post-content (begin
-		(display-individual-post (first post-content) true Id)); true= display comments, Id=link to page
+		(display-individual-post (first post-content) true Id) ; true= display comments, Id=link to page
+		(if Rockets:UserId (begin ; check to see if user is signed in
+			(if (not (find (string Id "-") Rockets:UserReadPosts)) ; check to see if post is not in user's read list
+				(begin
+					(push (string Id "-") Rockets:UserReadPosts -1) ; add it to read list
+					(set 'UserId Rockets:UserId) ; get variables ready to write to database
+					(set 'UserReadPosts Rockets:UserReadPosts)
+					(update-record "Users" UserId UserReadPosts)
+				))
+		)))
 		(displayln "<p>Sorry! We couldn't find that post."))
-)
-	(displayln "<p>Sorry! No post was requested.")
+	)
+	(displayln "<p>Sorry! We couldn't process your request, probably due to a timeout.  Please refresh the page and try again.")
 )
 
 (if edit-post (begin
