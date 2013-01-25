@@ -865,7 +865,7 @@
 ;; Returns: Returns a nested list of field values, one for each item in the RSS feed.
 ;; Note: The input format is a list formed by the function (xml-parse (get-url "http://rss.feed.address")
 ;; which is a built-in function of newLISP.  This list is fed directly into (get-fields-from-rss).
-;; Example:  (set 'rss-result (xml-parse (get-url "http://penny-arcade.com/feed)))
+;; Example:  (set 'rss-result (xml-parse (get-url "http://penny-arcade.com/feed")))
 ;;           (set 'field-result (get-fields-from-rss rss-result '("title" "author" "link")))
 ;; Returns: (("News Post: The Book Of Divine Wisdom" "tycho@penny-arcade.com (Tycho)" "http://penny-arcade.com/2013/01/25/the-book-of-divine-wisdom1")  
 ;;           ("News Post: So many games!" "gabe@penny-arcade.com (Gabe)" "http://penny-arcade.com/2013/01/25/so-many-games")
@@ -878,13 +878,12 @@
 	(set 'item-refs (ref-all "item" rss-input))
 	(dolist (i item-refs)
 		(set 'item-rss (rss-input (chop i)))
-		;(println "Item: " item-rss)
 		(dolist (f list-of-field-names)
 			(set 'field-ref (ref f item-rss))
 			(if field-ref 	(set 'temp-result (item-rss (chop field-ref)))
 								(set 'temp-result nil))
 			(if temp-result (begin 
-				(set 'temp-result-ref (or (ref "TEXT" temp-result) (ref "CDATA" temp-result)))
+				(set 'temp-result-ref (or (ref "CDATA" temp-result) (ref "TEXT" temp-result)))
 				(if temp-result-ref (begin
 					(set 'temp-result (last (temp-result (chop temp-result-ref))))
 					(replace "\n" temp-result "")
