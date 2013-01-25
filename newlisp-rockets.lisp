@@ -8,7 +8,7 @@
 ; Without Dragonfly I would have been unable to do Rockets at all.  Some parts of Rockets contain
 ; snippets of Dragonfly code.  Also thanks to Lutz Mueller, the author of newLISP at http://www.newlisp.org 
 ;
-; Copyright 2012 by Rocket Man
+; Copyright 2012, 2013 by Rocket Man
 ;
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.24)    
+(constant (global '$ROCKETS_VERSION) 0.25)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -818,7 +818,7 @@
 )
 
 
-;! ===== SOCIAL MEDIA AND EMAIL FUNCTIONS =====================================================
+;! ===== SOCIAL MEDIA, EMAIL AND RSS FUNCTIONS =====================================================
 ; Twitter functions (lifted from Dragonfly.. will rewrite later)
 
 ;; Function: (twitter-search)
@@ -859,3 +859,43 @@
    (exec (string "/usr/sbin/sendmail -t -f " from)
     (format "To: %s\nFrom: %s <%s>\nSubject: %s\nContent-Type: text/html; charset=iso-8859-1\n\n%s"
        to realname from subject body)))
+
+;; Function: (get-fields-from-rss)
+;; Usage: (get-fields-from-rss (xml-parse (get-url "http://rss.feed.address") '("List" "of" "field" "names))
+;; Returns: Returns a nested list of field values, one for each item in the RSS feed.
+;; Note: The input format is a list formed by the function (xml-parse (get-url "http://rss.feed.address")
+;; which is a built-in function of newLISP.  This list is fed directly into (get-fields-from-rss).
+;; Example:  (set 'rss-result (xml-parse (get-url "http://penny-arcade.com/feed)))
+;;           (set 'field-result (get-fields-from-rss rss-result '("title" "author" "link")))
+;; Returns: (("News Post: The Book Of Divine Wisdom" "tycho@penny-arcade.com (Tycho)" "http://penny-arcade.com/2013/01/25/the-book-of-divine-wisdom1")  
+;;           ("News Post: So many games!" "gabe@penny-arcade.com (Gabe)" "http://penny-arcade.com/2013/01/25/so-many-games")
+;;           ...etc ... )
+;; Note: If the field is not found in the RSS feed, (get-fields-from-rss) returns "nil" in that spot instead.
+;-----------------------------------------------------------------------------------------
+(define (get-fields-from-rss rss-input list-of-field-names)
+	(set 'temp-return-list nil)
+	(set 'final-return-list nil)
+	(set 'item-refs (ref-all "item" rss-input))
+	(dolist (i item-refs)
+		(set 'item-rss (rss-input (chop i)))
+		;(println "Item: " item-rss)
+		(dolist (f list-of-field-names)
+			(set 'field-ref (ref f item-rss))
+			(if field-ref 	(set 'temp-result (item-rss (chop field-ref)))
+								(set 'temp-result nil))
+			(if temp-result (begin 
+				(set 'temp-result-ref (or (ref "TEXT" temp-result) (ref "CDATA" temp-result)))
+				(if temp-result-ref (begin
+					(set 'temp-result (last (temp-result (chop temp-result-ref))))
+					(replace "\n" temp-result "")
+					(replace "\t" temp-result "") ; get rid of tabs and carriage returns
+				))
+			))
+			(push temp-result temp-return-list -1)
+			(set 'temp-result nil)
+		)
+		(push temp-return-list final-return-list -1)
+		(set 'temp-return-list nil)
+	)
+	(set 'return-result final-return-list)
+)
