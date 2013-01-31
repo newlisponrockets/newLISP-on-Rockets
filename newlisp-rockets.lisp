@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.25)    
+(constant (global '$ROCKETS_VERSION) 0.26)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -728,6 +728,31 @@
 	(set 'return-value (query temp-sql-query)) ; this returns a list of everything in the record
 )
 
+;! ===== DATA CONVERSION FUNCTIONS =====================================================
+;; Function: (convert-json-to-list)
+;; Usage: (convert-json-to-list "string of JSON input)
+;; Returns: A nested list in native newLISP list format in the same structure as the JSON string
+;; Note: You will still need to define your own functions to retrieve individual data elements
+;; from the list using (ref) or (ref-all)
+(define (convert-json-to-list str-input-json)
+	(replace "{" str-input-json "(")
+	(replace "}" str-input-json ")")
+	(replace "[" str-input-json "")
+	(replace "]" str-input-json "")
+	(replace "\"," str-input-json "\" ")
+	(replace ")," str-input-json ") ")
+	(replace ",\"" str-input-json " \"")
+	(replace "," str-input-json "&#44;")
+	(replace "\":" str-input-json "\" ")
+	(replace "\\n" str-input-json "")
+	(replace "\\\"" str-input-json "")
+	(replace "(\"" str-input-json "([text]")
+	(replace " \"" str-input-json " [text]")
+	(replace "\")" str-input-json "[/text])")
+	(replace "\" " str-input-json "[/text] ")
+	(set 'return-result (read-expr str-input-json))
+)
+
 ;! ===== FORM AND TABLE FUNCTIONS =========================================================================
 
 ;; Function: (display-post-box)
@@ -817,10 +842,7 @@
 	(displayln "</table>")
 )
 
-
 ;! ===== SOCIAL MEDIA, EMAIL AND RSS FUNCTIONS =====================================================
-; Twitter functions (lifted from Dragonfly.. will rewrite later)
-
 ;; Function: (twitter-search)
 ;; Usage: (twitter-search "Key words" 10)
 ;; Returns: Displays the results of a Twitter search for the key words or phrases entered.
