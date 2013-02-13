@@ -26,3 +26,4 @@ newLISP on Rockets Revision History
 0.24 - 01/14/2013 - Changed blog database to add PostViews, updated setup-rockets.lisp script
 0.25 - 01/25/2013 - Added (get-fields-from-rss) function to convert RSS feeds
 0.26 - 01/30/2013 - Added (convert-json-to-list) function to convert JSON notation to LISP lists
+0.27 - 02/12/2013 - Added the ability to add custom Javascript to the footer.

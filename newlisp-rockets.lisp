@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.26)    
+(constant (global '$ROCKETS_VERSION) 0.27)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -289,10 +289,12 @@
   	(display-file (string $PARTIAL_PATH "/" partialname ".lsp")))
 
 ;; Function: (display-footer)
-;; Usage: (display-footer "Optional Company Name")
+;; Usage: (display-footer "Optional Company Name" "Optional Javascript string")
 ;; Returns: Prints the footer with benchmark result.  Also loads Javascript libraries.
+;; Example: (display-footer "JetCondo" "$(document).ready(function() { $(\"#weather\").load(\"weather-widget.html\"); });")
+;; Note: You do not need to add <script></script> to the optional Javascript, it will be added automatically
 ;-----------------------------------------------------------------------------------------------------
-(define (display-footer str-company-name)
+(define (display-footer str-company-name str-javascript)
 	(if (nil? str-company-name) (set 'str-company-name ""))
 	(display "<hr><footer><p>")
 	(display-image "poweredby.png")
@@ -304,6 +306,7 @@
 		(dolist (f $FORM-DATEPICKER)
 			(displayln "<script> $(function(){	$('#" f "').datepicker({format: 'mm-dd-yyyy'}); });</script>"))
 	))
+	(if str-javascript (displayln "<script>" str-javascript "</script>"))
 	(displayln (benchmark-result) "</footer></div>") ; ends main container
 	(displayln "</body></html>"))
 
