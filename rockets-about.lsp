@@ -9,14 +9,15 @@
 ; 
 ; Written 2012 by Rocket Man
 
-(display-header)
-(open-database "ROCKETS-BLOG")
+(load "Rockets-config.lisp") ; load configuration information
+(display-header (string RocketsConfig:Name " - About"))
+(open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (set 'active-page "rockets-about")
 (display-partial "rockets-navbar")
 
 (start-div "hero-unit")
-	(displayln "<h2>The newLISP on Rockets Blog</h2>")
+	(displayln "<h2>" RocketsConfig:Name "</h2>")
 	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
 	(displayln "<h3>What is newLISP on Rockets?</h3>")
 	(displayln "<P><a href='http://newlisp.org'>newLISP</a> is a fast and flexible scripting language that uses a LISP syntax.")
@@ -49,5 +50,5 @@
 ;(displayln "Posts table: " (query "pragma table_info('Posts');"))
 
 (close-database)
-(display-footer "Rocket Man")
+(display-footer RocketsConfig:Owner)
 (display-page) ; this is needed to actually display the page!

@@ -6,7 +6,8 @@
 ; 
 ; This page takes a post in $POST and posts it to the Posts table, post-haste.  Posts!
 ; Posts!
-(open-database "ROCKETS-BLOG")
+(load "Rockets-config.lisp") ; load configuration information
+(open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (display-partial "rockets-common-functions")
 ; only registered users should ever be on this page

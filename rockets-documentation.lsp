@@ -1,7 +1,8 @@
 #!/usr/bin/env newlisp 
 (load "/var/www/newlisp-rockets.lisp") 
-(display-header "newLISP on Rockets Documentation" "docs")
-(open-database "ROCKETS-BLOG")
+(load "Rockets-config.lisp") ; load configuration information
+(display-header (string RocketsConfig:Name " - Documentation") "docs")
+(open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (display-partial "rockets-common-functions") ; loads functions common to the blog but not part of Rockets
 (set 'active-page "rockets-documentation")
@@ -70,5 +71,5 @@
 
 (end-div)
 (end-div)
-(display-footer "Rocket Man") 
+(display-footer RocketsConfig:Owner)
 (display-page)

@@ -6,7 +6,8 @@
 ; 
 ; This page takes a post in $POST and posts it to the Posts table, post-haste.  Posts!
 ; Posts!
-(open-database "ROCKETS-BLOG")
+(load "Rockets-config.lisp") ; load configuration information
+(open-database RocketsConfig:Database)
 
 (displayln "<P>$POST data: " ($POST))
 

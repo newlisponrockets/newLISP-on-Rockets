@@ -7,19 +7,15 @@
 ; This is the first version of the self-hosted blog for newLISP on Rockets.
 ; The blog is designed to showcase how you would use Rockets for a real application.
 ; 
+; This page just verifies that a user entered the correct credentials
 ; Written 2012 by Rocket Man
 
+(load "Rockets-config.lisp") ; load configuration information
 (display-header)
-(display-navbar "newLISP on Rockets" '(("Home" "rockets-main") ("About" "rockets-about") ("Why Rockets?" "rockets-why") ("Register" "rockets-register" "active")) "rockets-verify")
-
-(start-div "hero-unit")
-	(displayln "<h2>The newLISP on Rockets Blog</h2>")
-	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
-(end-div)
 
 (module "crypto.lsp")
 
-(open-database "ROCKETS-BLOG")
+(open-database RocketsConfig:Database)
 (display-partial "rockets-common-functions")
 
 ; set Rockets cookie name (from common functions)
@@ -60,5 +56,5 @@
 ))
 
 (close-database)
-(display-footer "Rocket Man")
+(display-footer RocketConfig:Owner)
 (display-page) ; this is needed to actually display the page!

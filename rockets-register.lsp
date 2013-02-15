@@ -9,8 +9,9 @@
 ; 
 ; Written 2012 by Rocket Man
 
-(display-header "The newLISP on Rockets Blog - Why Rockets?")
-(open-database "ROCKETS-BLOG")
+(load "Rockets-config.lisp") ; load configuration information
+(display-header (string RocketsConfig:Name " - Register"))
+(open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (set 'active-page "rockets-register")
 (display-partial "rockets-navbar")
@@ -60,6 +61,8 @@
 
 (displayln "<table><tr>")
 (displayln "<br><br><br><td width=100>User name:</td><td><input type='text' name='u'><td>")
+(if (= error-messages "samename") 
+	(display-error "Somebody with the same name or email address is already registered here."))
 (if (= error-messages "noname") 
 	(display-error "You must enter a user name."))
 (displayln "</td></tr>")
@@ -80,5 +83,5 @@
 
 
 (close-database)
-(display-footer "Rocket Man")
+(display-footer RocketsConfig:Owner)
 (display-page) ; this is needed to actually display the page!

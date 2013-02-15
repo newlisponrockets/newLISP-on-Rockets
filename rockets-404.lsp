@@ -9,8 +9,9 @@
 ; 
 ; Written 2012 by Rocket Man
 
+(load "Rockets-config.lisp") ; load configuration information
 (display-header)
-(open-database "ROCKETS-BLOG")
+(open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 
 (display-partial "rockets-navbar")
@@ -29,5 +30,5 @@
 ;(displayln "Posts table: " (query "pragma table_info('Posts');"))
 
 (close-database)
-(display-footer "Rocket Man")
+(display-footer RocketsConfig:Owner)
 (display-page) ; this is needed to actually display the page!
