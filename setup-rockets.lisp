@@ -102,7 +102,7 @@
 (set 'UserPosts 0) ; start from the bottom!
 
 ; save the configuration file
-(save "Rockets-config.lisp" 'Rockets-Config)
+(save "Rockets-config.lisp" 'RocketsConfig)
 
 ; create the database
 (open-database database-name)
