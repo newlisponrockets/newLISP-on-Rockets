@@ -40,8 +40,8 @@
 ; now check these things to see if they are acceptable
 
 ; first check to see if the user name or email exists in the database already
-(if (query (string "SELECT * FROM Users WHERE UserName=" (trim UserName))) (page-redirect "rockets-register" "e=samename"))
-(if (query (string "SELECT * FROM Users WHERE UserEmail=" (trim UserEmail))) (page-redirect "rockets-register" "e=samename"))
+(if (query (string "SELECT * FROM Users WHERE UserName='" (trim UserName) "'")) (page-redirect "rockets-register" "e=samename"))
+(if (query (string "SELECT * FROM Users WHERE UserEmail='" (trim UserEmail) "'")) (page-redirect "rockets-register" "e=samename"))
 (if (= (trim UserName) "") (page-redirect "rockets-register" "e=noname"))
 (if (= (trim UserPassword) "") (page-redirect "rockets-register" "e=nopw"))
 (if (!= UserPassword UserConfirmPassword) (page-redirect "rockets-register" "e=pwmatch"))
