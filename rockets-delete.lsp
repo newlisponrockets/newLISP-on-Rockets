@@ -7,7 +7,8 @@
 ; This just deletes a page
 ; Version 0.01 (Rockets version shown on page)
 
-(open-database "ROCKETS-BLOG")
+(load "Rockets-config.lisp") ; load configuration information
+(open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (set 'Id (integer ($GET "post")))	
 (set 'PostId Id) ; for deleting comments	

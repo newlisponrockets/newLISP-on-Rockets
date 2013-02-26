@@ -9,8 +9,9 @@
 ; 
 ; Written 2012 by Rocket Man
 
-(display-header "The newLISP on Rockets Blog")
-(open-database "ROCKETS-BLOG")
+(load "Rockets-config.lisp") ; load configuration information
+(display-header (string RocketsConfig:Name " - Forum"))
+(open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (display-partial "rockets-common-functions") ; loads functions common to the blog but not part of Rockets
 (set 'active-page "rockets-forum")
@@ -18,7 +19,7 @@
 
 (start-div "hero-unit")
 	(display-image "rockets.png" 317 180)
-	(displayln "<h2>The newLISP on Rockets Discussion Forum</h2>")
+	(displayln "<h2>The " RocketsConfig:ShortName " Discussion Forum</h2>")
 	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
 (end-div)
 
@@ -84,6 +85,6 @@
 )) ; any registered user may make a forum post
 
 (close-database)
-(display-footer "Rocket Man")
+(display-footer RocketsConfig:Owner)
 (display-page) ; this is needed to actually display the page!
 

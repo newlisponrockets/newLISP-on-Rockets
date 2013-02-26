@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.27)    
+(constant (global '$ROCKETS_VERSION) 0.32)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -229,13 +229,16 @@
 )
 
 ;; Function: (display-navbar)
-;; Usage: (display-header "Site name" '(list of menus) "page-to-go-for-signing-in")
+;; Usage: (display-header "Site name" '(list of menus) "page-to-go-for-signing-in" true "red")
 ;; Returns: Prints the top navigation bar with menus and form for signing in. Also, 
 ;; calling this function also sets up the main <div> container for the whole page.
 ;; Note: The .lsp extension is added automatically to page-to-go-for-signing-in
+;; Note: The optional "true" is to make the theme of the navigation bar regular colors instead of inverse (black)
+;; Note: The optional "red" is to add a thin stripe at the end of the navigation bar of a particular color.
 ;-----------------------------------------------------------------------------------------------------
-(define (display-navbar str-name list-menus str-signin)
-	(displayln "    <div class=\"navbar navbar-inverse navbar-fixed-top\">")
+(define (display-navbar str-name list-menus str-signin bool-not-inverse optional-bar-color)
+	(if bool-not-inverse (set 'temp-invert "") (set 'temp-invert "navbar-inverse")) ; select regular or inverse colors
+	(displayln "    <div class=\"navbar " temp-invert " navbar-fixed-top\">")
 	(displayln "      <div class=\"navbar-inner\">")
 	(displayln "        <div class=\"container\">")
 	(displayln "          <a class=\"btn btn-navbar\" data-toggle=\"collapse\" data-target=\".nav-collapse\">")
@@ -276,6 +279,7 @@
 	(displayln "          </div>")
 	(displayln "       </div>")
    (displayln "     </div>")
+	(if optional-bar-color (displayln "<div style='height: 10px; background: " optional-bar-color "'></div>"))
 	(displayln "    </div>")
 	(displayln " <div class=\"container\" style=\"padding-top: 50px;\">") ; start the main container for the page, add padding
 )
@@ -296,9 +300,9 @@
 ;-----------------------------------------------------------------------------------------------------
 (define (display-footer str-company-name str-javascript)
 	(if (nil? str-company-name) (set 'str-company-name ""))
-	(display "<hr><footer><p>")
+	(display "<hr><footer><p><a href='http://newlisponrockets.com'>")
 	(display-image "poweredby.png")
-	(displayln "&copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year
+	(displayln "</a> &copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year
 	(displayln "<script src=\"" $BASE_PATH "js/jquery-1.8.2.min.js\"></script>") ; Loads jQuery
 	(displayln "<script src=\"" $BASE_PATH "js/bootstrap.min.js\"></script>") ; Loads Bootstrap Javascript.
 	(displayln "<script src=\"" $BASE_PATH "js/bootstrap-datepicker.js\"></script>") ; Loads Bootstrap datepicker Javascript.
@@ -307,7 +311,7 @@
 			(displayln "<script> $(function(){	$('#" f "').datepicker({format: 'mm-dd-yyyy'}); });</script>"))
 	))
 	(if str-javascript (displayln "<script>" str-javascript "</script>"))
-	(displayln (benchmark-result) "</footer></div>") ; ends main container
+	(displayln (benchmark-result) " Rockets version: " $ROCKETS_VERSION ".</footer></div>") ; ends main container
 	(displayln "</body></html>"))
 
 ;; Function: (display-image)

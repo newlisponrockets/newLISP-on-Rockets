@@ -68,7 +68,7 @@
 (module "crypto.lsp")
 (module "sqlite3.lsp") ; loads the SQLite3 database module
 
-(set 'table1 "CREATE TABLE Posts (Id INTEGER PRIMARY KEY, PosterId TEXT, PostDate DATE, PostSubject TEXT, PostContent TEXT, PostComments INTEGER, PostType TEXT)")
+(set 'table1 "CREATE TABLE Posts (Id INTEGER PRIMARY KEY, PosterId TEXT, PostDate DATE, PostSubject TEXT, PostContent TEXT, PostComments INTEGER, PostType TEXT, PostViews INTEGER)")
 (set 'table2 "CREATE TABLE Users (UserId INTEGER PRIMARY KEY, UserEmail TEXT, UserPasswordHash TEXT, UserSalt TEXT, UserPosts INTEGER, UserAchievements TEXT, UserReadPosts TEXT, UserName TEXT, CookieSalt TEXT, UserAvatar TEXT, UserBirthdate DATE, UserJoinedDate DATE)")
 (set 'table3 "CREATE TABLE Comments (Id INTEGER PRIMARY KEY, PostId INTEGER, CommenterId INTEGER, CommentDate DATE, CommentSubject TEXT, CommentContent TEXT)")
 
@@ -76,9 +76,16 @@
 (println)
 (println "Now creating database...")
 ;(open-database database-name)
+(println "Please enter a name for your blog (eg: The newLISP on Rockets Blog)")
+(set 'RocketsConfig:Name (read-line))
+(println "Now enter a short version of this name to appear on the header (eg: newLISP on Rockets)")
+(set 'RocketsConfig:ShortName (read-line))
+(println "Now enter the owner of the blog (eg: Rocket Man)")
+(set 'RocketsConfig:Owner (read-line))
 (println "Now setting up Posts, Users, and Comments tables...")
 (print "Enter a database name (.db extension added automatically): ")
-(set 'database-name (upper-case (read-line)))s
+(set 'database-name (upper-case (read-line)))
+(set 'RocketsConfig:Database database-name)
 (print "Enter a user name for the ADMIN user (case sensitive): ")
 (set 'UserName (read-line))
 (print "Enter an email for the ADMIN user (case sensitive): ")
@@ -93,6 +100,9 @@
 (println "Password hash: " UserPasswordHash)
 (set 'UserId 0) ; Admin user is always UserId 0
 (set 'UserPosts 0) ; start from the bottom!
+
+; save the configuration file
+(save "Rockets-config.lisp" 'RocketsConfig)
 
 ; create the database
 (open-database database-name)

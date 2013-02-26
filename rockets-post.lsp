@@ -2,11 +2,13 @@
 
 (load "/var/www/newlisp-rockets.lisp") ; this is where the magic happens!
 
+(load "Rockets-config.lisp") ; load configuration information
+
 ; Rockets - Posting Page rockets-post.lsp
 ; 
 ; This page takes a post in $POST and posts it to the Posts table, post-haste.  Posts!
 ; Posts!
-(open-database "ROCKETS-BLOG")
+(open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 
 (if Rockets:UserId (begin ; must be a registered user to post anything

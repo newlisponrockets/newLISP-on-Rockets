@@ -1,7 +1,8 @@
 #!/usr/bin/env newlisp 
 (load "/var/www/newlisp-rockets.lisp") 
-(display-header)
-(open-database "ROCKETS-BLOG")
+(load "Rockets-config.lisp") ; load configuration information
+(display-header (string RocketsConfig:Name " - Post"))
+(open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
 (display-partial "rockets-common-functions") ; loads functions common to the blog but not part of Rockets
 (set 'active-page "rockets-item")
@@ -36,5 +37,5 @@
 	(display-post-box "Edit post..." "postsomething" "rockets-edit-post" "subjectline" "replybox" "Update Message" Id (post-content 3) (post-content 4))
 ))
 
-(display-footer) 
+(display-footer RocketsConfig:Owner) 
 (display-page)
