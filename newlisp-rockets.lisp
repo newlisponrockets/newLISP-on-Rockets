@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.32)    
+(constant (global '$ROCKETS_VERSION) 0.36)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -111,6 +111,7 @@
 		(dolist (r Rockets:cookielist)
 			(print "Set-Cookie: " r "\n"))))
 )
+
 
 ;! ===== BASIC FUNCTIONS =============================================================================
 
@@ -274,6 +275,8 @@
 		(displayln "              <input class=\"span2\" name=\"email\" id=\"email\" type=\"text\" placeholder=\"Email\">")
 		(displayln "              <input class=\"span2\" name=\"password\" id=\"password\" type=\"password\" placeholder=\"Password\">")
 		(displayln "              <button type=\"submit\" class=\"btn\">Sign in</button>")
+		(displayln "<a class='btn btn-success' href='rockets-register.lsp'>Register</a>")
+
 		(displayln "            </form>")
 	)	)
 	(displayln "          </div>")
@@ -300,9 +303,10 @@
 ;-----------------------------------------------------------------------------------------------------
 (define (display-footer str-company-name str-javascript)
 	(if (nil? str-company-name) (set 'str-company-name ""))
-	(display "<hr><footer><p><a href='http://newlisponrockets.com'>")
-	(display-image "poweredby.png")
-	(displayln "</a> &copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year
+	(display "<hr><footer><p>") (start-div "row-fluid") (start-div "span3")
+	(displayln "<a href='http://newlisponrockets.com'>")
+	(display-image "poweredby.png") (end-div) (start-div "span8")
+	(displayln "</a> &copy; " (date (date-value) 0 "%Y") " " str-company-name ". ") ; always prints current year	
 	(displayln "<script src=\"" $BASE_PATH "js/jquery-1.8.2.min.js\"></script>") ; Loads jQuery
 	(displayln "<script src=\"" $BASE_PATH "js/bootstrap.min.js\"></script>") ; Loads Bootstrap Javascript.
 	(displayln "<script src=\"" $BASE_PATH "js/bootstrap-datepicker.js\"></script>") ; Loads Bootstrap datepicker Javascript.
@@ -312,6 +316,7 @@
 	))
 	(if str-javascript (displayln "<script>" str-javascript "</script>"))
 	(displayln (benchmark-result) " Rockets version: " $ROCKETS_VERSION ".</footer></div>") ; ends main container
+	(end-div) (end-div)
 	(displayln "</body></html>"))
 
 ;; Function: (display-image)
@@ -391,6 +396,7 @@
 )
 
 
+
 ;! ===== PAGE HANDLING ==========================================================
 
 ;; Function: (page-redirect)
@@ -466,6 +472,7 @@
 (new Tree '$POST)
 (define (handle-multipart-data)
 	; first we have to find the boundary string
+	;(displayln "<P>ENVIRONMENT: " (env))
 	(set 'boundary-start (+ (length "boundary=") (find "boundary=" (env "CONTENT_TYPE"))))
 	(set 'boundary (slice (env "CONTENT_TYPE") boundary-start 99))
 	(let ((buffer "") (binary-buffer "") (found-variables nil))
@@ -516,13 +523,17 @@
 ;; Note: You can retrieve multiple values for the same key name by appending [] to the key name.
 ;; Example: POST data contains "name[]=a name[]=b", calling ($POST "name[]") will return ("a" "b")
 ;-----------------------------------------------------------------------------------------------------
+
 (if (and (env "CONTENT_TYPE") (starts-with (env "CONTENT_TYPE") "multipart/form-data"))
 	(handle-multipart-data) ; this is for file uploads, a special case
-	(let ((buffer "") (post-buffer "")) ; this is for regular forms
-		(unless (zero? (peek (device)))
-			(while (read (device) buffer $MAX_POST_LENGTH)
-				(write post-buffer buffer))
-			(parse-get-or-post post-buffer $POST)))
+	(begin
+ 		;(displayln "<P>ENVIRONMENT: " (env))
+		(set 'buffer "") (set 'post-buffer "") ; this is for regular forms
+		;(displayln "<P>Buffering...</p>")
+		(while (read (device) buffer $MAX_POST_LENGTH)
+			(write post-buffer buffer))
+		(parse-get-or-post post-buffer $POST)
+	)
 )
 ; below is the old code that had a bug that truncated long posts.  Leaving it in for now for reference.
 ;(when (> (peek (device)) 0)
@@ -866,10 +877,13 @@
 	(dolist (idx entry-index)
 		(set 'entry (sxml idx))
 		(set 'dateseconds (parse-date (lookup 'published entry) "%Y-%m-%dT%H:%M:%SZ")) ; convert string date to seconds
-		
+		(set 'tweet-text (lookup 'title entry))
+		(set 'h "(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))") ; add html links
+  		(replace h tweet-text (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)
+
 		(displayln
 			"<div class='row-fluid'>"
-			"<h4>" (lookup 'title entry) "</h4><br/>"
+			"<h5>" tweet-text "</h5><br/>"
 			"<div class='thumbnail'>" (date dateseconds 0 "%a %d %b %Y %H:%M:%S") "</div><div class='author'>By&nbsp;" (lookup '(author name) entry) "</div><br/>"
 			"</div>"
 		)

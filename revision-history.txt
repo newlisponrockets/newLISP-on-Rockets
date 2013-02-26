@@ -29,3 +29,4 @@ newLISP on Rockets Revision History
 0.27 - 02/12/2013 - Added the ability to add custom Javascript to the footer.
 0.30 - 02/15/2013 - Refactored code, put stuff into Rockets-config file for easier customization
 0.32 - 02/19/2013 - Added optional invert color for navbar, optional colored line underneath navbar, version # in footer
+0.36 - 02/26/2013 - Changed code in ($POST) to hopefully fix bug
