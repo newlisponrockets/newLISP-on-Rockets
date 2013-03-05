@@ -1,5 +1,5 @@
 #!/usr/bin/env newlisp 
-(load "/var/www/newlisp-rockets.lisp") 
+(load "newlisp-rockets.lisp") 
 (load "Rockets-config.lisp") ; load configuration information
 (display-header (string RocketsConfig:Name " - Post"))
 (open-database RocketsConfig:Database)
@@ -11,6 +11,7 @@
 (set 'forum-view-post (force-parameters 1 ($GET "f")))
 
 (if Id (extend active-page (string ".lsp?p=" Id))) ; in case user logs in and wants to return to this exact page
+(if forum-view-post (extend active-page (string "&f=true")))
 (display-partial "rockets-navbar") ; shows the navigation bar with Rockets blog menus
 
 (if Id (begin

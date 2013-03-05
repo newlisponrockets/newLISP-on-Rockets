@@ -409,14 +409,14 @@
 	(if (not (find ".lsp" str-url-to-redirect))
 		(extend str-url-to-redirect ".lsp")) ; add .lsp extension if not already there
 	(if str-optional-parameters (begin
-		(if (find "?" strl-url-to-redirect)
+		(if (find "?" str-url-to-redirect)
 			(extend str-url-to-redirect (string "&" str-optional-parameters))
 			(extend str-url-to-redirect (string "?" str-optional-parameters)) ; if already has parameters, use &
 		)	
 	))
 	(print "Content-type: text/html\n") 
 	(set 'Rockets:statuscode 302) ; HTTP "FOUND" redirects to a new site
-   (add-header "Location" str-url-to-redirect)
+	(add-header "Location" str-url-to-redirect)
 	(send-headers)
 	(print "\n")
 	(exit)
