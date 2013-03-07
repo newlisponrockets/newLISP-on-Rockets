@@ -9,6 +9,8 @@
 
 (set 'Owner "Rocket Man")
 
+(set 'AdminEmail "newlisponrockets@newlisponrockets.com")
+
 (set 'SiteURL "newlisponrockets.com")
 
 (context MAIN)
