@@ -714,7 +714,7 @@
 ;; Function: (get-record) 
 ;; Usage: (get-record "Table Name" ColumnName1)
 ;; Returns: A list of all values for the record if successful, otherwise displays the SQL error
-;; The variable ColumnName1 needs to be assigned a value that will be checked to qualify the deletion
+;; The variable ColumnName1 needs to be assigned a value that will be checked to qualify the query
 ;; Example: (set 'Email "bob@bob.com") (get-record "Posts" Email) will retrieve all records where
 ;; the column name "Email" is equal to "bob@bob.com".  
 ;; Note: Variables need to be either integers or strings, depending on the type of column.

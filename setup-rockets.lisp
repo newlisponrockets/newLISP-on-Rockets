@@ -80,6 +80,8 @@
 (set 'RocketsConfig:Name (read-line))
 (println "Now enter a short version of this name to appear on the header (eg: newLISP on Rockets)")
 (set 'RocketsConfig:ShortName (read-line))
+(println "Now enter the URL (minus the http://) of the blog (eg: newlisponrockets.com)")
+(set 'RocketsConfig:SiteURL (read-line))
 (println "Now enter the owner of the blog (eg: Rocket Man)")
 (set 'RocketsConfig:Owner (read-line))
 (println "Now setting up Posts, Users, and Comments tables...")
@@ -90,6 +92,7 @@
 (set 'UserName (read-line))
 (print "Enter an email for the ADMIN user (case sensitive): ")
 (set 'UserEmail (read-line))
+(set 'RocketsConfig:AdminEmail UserEmail) ; add this to config file
 (print "Now enter a password for the ADMIN user (case sensitive): ")
 (set 'password (read-line))
 (set 'UserSalt (uuid))
