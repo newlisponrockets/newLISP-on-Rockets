@@ -2,7 +2,7 @@
 
 (load "newlisp-rockets.lisp") ; this is where the magic happens!
 
-; Access log -> Database script
+; Access log -> Database script log-to-database.lisp
 ; 
 ; This script copies everything in /var/log/apache2/access.log into a database
 ; which can be queried later.
