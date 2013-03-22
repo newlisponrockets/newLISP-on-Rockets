@@ -9,14 +9,43 @@
 (set 'Blog:rocket-cookie-name "rockets-4dckq3-e4jcx-2wgxc")
 (set 'Blog:rocket-database-name "ROCKETS-BLOG")
 
+; this function displays the results of a poll NEW! 
+(define (display-poll-results str-poll-data str-post-data)
+	(set 'str-poll-data (chop (parse str-poll-data "_")))	
+	(set 'return-result (string  "<p><br>Poll Results: "))
+	(dolist (pp str-poll-data)
+		(set 'ppp (parse pp "-"))
+		(push ppp poll-list -1))
+	(sort poll-list)
+
+	; this part extracts the actual poll entries from the post itself since they don't live in PostPoll part of the DB
+	(set 'temp-position 0)
+	(while (find "[/radio]" str-post-data nil temp-position)
+		(set 'temp-position (+ (find "[/radio]" str-post-data nil temp-position) 8))
+		(set 'temp-end-position (find "[" str-post-data nil temp-position))
+;		(if (nil? temp-end-position) (set 'temp-end-position (length str-post-data)))
+		(set 'temp-label (slice str-post-data temp-position (- temp-end-position temp-position)))
+		(push temp-label poll-title-list -1)
+	)
+	(dolist (pppp poll-list)
+		(extend return-result (string "<br>" (poll-title-list (int (pppp 0))) ": " (pppp 1)))
+	)
+	(extend return-result (string "<br><br>"))
+)
+
 ; this function displays an individual post with headers and the post itself
 ; also shows comments if bool-show-comments is true, and allows a logged-in user to reply
 ; also allows post to be shown in forum view if forum-view-post=true
 (define (display-individual-post list-post-data bool-show-comments str-linkback-id)
+	; POLL STUFF
+	(if (> (length list-post-data) 7) ; only with databases that contain PostPoll in Posts
+		(if (list-post-data 8) (set 'post-poll-data (display-poll-results (list-post-data 8) (list-post-data 4))))
+	)
+	(if (nil? post-poll-data) (set 'post-poll-data "")) ; if no poll just leave blank
 	(if forum-view-post (begin ; ---- begin forum view of post + comments
 		(displayln "<h3>" (list-post-data 3) "</h3>")
 		(set 'header-list '("Author" "Message"))
-		(set 'post-data (list (string "<img src='images/avatars/" (author-avatar (list-post-data 1)) "' width=64 height=64><br>" (author-name (list-post-data 1)) "<h6>Posts: " (author-posts (list-post-data 1)) "</h6>") (format-for-web (list-post-data 4))))
+		(set 'post-data (list (string "<img src='images/avatars/" (author-avatar (list-post-data 1)) "' width=64 height=64><br>" (author-name (list-post-data 1)) "<h6>Posts: " (author-posts (list-post-data 1)) "</h6>") (string (format-for-web (list-post-data 4)) post-poll-data)))
 		(set 'PostId (int (list-post-data 0)))
 		(set 'post-data (list post-data)) ; okay these two lines of code are duplicated... I can live with it for now
 		(set 'post-comments (get-record "Comments" PostId))
@@ -32,7 +61,7 @@
 		(displayln "<br><b>Post #:</b> " (list-post-data 0) )
 		(displayln "<BR><B>Date:</b> " (list-post-data 2) "")
 		(displayln "<br><B>Author:</b> " (author-name (list-post-data 1)) "")
-		(displayln "<br><br><p>" (format-for-web (list-post-data 4)) "</p>")
+		(displayln "<br><br><p>" (format-for-web (list-post-data 4)) post-poll-data "</p>")
 		(if (= Rockets:UserId 0) (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete post</a>"))
 		(if (= Rockets:UserId 0) (displayln "<a class='btn btn-info' href='rockets-item.lsp?p=" (list-post-data 0) "&edit=yes#edit'>Edit post</a>"))
 		; print reply button if we're not on main page and if valid account is logged in

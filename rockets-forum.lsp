@@ -2,7 +2,7 @@
 
 (load "newlisp-rockets.lisp") ; this is where the magic happens!
 
-; Rockets - Main Page
+; Rockets-forum.lsp - Rockets forum page
 ; 
 ; This is the first version of the self-hosted blog for newLISP on Rockets.
 ; The blog is designed to showcase how you would use Rockets for a real application.

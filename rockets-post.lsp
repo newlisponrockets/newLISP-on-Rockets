@@ -29,6 +29,18 @@
 			(set 'PostSubject ($POST "subjectline"))
 			(set 'PostContent ($POST "post"))
 			(set 'PostDate (date (date-value) 0 "%Y-%m-%d %H:%M:%S.000"))
+			(set 'PostPoll ($POST "polltopic")) ; for polls, adds text to post and info to database
+			(set 'PostPollValues ($POST "pollvalues"))
+			(if PostPoll (begin
+				(set 'poll-prepend-text (string "[h4]" PostPoll "[/h4]\n[poll]"))
+				(set 'PostPollSubject PostSubject) ; we need a copy of this variable  
+				(replace " " PostPollSubject "_") ; this is to generate unique form names for each poll
+				(set 'PostPollValues (parse PostPollValues "\n"))
+				(dolist (p PostPollValues)
+					(extend poll-prepend-text (string "\n" "[radio]" PostPollSubject " value=" $idx "[/radio] " p ))
+				)
+				(set 'PostContent (string poll-prepend-text " [/poll]\n\n\n " PostContent))
+			))
 			(if (= post-type-trigger "Forum")
 				(set 'PostType "Forum post")
 				(set 'PostType "Blog post"))
@@ -42,6 +54,7 @@
 	))
 
 )) ; end check to see if user is signed in
+
 ;(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>")
 (if (= PostType "Blog post")
 	(page-redirect "rockets-main.lsp")

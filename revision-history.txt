@@ -30,3 +30,4 @@ newLISP on Rockets Revision History
 0.30 - 02/15/2013 - Refactored code, put stuff into Rockets-config file for easier customization
 0.32 - 02/19/2013 - Added optional invert color for navbar, optional colored line underneath navbar, version # in footer
 0.36 - 02/26/2013 - Bunch of small bug fixes, primarily to ($POST) issues
+0.41 - 03/22/2013 - Many small fixes, added preliminary poll option in posts (admin only for now)

@@ -1,5 +1,6 @@
 ; (rockets-checksignin.lsp)
 ;
+; MODIFIED FOR WRITINGHOLMES
 ; This is a partial file... all it does is check the validity of the user's sign-in cookie
 ; and if it is a valid cookie, retrieves the user data.  If it's not a valid cookie or the cookie
 ; isn't there, it simply doesn't set the appropriate variables
@@ -30,6 +31,7 @@
 		(set 'Rockets:UserEmail (load-user-sql-data 1))
 		(set 'Rockets:UserSalt (load-user-sql-data 3))
 		(set 'Rockets:UserPosts (load-user-sql-data 4))
+		(set 'Rockets:UserAchievements (load-user-sql-data 5))
 		(set 'Rockets:UserReadPosts (load-user-sql-data 6))
 		(if (nil? Rockets:UserReadPosts) (set 'Rockets:UserReadPosts "")) ; set blank if no data for read posts
 		(set 'Rockets:UserName (load-user-sql-data 7))
@@ -39,5 +41,9 @@
 		(if (and Rockets:UserBirthDate (= (length Rockets:UserBirthDate) 23)) ; change SQLite format to MM-DD-YYYY format
 			(set 'Rockets:UserBirthDate (string (slice Rockets:UserBirthDate 8 2) "-" (slice Rockets:UserBirthDate 5 2) "-" (slice Rockets:UserBirthDate 0 4))))
 		(if (nil? Rockets:UserAvatar) (set 'Rockets:UserAvatar "unknown.png"))
+		; set Admin flag if UserId=1 OR if Admin flag set in Achievements
+		(if (or (= Rockets:UserId 0) (find "A" Rockets:UserAchievements))
+			(set 'Rockets:IsUserAdmin true)
+			(set 'Rockets:IsUserAdmin nil))
 	))
 ))

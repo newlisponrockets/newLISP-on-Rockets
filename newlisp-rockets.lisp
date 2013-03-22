@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.36)    
+(constant (global '$ROCKETS_VERSION) 0.41)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -171,7 +171,7 @@
 	(replace "<" str-input-for-web "&lt;")
 	(replace ">" str-input-for-web "&gt;")
 	; but we need a way to do bold and italics at least, so let's do that, and images
-	(set 'ubb-code-list '("i" "b" "u" "code" "pre"))
+	(set 'ubb-code-list '("i" "b" "u" "code" "pre" "h1" "h2" "h3" "h4"))
 	(dolist (u ubb-code-list)
 		(replace (string "[" u "]") str-input-for-web (string "<" u ">"))
 		(replace (string "[" (upper-case u) "]") str-input-for-web (string "<" u ">"))
@@ -189,6 +189,10 @@
 	(replace "[YOUTUBE]" str-input-for-web "<iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/")
 	(replace "[/youtube]" str-input-for-web "\" frameborder=\"0\" allowfullscreen></iframe>")
 	(replace "[/YOUTUBE]" str-input-for-web "\" frameborder=\"0\" allowfullscreen></iframe>")
+	(replace "[radio]" str-input-for-web "<input type='radio' name=")
+	(replace "[/radio]" str-input-for-web ">")
+	(replace "[poll]" str-input-for-web "<form name=poll method=POST action=rockets-poll.lsp>")
+	(replace "[/poll]" str-input-for-web "<br><br><input type=submit value='Vote'></form>")
 	; replace line breaks with HTML line breaks
 	(replace "\r\n" str-input-for-web "<BR>")
 )
@@ -774,7 +778,7 @@
 ;! ===== FORM AND TABLE FUNCTIONS =========================================================================
 
 ;; Function: (display-post-box)
-;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box" "optional hidden value")
+;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box" "optional hidden value" true)
 ;; Returns: Displays a form with a subject line and a text box, and a submit button.  
 ;; The form will enter information into POST and redirect to "page-to-submit.lsp" when Submit is clicked.
 ;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically.
@@ -785,8 +789,9 @@
 ;; If this becomes a trend, I might just turn hidden values into a list, which would be cleaner, but we'll leave it for now.
 ;; This is useful for when you want the page that is called via the submit button to remember the Id # of, for example,
 ;; which post you were editing or just added.
+;; Note: The final option "true" will add a poll option to the post box display.
 ;-----------------------------------------------------------------------------------------------------
-(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id str-optional-subject-value str-optional-post-value str-optional-hidden-value)
+(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id str-optional-subject-value str-optional-post-value str-optional-hidden-value bool-poll-option)
 	(displayln "<h3>" str-title "</h3>")
 	(if (not (find ".lsp" str-action-page)) (extend str-action-page ".lsp"))
 	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
@@ -803,6 +808,11 @@
 	; now add the two hidden values, if they exist
 	(if str-linkback-id (displayln "<input type='hidden' name='linkbackid' value='" str-linkback-id "'>"))
 	(if str-optional-hidden-value (displayln "<input type='hidden' name='optionalhidden' value='" str-optional-hidden-value "'>"))
+	(if bool-poll-option (begin
+		(displayln "<br>Add a poll option:")
+		(displayln "<br><br>Poll topic (leave blank for no poll): <input type=text' id='polltopic' name='polltopic' class='span4'>")
+		(displayln "<br><br>Poll options (one for each line): <textarea name='pollvalues' id='pollvalues' class='field span7' rows='5'></textarea>")
+	))
 	(displayln "<br><p><input type='submit' class='btn' value='" str-submit-button-text "'>")
 	(displayln "</form>"))
 
@@ -883,8 +893,8 @@
 
 		(displayln
 			"<div class='row-fluid'>"
-			"<h5>" tweet-text "</h5><br/>"
 			"<div class='thumbnail'>" (date dateseconds 0 "%a %d %b %Y %H:%M:%S") "</div><div class='author'>By&nbsp;" (lookup '(author name) entry) "</div><br/>"
+			"<h5>" tweet-text "</h5><br/>"
 			"</div>"
 		)
 	)

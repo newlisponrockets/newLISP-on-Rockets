@@ -47,8 +47,8 @@
 (display-paging-links 1 total-pages current-page active-page) ; display them again
 
 ; print post entry box
-(if (= Rockets:UserId 0) (begin
-	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message")
+(if Rockets:IsUserAdmin (begin
+	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil nil true)
 )) ; only the site administrator may make new blog posts at the moment
 
 (close-database)
