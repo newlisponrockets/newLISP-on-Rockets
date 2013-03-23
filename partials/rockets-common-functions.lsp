@@ -108,6 +108,8 @@
 					; we need to pass in "forum-view-post" as a hidden variable so that we can return to the forum view when we return after replying
 				))
 			))
+			; get rid of poll result string for next post
+			(set 'post-poll-data "")
 )
 
 ; Get the user's name given the user Id
