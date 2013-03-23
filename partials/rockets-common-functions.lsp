@@ -13,6 +13,7 @@
 (define (display-poll-results str-poll-data str-post-data)
 	(set 'str-poll-data (chop (parse str-poll-data "_")))	
 	(set 'return-result (string  "<p><br>Poll Results: "))
+	(set 'poll-list nil)
 	(dolist (pp str-poll-data)
 		(set 'ppp (parse pp "-"))
 		(push ppp poll-list -1))
@@ -20,6 +21,7 @@
 
 	; this part extracts the actual poll entries from the post itself since they don't live in PostPoll part of the DB
 	(set 'temp-position 0)
+	(set 'poll-title-list nil)
 	(while (find "[/radio]" str-post-data nil temp-position)
 		(set 'temp-position (+ (find "[/radio]" str-post-data nil temp-position) 8))
 		(set 'temp-end-position (find "[" str-post-data nil temp-position))
