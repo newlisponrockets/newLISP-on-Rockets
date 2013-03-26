@@ -17,7 +17,7 @@
 	(dolist (pp str-poll-data)
 		(set 'ppp (parse pp "-"))
 		(push ppp poll-list -1))
-	(sort poll-list)
+	(sort poll-list) ; puts the votes in numerical order
 
 	; this part extracts the actual poll entries from the post itself since they don't live in PostPoll part of the DB
 	(set 'temp-position 0)
@@ -29,10 +29,17 @@
 		(set 'temp-label (slice str-post-data temp-position (- temp-end-position temp-position)))
 		(push temp-label poll-title-list -1)
 	)
+	; get total # of votes (to calculate percentages)
+	(set 'total-votes 0)
+	(dolist (t poll-list) (set 'total-votes (+ total-votes (int (t 1)))))
+	(extend return-result "<p>Total votes: " (string total-votes))
+	; make a quick table for the poll
+	(extend return-result "<table width=*>")
 	(dolist (pppp poll-list)
-		(extend return-result (string "<br>" (poll-title-list (int (pppp 0))) ": " (pppp 1)))
+		(set 'percentage-of-total (mul (div (float (pppp 1)) total-votes) 100))
+		(extend return-result (string "<tr><td width=20%>" (poll-title-list (int (pppp 0))) ":</td><td width=10%> " (pppp 1) "</td><td width=70%><span style='background-color: #00009d'>" (dup "." percentage-of-total) "</span></td></tr>"))
 	)
-	(extend return-result (string "<br><br>"))
+	(extend return-result (string "</table><br><br>"))
 )
 
 ; this function displays an individual post with headers and the post itself

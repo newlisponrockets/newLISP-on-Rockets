@@ -37,7 +37,9 @@
 				(replace " " PostPollSubject "_") ; this is to generate unique form names for each poll
 				(set 'PostPollValues (parse PostPollValues "\n"))
 				(dolist (p PostPollValues)
-					(extend poll-prepend-text (string "\n" "[radio]" PostPollSubject " value=" $idx "[/radio] " p ))
+					(extend poll-prepend-text (string "\n" "[radio]" PostPollSubject " value=" $idx))
+					(if (= $idx 0) (extend poll-prepend-text " checked=yes"))	
+					(extend poll-prepend-text (string "[/radio] " p ))
 				)
 				(set 'PostContent (string poll-prepend-text " [/poll]\n\n\n " PostContent))
 			))
