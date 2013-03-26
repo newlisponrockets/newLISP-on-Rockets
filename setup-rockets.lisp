@@ -69,7 +69,7 @@
 (module "sqlite3.lsp") ; loads the SQLite3 database module
 
 (set 'table1 "CREATE TABLE Posts (Id INTEGER PRIMARY KEY, PosterId TEXT, PostDate DATE, PostSubject TEXT, PostContent TEXT, PostComments INTEGER, PostType TEXT, PostViews INTEGER, PostPoll TEXT)")
-(set 'table2 "CREATE TABLE Users (UserId INTEGER PRIMARY KEY, UserEmail TEXT, UserPasswordHash TEXT, UserSalt TEXT, UserPosts INTEGER, UserAchievements TEXT, UserReadPosts TEXT, UserName TEXT, CookieSalt TEXT, UserAvatar TEXT, UserBirthdate DATE, UserJoinedDate DATE)")
+(set 'table2 "CREATE TABLE Users (UserId INTEGER PRIMARY KEY, UserEmail TEXT, UserPasswordHash TEXT, UserSalt TEXT, UserPosts INTEGER, UserAchievements TEXT, UserReadPosts TEXT, UserName TEXT, CookieSalt TEXT, UserAvatar TEXT, UserBirthdate DATE, UserJoinedDate DATE, UserPollsVoted TEXT)")
 (set 'table3 "CREATE TABLE Comments (Id INTEGER PRIMARY KEY, PostId INTEGER, CommenterId INTEGER, CommentDate DATE, CommentSubject TEXT, CommentContent TEXT)")
 
 (println "This is a VERY RUDIMENTARY setup for the newLISP on Rockets database!")

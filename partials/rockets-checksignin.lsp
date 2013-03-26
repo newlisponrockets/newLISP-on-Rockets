@@ -38,6 +38,11 @@
 		(set 'Rockets:CookieSalt (load-user-sql-data 8))
 		(set 'Rockets:UserAvatar (load-user-sql-data 9))
 		(set 'Rockets:UserBirthDate (load-user-sql-data 10))
+		(if (> (length load-user-sql-data) 10) ; from now on check because database might be out of date
+			(set 'Rockets:UserJoinedDate (load-user-sql-data 11)))
+		(if (> (length load-user-sql-data) 11) ; from now on check because database might be out of date
+			(set 'Rockets:UserPollsVoted (load-user-sql-data 12)))
+		(if (nil? Rockets:UserPollsVoted) (set 'Rockets:UserPollsVoted ""))
 		(if (and Rockets:UserBirthDate (= (length Rockets:UserBirthDate) 23)) ; change SQLite format to MM-DD-YYYY format
 			(set 'Rockets:UserBirthDate (string (slice Rockets:UserBirthDate 8 2) "-" (slice Rockets:UserBirthDate 5 2) "-" (slice Rockets:UserBirthDate 0 4))))
 		(if (nil? Rockets:UserAvatar) (set 'Rockets:UserAvatar "unknown.png"))
