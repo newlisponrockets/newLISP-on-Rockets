@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.41)    
+(constant (global '$ROCKETS_VERSION) 0.43)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -181,6 +181,8 @@
 	(replace "[/img]" str-input-for-web "'>")
 	(replace "[IMG]" str-input-for-web "<img src='")
 	(replace "[/IMG]" str-input-for-web "'>")
+	(replace "[mono]" str-input-for-web "<div style='font-family:Courier'>")
+	(replace "[/mono]" str-input-for-web "</div>")
 	; replace html links with clickable links
   	(set 'h "(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
   	(replace h str-input-for-web (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)
@@ -335,18 +337,19 @@
 	(displayln ">"))
 
 ;; Function: (display-paging-links)
-;; Usage: (display-paging-links int-start-page int-total-pages int-current-page "page-url")
-;; Example: (display-paging-links 1 99 2 "rockets-main")
+;; Usage: (display-paging-links int-start-page int-total-pages int-current-page "page-url" "str-parameters")
+;; Example: (display-paging-links 1 99 2 "rockets-main" "t=blogposts")
 ;; Returns: Displays a list of clickable paging links, in this example from page 1 to 99, current page 2
 ;; The "page-url" (.lsp extension added automatically) is the page that displays the content
 ;-----------------------------------------------------------------------------------------------------
-(define (display-paging-links int-start-page int-total-pages int-current-page str-page-url)
+(define (display-paging-links int-start-page int-total-pages int-current-page str-page-url str-additional-parameters)
+	(if (nil? str-additional-parameters) (set 'str-additional-parameters ""))
 	(start-div "pagination")
 	(display "<ul>")
 	(for (x int-start-page int-total-pages 1)
 	(display "<li")
 		(if (= x int-current-page) (display " class='active'"))
-		(displayln "><a href='" str-page-url ".lsp?p=" x "'>" x "</a></li>")
+		(displayln "><a href='" str-page-url ".lsp?p=" x str-additional-paramenters "'>" x "</a></li>")
 	)
 	(display "</ul>")
 	(end-div)

@@ -37,6 +37,9 @@
 (start-div "hero-unit")
 (displayln "<h2>Documentation</h2>")
 (displayln "<p>These are the basic functions of newLISP on Rockets.  Additional documentation and tutorials are coming soon.</p>")
+(displayln "<p><a href=http://newlisponrockets.com/rockets-item.lsp?p=99>Quick setup guide for installing Rockets on a new Linux system</a></p>")
+(displayln "<p><a href=http://newlisponrockets.com/rockets-item.lsp?p=97>If you get the error \"Cannot find crypto library\"</a></p>")
+
 (end-div)
 
 (dolist (d documentation-list)
