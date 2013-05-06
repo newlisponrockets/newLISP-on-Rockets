@@ -349,7 +349,7 @@
 	(for (x int-start-page int-total-pages 1)
 	(display "<li")
 		(if (= x int-current-page) (display " class='active'"))
-		(displayln "><a href='" str-page-url ".lsp?p=" x str-additional-paramenters "'>" x "</a></li>")
+		(displayln "><a href='" str-page-url ".lsp?p=" x str-additional-parameters "'>" x "</a></li>")
 	)
 	(display "</ul>")
 	(end-div)

@@ -31,4 +31,5 @@ newLISP on Rockets Revision History
 0.32 - 02/19/2013 - Added optional invert color for navbar, optional colored line underneath navbar, version # in footer
 0.36 - 02/26/2013 - Bunch of small bug fixes, primarily to ($POST) issues
 0.41 - 03/22/2013 - Many small fixes, added preliminary poll option in posts (admin only for now)
-0.42 - 05/06/2013 - Updated documentation page, added additional parameter feature to (display-paging-links)
+0.42 - 04/05/2013 - Added polls for main blog section
+0.43 - 05/06/2013 - Updated documentation page, added additional parameter feature to (display-paging-links)
