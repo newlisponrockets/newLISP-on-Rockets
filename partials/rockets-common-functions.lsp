@@ -54,13 +54,13 @@
 	(if forum-view-post (begin ; ---- begin forum view of post + comments
 		(displayln "<h3>" (list-post-data 3) "</h3>")
 		(set 'header-list '("Author" "Message"))
-		(set 'post-data (list (string "<img src='images/avatars/" (author-avatar (list-post-data 1)) "' width=64 height=64><br>" (author-name (list-post-data 1)) "<h6>Posts: " (author-posts (list-post-data 1)) "</h6>") (string (format-for-web (list-post-data 4)) post-poll-data)))
+		(set 'post-data (list (string "<img src='images/avatars/" (author-avatar (list-post-data 1)) "' width=64 height=64><br>" (author-name (list-post-data 1)) "<h6>Posts: " (author-posts (list-post-data 1)) "</h6>") (string "<h5 style='text-align:right'>Posted on: " (list-post-data 2) "</h5>" (format-for-web (list-post-data 4)) post-poll-data)))
 		(set 'PostId (int (list-post-data 0)))
 		(set 'post-data (list post-data)) ; okay these two lines of code are duplicated... I can live with it for now
 		(set 'post-comments (get-record "Comments" PostId))
 		(if post-comments (begin
 			(dolist (p post-comments)
-				(push (list (string "<img src='images/avatars/" (author-avatar (p 2)) "' width=64 height=64><br>"(author-name (p 2)) "<h6>Posts: " (author-posts (p 2)) "</h6>") (format-for-web (p 5))) post-data -1)) ; add each comment to the thread
+				(push (list (string "<img src='images/avatars/" (author-avatar (p 2)) "' width=64 height=64><br>"(author-name (p 2)) "<h6>Posts: " (author-posts (p 2)) "</h6>") (string "<h5 style='text-align:right'>Posted on: " (list-post-data 2) "</h5>" (format-for-web (p 5)))) post-data -1)) ; add each comment to the thread
 		))
 		(display-table header-list post-data "striped") 
 		(if (= Rockets:UserId 0) (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete this thread</a>"))
