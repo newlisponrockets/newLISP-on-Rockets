@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.43)    
+(constant (global '$ROCKETS_VERSION) 0.45)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -271,6 +271,8 @@
 		(displayln "                <li class=\"dropdown\">")
 		(displayln "                  <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Welcome, " Rockets:UserName "&nbsp;<b class=\"caret\"></b></a>")
 		(displayln "                  <ul class=\"dropdown-menu\"><li><a href=\"rockets-profile.lsp\">Edit Profile</a></li>")
+		; display Admin page link if admin user
+		(if (= Rockets:UserId 0) (displayln "                                              <li><a href=\"rockets-admin.lsp\">Admin page</a></li>"))
 		(displayln "                                              <li><a href=\"rockets-signout.lsp\">Sign Out</a></li></ul>")
 		(displayln "                </li>")
 		(displayln "              </ul>")
@@ -781,7 +783,7 @@
 ;! ===== FORM AND TABLE FUNCTIONS =========================================================================
 
 ;; Function: (display-post-box)
-;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box" "optional hidden value" true)
+;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box" "optional hidden value" bool-include-poll)
 ;; Returns: Displays a form with a subject line and a text box, and a submit button.  
 ;; The form will enter information into POST and redirect to "page-to-submit.lsp" when Submit is clicked.
 ;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically.
@@ -813,7 +815,7 @@
 	(if str-optional-hidden-value (displayln "<input type='hidden' name='optionalhidden' value='" str-optional-hidden-value "'>"))
 	(if bool-poll-option (begin
 		(displayln "<br>Add a poll option:")
-		(displayln "<br><br>Poll topic (leave blank for no poll): <input type=text' id='polltopic' name='polltopic' class='span4'>")
+		(displayln "<br><br>Poll topic (leave blank for no poll): <input type='text' id='polltopic' name='polltopic' class='span4'>")
 		(displayln "<br><br>Poll options (one for each line): <textarea name='pollvalues' id='pollvalues' class='field span7' rows='5'></textarea>")
 	))
 	(displayln "<br><p><input type='submit' class='btn' value='" str-submit-button-text "'>")
