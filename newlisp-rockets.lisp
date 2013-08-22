@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.45)    
+(constant (global '$ROCKETS_VERSION) 0.47)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -281,7 +281,7 @@
 		(displayln "            <form class=\"navbar-form pull-right\" method=\"post\" action=\"" str-signin ".lsp\">")
 		(displayln "              <input class=\"span2\" name=\"activepage\" id=\activepage\" type=\"hidden\" value=\"" active-page "\">")
 		(displayln "              <input class=\"span2\" name=\"email\" id=\"email\" type=\"text\" placeholder=\"Email\">")
-		(displayln "              <input class=\"span2\" name=\"password\" id=\"password\" type=\"password\" placeholder=\"Password\">")
+		(displayln "              <input class=\"span1\" name=\"password\" id=\"password\" type=\"password\" placeholder=\"Password\">")
 		(displayln "              <button type=\"submit\" class=\"btn\">Sign in</button>")
 		(displayln "<a class='btn btn-success' href='rockets-register.lsp'>Register</a>")
 
@@ -386,6 +386,46 @@
 		(displayln "<button type='button' class='close' data-dismiss='alert'>&times;</button>")
 		(displayln str-error-text)
 	(end-div))
+
+;; Function (display-h1)
+;; Usage: (display-h1 "String to display as header")
+;; Returns: Displays the string bracketed by <h1> and </h1>"
+;-----------------------------------------------------------------------------------------------------
+(define (display-h1 str-text)
+	(displayln "<h1>" str-text "</h1>")
+)
+
+;; Function (display-h2)
+;; Usage: (display-h2 "String to display as header")
+;; Returns: Displays the string bracketed by <h2> and </h2>"
+;-----------------------------------------------------------------------------------------------------
+(define (display-h2 str-text)
+	(displayln "<h2>" str-text "</h2>")
+)
+
+;; Function (display-h3)
+;; Usage: (display-h3 "String to display as header")
+;; Returns: Displays the string bracketed by <h3> and </h3>"
+;-----------------------------------------------------------------------------------------------------
+(define (display-h3 str-text)
+	(displayln "<h3>" str-text "</h3>")
+)
+
+;; Function (display-h4)
+;; Usage: (display-h4 "String to display as header")
+;; Returns: Displays the string bracketed by <h4> and </h4>"
+;-----------------------------------------------------------------------------------------------------
+(define (display-h4 str-text)
+	(displayln "<h4>" str-text "</h4>")
+)
+
+;; Function (display-h5)
+;; Usage: (display-h5 "String to display as header")
+;; Returns: Displays the string bracketed by <h5> and </h5>"
+;-----------------------------------------------------------------------------------------------------
+(define (display-h5 str-text)
+	(displayln "<h5>" str-text "</h5>")
+)
 
 ;; Function: (display-page)
 ;; Usage: (display-page)

@@ -19,6 +19,8 @@
 
 (displayln "<h2>Admin Page</h2>")
 
+(displayln "<p><i>MODIFIED HHHHHHHH and another modification</i></p>")
+
 (if (= Rockets:UserId 0) (begin ; admin-only section
 	(displayln "<h3>List of files in repository</h3>")
 	(set 'git-data (exec "git ls-tree --full-tree -r HEAD"))
@@ -27,7 +29,7 @@
 	(dolist (g git-data-parsed)
 		(push (last (parse g "\t")) git-names -1))
 	(dolist (g git-names)
-		(push (list g "<form name='FileUpload' action='rockets-adminupload.lsp' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='submit' value='Upload' name='submit'></form>") git-table -1)
+		(push (list g "<form name='FileUpload' action='rockets-adminupload.lsp?checkname=" g "' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value;this.form.style.color = \"green\";this.form.submit.style.backgroundColor = \"green\";'><input type='hidden' name='textname'><input type='submit' value='Upload' name='submit'></form>") git-table -1)
 	)	
 	(display-table '("File name" "Upload new file") git-table "hover")
 	)
