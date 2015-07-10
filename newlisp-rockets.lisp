@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.47)    
+(constant (global '$ROCKETS_VERSION) 0.48)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -387,7 +387,7 @@
 		(displayln str-error-text)
 	(end-div))
 
-;; Function (display-h1)
+;; Function: (display-h1)
 ;; Usage: (display-h1 "String to display as header")
 ;; Returns: Displays the string bracketed by <h1> and </h1>"
 ;-----------------------------------------------------------------------------------------------------
@@ -395,7 +395,7 @@
 	(displayln "<h1>" str-text "</h1>")
 )
 
-;; Function (display-h2)
+;; Function: (display-h2)
 ;; Usage: (display-h2 "String to display as header")
 ;; Returns: Displays the string bracketed by <h2> and </h2>"
 ;-----------------------------------------------------------------------------------------------------
@@ -403,7 +403,7 @@
 	(displayln "<h2>" str-text "</h2>")
 )
 
-;; Function (display-h3)
+;; Function: (display-h3)
 ;; Usage: (display-h3 "String to display as header")
 ;; Returns: Displays the string bracketed by <h3> and </h3>"
 ;-----------------------------------------------------------------------------------------------------
@@ -411,7 +411,7 @@
 	(displayln "<h3>" str-text "</h3>")
 )
 
-;; Function (display-h4)
+;; Function: (display-h4)
 ;; Usage: (display-h4 "String to display as header")
 ;; Returns: Displays the string bracketed by <h4> and </h4>"
 ;-----------------------------------------------------------------------------------------------------
@@ -419,7 +419,7 @@
 	(displayln "<h4>" str-text "</h4>")
 )
 
-;; Function (display-h5)
+;; Function: (display-h5)
 ;; Usage: (display-h5 "String to display as header")
 ;; Returns: Displays the string bracketed by <h5> and </h5>"
 ;-----------------------------------------------------------------------------------------------------
@@ -822,6 +822,33 @@
 
 ;! ===== FORM AND TABLE FUNCTIONS =========================================================================
 
+;; Function: (display-button)
+;; Usage: (display-button "Button Title" "page-to-link")
+;; Returns: Displays a normal button that when clicked, loads the linked page.
+;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically
+(define (display-button str-button-title str-page-to-link)
+	(if (not (find ".lsp" str-page-to-link)) (extend str-page-to-link ".lsp"))
+	(displayln "<a class='btn' href='" str-page-to-link "'>" str-button-title "</a>")
+)
+
+;; Function: (display-button-green)
+;; Usage: (display-button-green "Button Title" "page-to-link")
+;; Returns: Displays a green button that when clicked, loads the linked page.
+;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically
+(define (display-button-green str-button-title str-page-to-link)
+	(if (not (find ".lsp" str-page-to-link)) (extend str-page-to-link ".lsp"))
+	(displayln "<a class='btn btn-success' href='" str-page-to-link "'>" str-button-title "</a>")
+)
+
+;; Function: (display-button-red)
+;; Usage: (display-button-red "Button Title" "page-to-link")
+;; Returns: Displays a red button that when clicked, loads the linked page.
+;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically
+(define (display-button-red str-button-title str-page-to-link)
+	(if (not (find ".lsp" str-page-to-link)) (extend str-page-to-link ".lsp"))
+	(displayln "<a class='btn btn-danger' href='" str-page-to-link "'>" str-button-title "</a>")
+)
+
 ;; Function: (display-post-box)
 ;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box" "optional hidden value" bool-include-poll)
 ;; Returns: Displays a form with a subject line and a text box, and a submit button.  
@@ -920,6 +947,7 @@
 ;; Usage: (twitter-search "Key words" 10)
 ;; Returns: Displays the results of a Twitter search for the key words or phrases entered.
 ;; Optional: Add an integer to specify the maximum number of items to show
+;; Note: Twitter has changed their API and this function (which used the older, public API) no longer works.  I am working on a replacement.
 ;-----------------------------------------------------------------------------------------
 (define (twitter-search keyword max-items)
 	(set 'xml (get-url (string "http://search.twitter.com/search.atom?rpp="max-items"&q="keyword) ))

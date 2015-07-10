@@ -1,6 +1,6 @@
 #!/usr/bin/env newlisp
 
-(load "/var/www/newlisp-rockets.lisp") ; this is where the magic happens!
+(load "newlisp-rockets.lisp") ; this is where the magic happens!
 
 ; Rockets Blog - Avatar upload page (rockets-adminupload.lsp)
 ; 

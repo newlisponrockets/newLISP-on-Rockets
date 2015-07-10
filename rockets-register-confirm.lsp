@@ -1,5 +1,5 @@
 #!/usr/bin/env newlisp 
-(load "/var/www/newlisp-rockets.lisp") 
+(load "newlisp-rockets.lisp") 
 (load "Rockets-config.lisp") ; load configuration information
 (display-header)
 (open-database RocketsConfig:Database)
