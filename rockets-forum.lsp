@@ -64,9 +64,15 @@
 	(set 'post-type (x 6))
 	(set 'post-views (x 7))
 	(if (nil? post-views) (set 'post-views 0)) ; needed because views was a late addition
-	(if (or (find (string post-num "-") Rockets:UserReadPosts) (nil? Rockets:UserId)) ; if you're not logged in OR if you are, and you've read the post
+        ; check to see if the user has read this post or not
+        (if Rockets:UserReadPosts 
+          (begin
+  	    (if (or (find (string post-num "-") Rockets:UserReadPosts) (nil? Rockets:UserId)) ; if you're not logged in OR if you are, and you've read the post
 		(set 'post-read " ")
 		(set 'post-read (string " <img src=images/new-icon.png>")))
+          )
+          (set 'post-read " ")
+        )
 	(push (list (string post-subject post-read) post-type post-author post-views post-replies) forum-post-table -1)
 	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil nil) forum-links-table -1)
 )
