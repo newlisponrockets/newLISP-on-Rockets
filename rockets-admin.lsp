@@ -4,10 +4,10 @@
 
 ; (rockets-profile.lsp) - Rockets - Site admin / upload page 
 ; 
-; This page allow the site owner to upload files directly, manipulate 
-; the source control system, change theme, etc. 
+; This page allow the site owner to change the configuration of 
+; their newLISP on Rockets system.
 ;
-; Written 2013 by Rocket Man
+; Written 2018 by Jeremy Reimer
 
 (load "Rockets-config.lisp") ; load configuration information
 
@@ -20,9 +20,20 @@
 (displayln "<h2>Admin Page</h2>")
 
 (if (= Rockets:UserId 0) (begin ; admin-only section
-        (displayln "<p>Site name: " RocketsConfig:ShortName "</p>")
+        (displayln "<form name='admin'>")
+        (displayln "<h2>Site configuration</h2>")
+        (displayln "<p>Site name: <input type='text' name='shortname' value='" RocketsConfig:ShortName "'></p>")
+        (displayln "<h2>Top menu navigation</h2>")
+        ; display all navigation
+
+        (dolist (n RocketsNavigation:navbar-list)
+            (displayln "<p>Menu item: " $idx ": <input type='text' name='menuname" $idx "' value='" (n 0) "'>")
+            (displayln "Page destination: <input type='text' name='menuvalue" $idx "' value='" (n 1) "'>")
         )
-	(displayln "<p>Sorry, you must be signed in to an administer account to access this page.</p><p><a href='rockets-main.lsp'>Return to main page.</a></p>")
+        (displayln "<p><input type='submit' value='Save changes'>")
+        (displayln "</form>")
+        )
+	(displayln "<p>Sorry, you must be signed in to an admin account to access this page.</p><p><a href='rockets-main.lsp'>Return to main page.</a></p>")
 )
 	
 
