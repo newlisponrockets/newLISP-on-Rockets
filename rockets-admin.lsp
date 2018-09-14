@@ -17,23 +17,35 @@
 (set 'active-page "rockets-profile")
 (display-partial "rockets-navbar")
 
+(define (update-page)
+    (save "Rockets-config.lisp" 'RocketsConfig)
+    (save "Rockets-navigation.lisp" 'RocketsNavigation)
+    (page-redirect "rockets-admin.lsp?updated=true")
+)
+
 (displayln "<h2>Admin Page</h2>")
 
 (if (= Rockets:UserId 0) (begin ; admin-only section
+        ; if we made changes and updated the page, show success
+        (if ($GET "updated") (display-success "Settings updated."))
+        ; display the form to make changes
         (displayln "<form name='admin' method='POST'>")
         (displayln "<h3>Site configuration</h3>")
         (displayln "<p>Site name: <input type='text' name='shortname' value='" RocketsConfig:ShortName "'></p>")
         (displayln "<h3>Top menu navigation</h3>")
         ; display all navigation
 
-        (dolist (n RocketsNavigation:navbar-list)
+        (dolist (n RocketsNavigation:navbar-list)            
             (displayln "<p>Menu item: " $idx ": <input type='text' name='menuname" $idx "' value='" (n 0) "'>")
             (displayln "Page destination: <input type='text' name='menuvalue" $idx "' value='" (n 1) "'>")
+            (if (> $idx 0) (display-button-red "Delete" (string "rockets-admin.lsp?del=" $idx)))
         )
-        (displayln "<p><input type='submit' value='Save changes'>")
+        (displayln "</p><p>")
+        (display-button-green "Add menu item" (string "rockets-admin.lsp?add=true"))
+        (displayln "</p><hr><p><input type='submit' value='Save changes'></p>")
         (displayln "</form>")        
     
-        ; if we've made changes, save them.
+        ; if we've made changes to any items, save them.
         (if ($POST) (begin
              ; check to see if name has changed
             (setq get-name ($POST "shortname"))
@@ -47,12 +59,19 @@
                 (setq (RocketsNavigation:navbar-list $idx 0) item)
                 (setq (RocketsNavigation:navbar-list $idx 1) value)
             )
-            (save "Rockets-config.lisp" 'RocketsConfig)
-            (save "Rockets-navigation.lisp" 'RocketsNavigation)
-            (page-redirect "rockets-admin.lsp?updated=true")
+            (update-page)
         ))
-        ; if we made changes and updated page, show success
-        (if ($GET "updated") (display-success "Settings updated."))
+        ; if we've added or deleted items, adjust list and save them
+        (if ($GET "add") (begin 
+            (extend RocketsNavigation:navbar-list '(("New item" "filename-of-page")))
+            (update-page)
+
+        ))
+        (if ($GET "del") (begin 
+            (pop RocketsNavigation:navbar-list (int ($GET "del")))
+            (update-page)
+        ))
+
     )
 	(displayln "<p>Sorry, you must be signed in to an admin account to access this page.</p><p><a href='rockets-main.lsp'>Return to main page.</a></p>")
 )
