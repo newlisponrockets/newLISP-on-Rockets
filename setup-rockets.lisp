@@ -104,6 +104,9 @@
 (set 'UserId 0) ; Admin user is always UserId 0
 (set 'UserPosts 0) ; start from the bottom!
 
+; set the default front page configuration
+(set 'RocketsConfig:FrontPageType 1)
+
 ; save the configuration file
 (save "Rockets-config.lisp" 'RocketsConfig)
 

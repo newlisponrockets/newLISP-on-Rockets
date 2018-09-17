@@ -5,6 +5,8 @@
 
 (set 'Database "ROCKETS-BLOG")
 
+(set 'FrontPageType 1)
+
 (set 'Name "The newLISP on Rockets Blog")
 
 (set 'Owner "Rocket Man")

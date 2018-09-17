@@ -42,7 +42,20 @@
         )
         (displayln "</p><p>")
         (display-button-green "Add menu item" (string "rockets-admin.lsp?add=true"))
-        (displayln "</p><hr><p><input type='submit' value='Save changes'></p>")
+        (displayln "</p><hr>")
+        (displayln "<h3>Main Page configuration</h3>")
+        ; this sets the default front page type if none was configured before
+        (if (nil? RocketsConfig:FrontPageType) (setq RocketsConfig:FrontPageType 1))
+        (setq page-choices '("Single page with custom content" "Single page with blog posts" "Two columns with custom left hand navbar content" "Three columns with custom left and right hand navbar content" ))
+        (displayln "<select name='mainpage' style='width: auto'>")
+        (dolist (c page-choices)
+            (display "<option value='" $idx "'")
+            (if (= $idx RocketsConfig:FrontPageType) (display " selected"))
+            (displayln ">" c "</option>")
+        )
+        (displayln "</select>")        
+
+        (displayln "<hr><p><input type='submit' value='Save changes'></p>")
         (displayln "</form>")        
     
         ; if we've made changes to any items, save them.
@@ -58,7 +71,8 @@
                 (setq value ($POST (string "menuvalue" $idx)))
                 (setq (RocketsNavigation:navbar-list $idx 0) item)
                 (setq (RocketsNavigation:navbar-list $idx 1) value)
-            )
+            )            
+            (if ($POST "mainpage") (setq RocketsConfig:FrontPageType (int ($POST "mainpage"))))
             (update-page)
         ))
         ; if we've added or deleted items, adjust list and save them
