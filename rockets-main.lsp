@@ -17,39 +17,57 @@
 (set 'active-page "rockets-main")
 (display-partial "rockets-navbar") ; shows the navigation bar with Rockets blog menus
 
-(start-div "hero-unit")
-	(display-image "newlisp-rockets-picture.jpg" 960 540)
-	(displayln "<h2>" RocketsConfig:Name "</h2>")
-	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
-(end-div)
-
 ; get current page from URL (if there is one)
 (set 'current-page (force-parameters 1 ($GET "p"))) ; we only need the first part, ignore anything else
 (if current-page (set 'current-page (int current-page)) (set 'current-page 1))
 
-; get all existing posts
-(set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts WHERE PostType='Blog post'"))))))
-
-(set 'total-pages (/ total-posts Blog:posts-per-page))
-(if (>= (mod (float total-posts) (float Blog:posts-per-page)) 1) (inc total-pages)) ; fix number of pages if not evenly divisible
-
-(display-paging-links 1 total-pages current-page active-page)
-
-(set 'start-post-num (- (* current-page Blog:posts-per-page) Blog:posts-per-page))
-(set 'posts-query-sql (string "SELECT * from Posts WHERE PostType='Blog post' ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
-
-(set 'posts-result (query posts-query-sql))
-; print out all posts
-(dolist (x posts-result)
-	(display-individual-post x)
+(define (display-hero-unit)
+    (start-div "hero-unit")
+        (display-image "newlisp-rockets-picture.jpg" 960 540)
+        (displayln "<h2>" RocketsConfig:Name "</h2>")
+        (displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
+    (end-div)
 )
 
-(display-paging-links 1 total-pages current-page active-page) ; display them again
+(define (display-custom-content)
+    (displayln "<h1>Your custom content goes here!</h1>")
+)
 
-; print post entry box
-(if Rockets:IsUserAdmin (begin
-	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil nil true)
-)) ; only the site administrator may make new blog posts at the moment
+(define (display-blog-posts)
+    ; get all existing posts
+    (set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts WHERE PostType='Blog post'"))))))
+
+    (set 'total-pages (/ total-posts Blog:posts-per-page))
+    (if (>= (mod (float total-posts) (float Blog:posts-per-page)) 1) (inc total-pages)) ; fix number of pages if not evenly divisible
+
+    (display-paging-links 1 total-pages current-page active-page)
+
+    (set 'start-post-num (- (* current-page Blog:posts-per-page) Blog:posts-per-page))
+    (set 'posts-query-sql (string "SELECT * from Posts WHERE PostType='Blog post' ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
+
+    (set 'posts-result (query posts-query-sql))
+    ; print out all posts
+    (dolist (x posts-result)
+    	(display-individual-post x)
+    )
+
+    (display-paging-links 1 total-pages current-page active-page) ; display them again
+
+    ; print post entry box
+    (if Rockets:IsUserAdmin (begin
+    	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil nil true)
+    )) ; only the site administrator may make new blog posts at the moment
+)
+
+(case RocketsConfig:FrontPageType
+     (0 (display-custom-content))
+     (1 (display-hero-unit) (display-blog-posts))
+     (2 (display-hero-unit) (start-div "row-fluid") (start-div "span4") (display-partial "rockets-leftpanel") (end-div) 
+        (start-div "span8") (display-blog-posts) (end-div) (end-div) )
+     (3 (display-hero-unit) (start-div "row-fluid") (start-div "span3") (display-partial "rockets-leftpanel") (end-div)
+        (start-div "span6") (display-blog-posts) (end-div)
+        (start-div "span3") (display-partial "rockets-rightpanel") (end-div) (end-div))
+)
 
 (close-database)
 (display-footer RocketsConfig:Owner)

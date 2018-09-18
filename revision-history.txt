@@ -33,3 +33,5 @@ newLISP on Rockets Revision History
 0.41 - 03/22/2013 - Many small fixes, added preliminary poll option in posts (admin only for now)
 0.42 - 04/05/2013 - Added polls for main blog section
 0.43 - 05/06/2013 - Updated documentation page, added additional parameter feature to (display-paging-links)
+0.48 - 07/10/2015 - Removed some hardcoded directories from Rockets pages, cleaned up some bugs
+
