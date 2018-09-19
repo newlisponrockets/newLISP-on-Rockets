@@ -56,7 +56,14 @@
         (displayln "</select>")        
 
         (displayln "<hr><p><input type='submit' value='Save changes'></p>")
-        (displayln "</form>")        
+        (displayln "</form>")    
+
+        ; add form for uploading a main image for the blog
+        (displayln "<p>Blog header image:")
+        (if RocketsConfig:HeaderImage 
+            (displayln "<img src='images/" RocketsConfig:HeaderImage "' width=300 height=200>") 
+            (displayln "Default image"))
+        (displayln "<form name='FileUpload' action='fileupload.lsp?updateheader=yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='hidden' name='updateheaderimage' value='yes'><input type='submit' value='Upload' name='submit'></form>")    
     
         ; if we've made changes to any items, save them.
         (if ($POST) (begin

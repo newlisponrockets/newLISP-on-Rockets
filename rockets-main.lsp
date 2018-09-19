@@ -2,12 +2,12 @@
 
 (load "newlisp-rockets.lisp") ; this is where the magic happens!
 
-; Rockets - Main Page
+; Rockets 2.0 - Main Page
 ; 
-; This is the first version of the self-hosted blog for newLISP on Rockets.
-; The blog is designed to showcase how you would use Rockets for a real application.
+; This is the second  version of the self-hosted blog for newLISP on Rockets.
+; The blog is minimalist but functional, and can be customized in the Admin control panel
 ; 
-; Written 2012 by Rocket Man
+; Copyright 2012-2018 by Jeremy Reimer (aka Rocket Man)
 
 (load "Rockets-config.lisp") ; load configuration information
 (display-header RocketsConfig:Name)
@@ -23,14 +23,17 @@
 
 (define (display-hero-unit)
     (start-div "hero-unit")
-        (display-image "newlisp-rockets-picture.jpg" 960 540)
+        (if RocketsConfig:HeaderImage
+            (display-image RocketsConfig:HeaderImage)
+            (display-image "newlisp-rockets-picture.jpg" 960 540)
+        )        
         (displayln "<h2>" RocketsConfig:Name "</h2>")
         (displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
     (end-div)
 )
 
 (define (display-custom-content)
-    (displayln "<h1>Your custom content goes here!</h1>")
+    (display-partial "rockets-custom")
 )
 
 (define (display-blog-posts)
