@@ -7,7 +7,7 @@
 
 (set 'FrontPageType 1)
 
-(set 'HeaderImage "newlisp-rockets-picture.jpg")
+(set 'HeaderImage "jupiter-from-juno.jpg")
 
 (set 'Name "The newLISP on Rockets Blog")
 

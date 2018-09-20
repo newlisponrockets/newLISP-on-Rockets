@@ -1,6 +1,6 @@
 #!/usr/bin/env newlisp
 
-(load "/var/www/newlisp-rockets.lisp") ; this is where the magic happens!
+(load "newlisp-rockets.lisp") ; this is where the magic happens!
 
 (load "Rockets-config.lisp") ; load configuration information
 
@@ -31,7 +31,8 @@
 			(set 'PostDate (date (date-value) 0 "%Y-%m-%d %H:%M:%S.000"))
 			(set 'PostPoll ($POST "polltopic")) ; for polls, adds text to post and info to database
 			(set 'PostPollValues ($POST "pollvalues"))
-			(if PostPoll (begin
+			(displayln "Post Poll Values: " PostPoll ">>>")
+			(if (not (= PostPoll "")) (begin
 				(set 'poll-prepend-text (string "[h4]" PostPoll "[/h4]\n[poll]"))
 				(set 'PostPollSubject PostSubject) ; we need a copy of this variable  
 				(replace " " PostPollSubject "_") ; this is to generate unique form names for each poll

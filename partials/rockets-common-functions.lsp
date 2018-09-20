@@ -37,6 +37,7 @@
 	(extend return-result "<table width=*>")
 	(dolist (pppp poll-list)
 		(set 'percentage-of-total (mul (div (float (pppp 1)) total-votes) 100))
+		;(displayln "POLL DEGBUGGING: " (poll-title-list (int (pppp 0))))
 		(extend return-result (string "<tr><td width=20%>" (poll-title-list (int (pppp 0))) ":</td><td width=10%> " (pppp 1) "</td><td width=70%><span style='background-color: #00009d'>" (dup "." percentage-of-total) "</span></td></tr>"))
 	)
 	(extend return-result (string "</table><br><br>"))

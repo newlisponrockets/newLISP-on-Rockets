@@ -31,7 +31,8 @@
         ; display the form to make changes
         (displayln "<form name='admin' method='POST'>")
         (displayln "<h3>Site configuration</h3>")
-        (displayln "<p>Site name: <input type='text' name='shortname' value='" RocketsConfig:ShortName "'></p>")
+        (displayln "<p>Site short name: <input type='text' name='shortname' value='" RocketsConfig:ShortName "'></p>")
+        (displayln "<p>Site full name: <input type='text' name='longname' value='" RocketsConfig:Name "'></p>")
         (displayln "<h3>Top menu navigation</h3>")
         ; display all navigation
 
@@ -72,6 +73,9 @@
             (if get-name (begin
                 (setq RocketsConfig:ShortName get-name)
             ))
+            (setq get-long-name ($POST "longname"))
+            (if get-long-name (begin 
+                (setq RocketsConfig:Name get-long-name)))
             ; check to see if links have changed
             (dolist (m RocketsNavigation:navbar-list)
                 (setq item ($POST (string "menuname" $idx)))
