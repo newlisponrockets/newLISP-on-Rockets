@@ -8,7 +8,7 @@
 ; Without Dragonfly I would have been unable to do Rockets at all.  Some parts of Rockets contain
 ; snippets of Dragonfly code.  Also thanks to Lutz Mueller, the author of newLISP at http://www.newlisp.org 
 ;
-; Copyright 2012 - 2018 by Jeremy Reimer (aka Rocket Man)
+; Copyright 2012, 2013 by Rocket Man
 ;
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.48)    
+(constant (global '$ROCKETS_VERSION) 0.99)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -569,8 +569,8 @@
 ;; Usage: ($POST "optional key name")
 ;; Returns: ($POST) on its own returns a list of all key/value pairs from the page's POST data.
 ;; Optional: ($POST "key name") returns the value for that particular key name.
-;; Note: You can retrieve multiple values for the same key name by appending [] to the key name.
-;; Example: POST data contains "name[]=a name[]=b", calling ($POST "name[]") will return ("a" "b")
+;; Note: For multi-select checkboxes, ($POST) does not return a list the way ($GET) does. For these boxes, 
+;; please give each checkbox a different name (eg: selection1, selection2, etc.)
 ;-----------------------------------------------------------------------------------------------------
 
 (if (and (env "CONTENT_TYPE") (starts-with (env "CONTENT_TYPE") "multipart/form-data"))

@@ -7,9 +7,9 @@
 
 (set 'FrontPageType 1)
 
-(set 'HeaderImage "jupiter-from-juno.jpg")
+(set 'HeaderImage "newlisp-rockets-2-logo.jpg")
 
-(set 'Name "The newLISP on Rockets Blog")
+(set 'Name "The newLISP on Rockets 2.0 Blog")
 
 (set 'Owner "Rocket Man")
 
