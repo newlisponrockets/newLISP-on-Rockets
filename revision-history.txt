@@ -35,4 +35,5 @@ newLISP on Rockets Revision History
 0.43 - 05/06/2013 - Updated documentation page, added additional parameter feature to (display-paging-links)
 0.48 - 07/10/2015 - Removed some hardcoded directories from Rockets pages, cleaned up some bugs
 0.98 - 09/21/2018 - Did a whole bunch of work and added some customization features to the Admin page, in preparation for a 2.0 release.
-
+0.99 - 09/24/2018 - Fixed an issue in the API documentation where the ($POST) feature didn't work the same way as the ($GET) feature for multiple checkboxes in forms
+ 

@@ -8,7 +8,7 @@
 ; Without Dragonfly I would have been unable to do Rockets at all.  Some parts of Rockets contain
 ; snippets of Dragonfly code.  Also thanks to Lutz Mueller, the author of newLISP at http://www.newlisp.org 
 ;
-; Copyright 2012, 2013 by Rocket Man
+; Copyright 2012 - 2018 by Jeremy Reimer (aka Rocket Man)
 ;
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.99)    
+(constant (global '$ROCKETS_VERSION) 0.991)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -87,9 +87,10 @@
 (define (parse-get-or-post thing-to-parse tree-to-add)
 		(dolist (r (parse thing-to-parse "&"))
 			(let (rtemp (parse r "="))
+			(replace "%5B%5D" rtemp "[]") ; fix encoding for
 			(if (> (length rtemp) 1) (begin 
 				; if it's multi-value (last 2 chars end in []) AND this value exists in the tree already, add it to the list
- 				(if (and (tree-to-add (rtemp 0)) (ends-with (rtemp 0) "[]"))
+ 				(if (and (tree-to-add (rtemp 0)) (or (ends-with (rtemp 0) "[]") (ends-with (rtemp 0) "%5B%5D")))
 					(tree-to-add (rtemp 0) (flat (push (tree-to-add (rtemp 0)) (list (url-decode (rtemp 1))))))
 					(tree-to-add (rtemp 0) (url-decode (rtemp 1))))
 			))
@@ -569,8 +570,10 @@
 ;; Usage: ($POST "optional key name")
 ;; Returns: ($POST) on its own returns a list of all key/value pairs from the page's POST data.
 ;; Optional: ($POST "key name") returns the value for that particular key name.
-;; Note: For multi-select checkboxes, ($POST) does not return a list the way ($GET) does. For these boxes, 
-;; please give each checkbox a different name (eg: selection1, selection2, etc.)
+;; Note: You can retrieve multiple values for the same key name by appending [] to the key name in the form
+;; But when you retrieve the ($POST) variable, use "%5B%5D" instead of "[]"
+;; eg: <input type='checkbox' name='leftpanel[]' value='box1'>
+;; retrieve this with ($POST "leftpanel%5B%5D")
 ;-----------------------------------------------------------------------------------------------------
 
 (if (and (env "CONTENT_TYPE") (starts-with (env "CONTENT_TYPE") "multipart/form-data"))
@@ -581,7 +584,11 @@
 		;(displayln "<P>Buffering...</p>")
 		(while (read (device) buffer $MAX_POST_LENGTH)
 			(write post-buffer buffer))
+		; DEBUGGING
+		;(displayln "***** POST BUFFER: " post-buffer)
+		;(displayln "HELLLLLLLLLLLLLLOOOOOOO")
 		(parse-get-or-post post-buffer $POST)
+		;(displayln ($POST))
 	)
 )
 ; below is the old code that had a bug that truncated long posts.  Leaving it in for now for reference.

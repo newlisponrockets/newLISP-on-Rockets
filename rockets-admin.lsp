@@ -60,25 +60,25 @@
         ; Left hand navigation options (only if you've enabled left-hand panel display)
         (if (or (= RocketsConfig:FrontPageType 2) (= RocketsConfig:FrontPageType 3)) (begin 
             (displayln "<h3>Left-hand panel configuration</h3>")
-            (displayln "<input type='checkbox' name='leftpanel1' value='box1'>Custom HTML display box 1<br>")
-            (displayln "<input type='checkbox' name='leftpanel2' value='popposts'>Most popular blog posts<br>")
-            (displayln "<input type='checkbox' name='leftpanel3' value='recentposts'>Recent forum posts<br>")
-            (displayln "<input type='checkbox' name='leftpanel4' value='forumlink'>Forum link<br>")
-            (displayln "<input type='checkbox' name='leftpanel5' value='box2'>Custom HTML display box 2<br>")
-            (displayln "<input type='checkbox' name='leftpanel6' value='box3'>Custom HTML display box 3<br>")
-            (displayln "<input type='checkbox' name='leftpanel7' value='blogtopics'>Blog topics<br>")
-            (displayln "<input type='checkbox' name='leftpanel8' value='box4'>Custom HTML display box 4<br>")
+            (displayln "<input type='checkbox' name='leftpanel[]' value='box1'>Custom HTML display box 1<br>")
+            (displayln "<input type='checkbox' name='leftpanel[]' value='popposts'>Most popular blog posts<br>")
+            (displayln "<input type='checkbox' name='leftpanel[]' value='recentposts'>Recent forum posts<br>")
+            (displayln "<input type='checkbox' name='leftpanel[]' value='forumlink'>Forum link<br>")
+            (displayln "<input type='checkbox' name='leftpanel[]' value='box2'>Custom HTML display box 2<br>")
+            (displayln "<input type='checkbox' name='leftpanel[]' value='box3'>Custom HTML display box 3<br>")
+            (displayln "<input type='checkbox' name='leftpanel[]' value='blogtopics'>Blog topics<br>")
+            (displayln "<input type='checkbox' name='leftpanel[]' value='box4'>Custom HTML display box 4<br>")
         ))
         (if (= RocketsConfig:FrontPageType 3) (begin 
             (displayln "<h3>Right-hand panel configuration</h3>")
-            (displayln "<input type='checkbox' name='rightpanel1' value='box1'>Custom HTML display box 1<br>")
-            (displayln "<input type='checkbox' name='rightpanel2' value='popposts'>Most popular blog posts<br>")
-            (displayln "<input type='checkbox' name='rightpanel3' value='recentposts'>Recent forum posts<br>")
-            (displayln "<input type='checkbox' name='rightpanel4' value='forumlink'>Forum link<br>")
-            (displayln "<input type='checkbox' name='rightpanel5' value='box2'>Custom HTML display box 2<br>")
-            (displayln "<input type='checkbox' name='rightpanel6' value='box3'>Custom HTML display box 3<br>")
-            (displayln "<input type='checkbox' name='rightpanel7' value='blogtopics'>Blog topics<br>")
-            (displayln "<input type='checkbox' name='rightpanel8' value='box4'>Custom HTML display box 4<br>")
+            (displayln "<input type='checkbox' name='rightpanel[]' value='box1'>Custom HTML display box 1<br>")
+            (displayln "<input type='checkbox' name='rightpanel[]' value='popposts'>Most popular blog posts<br>")
+            (displayln "<input type='checkbox' name='rightpanel[]' value='recentposts'>Recent forum posts<br>")
+            (displayln "<input type='checkbox' name='rightpanel[]' value='forumlink'>Forum link<br>")
+            (displayln "<input type='checkbox' name='rightpanel[]' value='box2'>Custom HTML display box 2<br>")
+            (displayln "<input type='checkbox' name='rightpanel[]' value='box3'>Custom HTML display box 3<br>")
+            (displayln "<input type='checkbox' name='rightpanel[]' value='blogtopics'>Blog topics<br>")
+            (displayln "<input type='checkbox' name='rightpanel[]' value='box4'>Custom HTML display box 4<br>")
         ))
 
 
@@ -112,8 +112,8 @@
             ; check if main page layout has changed
             (if ($POST "mainpage") (setq RocketsConfig:FrontPageType (int ($POST "mainpage"))))
             ; check if left and/or right hand panel configuration has changed            
-            (if ($POST "leftpanel") (displayln ($POST "leftpanel[]")))
-
+            (if ($POST "leftpanel%5B%5D") (setq RocketsConfig:LeftPanel ($POST "leftpanel%5B%5D")))
+            (if ($POST "rightpanel%5B%5D") (setq RocketsConfig:RightPanel ($POST "rightpanel%5B%5D")))
             (update-page)
         ))
         ; if we've added or deleted items, adjust list and save them
