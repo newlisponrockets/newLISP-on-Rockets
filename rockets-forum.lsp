@@ -65,9 +65,8 @@
 	(set 'post-views (x 7))
 	(if (nil? post-views) (set 'post-views 0)) ; needed because views was a late addition
         ; check to see if the user has read this post or not
-        (if Rockets:UserReadPosts 
-          (begin
-  	    (if (or (find (string post-num "-") Rockets:UserReadPosts) (nil? Rockets:UserId)) ; if you're not logged in OR if you are, and you've read the post
+        (if Rockets:UserReadPosts (begin
+	  (if (or (find (string post-num "-") Rockets:UserReadPosts) (nil? Rockets:UserId)) ; if you're not logged in OR if you are, and you've read the post
 		(set 'post-read " ")
 		(set 'post-read (string " <img src=images/new-icon.png>")))
           )
@@ -87,7 +86,7 @@
 
 ; print post entry box
 (if Rockets:UserId (begin
-	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil "Forum")
+	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil "Forum" true)
 )) ; any registered user may make a forum post
 
 (close-database)
