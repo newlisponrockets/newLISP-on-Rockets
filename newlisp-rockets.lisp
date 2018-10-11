@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.991)    
+(constant (global '$ROCKETS_VERSION) 0.992)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -857,7 +857,7 @@
 )
 
 ;; Function: (display-post-box)
-;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box" "optional hidden value" bool-include-poll)
+;; Usage: (display-post-box "Title" "Form Name" "page-to-submit" "Subject Line ID" "Postbox ID" "Submit Button Text" "optional linkback value" "optional text to pre-populate subject line" "optional text to pre-populate post box" "optional hidden value" bool-include-poll str-tags)
 ;; Returns: Displays a form with a subject line and a text box, and a submit button.  
 ;; The form will enter information into POST and redirect to "page-to-submit.lsp" when Submit is clicked.
 ;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically.
@@ -865,23 +865,26 @@
 ;; Note: You can hide the Subject Line text box by simply entering nil (no quotes) as the subject line.
 ;; Note: The "optional linkback value" parameter sets a hidden field named "linkbackid" in the form and sets it to that value.
 ;; Note: I've added another "optional hidden value" that sets a hidden field named "optionalhidden" in the form and sets it to that value.
+;; Note: For Rockets 2.0, there is another option called "str-tags" that adds a tags option
 ;; If this becomes a trend, I might just turn hidden values into a list, which would be cleaner, but we'll leave it for now.
 ;; This is useful for when you want the page that is called via the submit button to remember the Id # of, for example,
 ;; which post you were editing or just added.
 ;; Note: The final option "true" will add a poll option to the post box display.
 ;-----------------------------------------------------------------------------------------------------
-(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id str-optional-subject-value str-optional-post-value str-optional-hidden-value bool-poll-option)
+(define (display-post-box str-title str-form-name str-action-page str-subject-line str-postbox-id str-submit-button-text str-linkback-id str-optional-subject-value str-optional-post-value str-optional-hidden-value bool-poll-option str-tags)
 	(displayln "<h3>" str-title "</h3>")
 	(if (not (find ".lsp" str-action-page)) (extend str-action-page ".lsp"))
 	(displayln "<form name='" str-form-name "' METHOD='POST' action='" str-action-page "'>")
 	; can either show or hide subject line if you enter a value for str-subject-line
 	(if str-subject-line 
-		(display "<input type='text' class='field span5' name='" str-subject-line "' ")
+		(display "<p>Post title:</p> <input type='text' class='field span5' name='" str-subject-line "' ")
 		(display "<input type='hidden' class='field span5' name='subjectline' "))
 	(if str-optional-subject-value 
 		(display "value='" str-optional-subject-value "'>")
 		(display "value=''>"))
-	(display "<p><textarea name='post' id='" str-postbox-id "' class='field span9' rows='12'>")
+	(if str-tags 
+		(display "<p>Tags:</p> <p><input type='text' class='field span5' name='" str-tags "'></p> "))
+	(display "<p>Body:</p><p> <textarea name='post' id='" str-postbox-id "' class='field span9' rows='12'>")
 	(if str-optional-post-value (display str-optional-post-value))
 	(displayln "</textarea>")
 	; now add the two hidden values, if they exist

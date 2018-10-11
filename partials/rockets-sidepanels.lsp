@@ -15,7 +15,7 @@
                 (displayln "<li><a href=rockets-item.lsp?p=" (p 0) ">" (p 1) "</a></li>"))
 
     ))
-    (if (find "recentposts" panel-type) (begin ; Popular posts
+    (if (find "recentposts" panel-type) (begin ; Recent posts
 
         (display "<h3>Recent forum posts</h3>")
         (set 'new-posts (query "SELECT ID,PostSubject from Posts ORDER BY PostDate DESC LIMIT 5"))
@@ -39,6 +39,21 @@
     (if (find "blogtopics" panel-type) (begin ; Popular posts
 
         (display "<h3>Topics</h3>")
+        (set 'blog-keywords (query "SELECT DISTINCT PostTags from Posts;"))
+        ;(displayln (flat blog-keywords))
+        ;(displayln (nil? (first (flat blog-keywords))))
+        (if (not (nil? (first (flat blog-keywords)))) (begin
+            (dolist (k blog-keywords)
+                (set 'comma-delim (parse (first k) ","))
+                (dolist (cd comma-delim)
+                    (push (title-case (trim cd)) blog-keywords-parsed -1))
+            )
+            (set 'blog-keywords-parsed (sort (unique blog-keywords-parsed)))
+            (dolist (b blog-keywords-parsed) (displayln "<br><a href='rockets-main.lsp?tags=" b "'>" b "</a>"))
+        )
+            (displayln "<p>No post topics defined. Add some!</p>")
+        )
+
     ))               
     (if (find "box4" panel-type) (begin ; Popular posts
 

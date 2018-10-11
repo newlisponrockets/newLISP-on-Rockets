@@ -57,7 +57,7 @@
 
     ; print post entry box
     (if Rockets:IsUserAdmin (begin
-    	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil nil true)
+    	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil nil true "tags")
     )) ; only the site administrator may make new blog posts at the moment
 )
 
