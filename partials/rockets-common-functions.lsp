@@ -71,6 +71,7 @@
 		(displayln "<br><b>Post #:</b> " (list-post-data 0) )
 		(displayln "<BR><B>Date:</b> " (list-post-data 2) "")
 		(displayln "<br><B>Author:</b> " (author-name (list-post-data 1)) "")
+		(if (> (length list-post-data) 8) (if (list-post-data 9) (displayln "<br><b>Tags:</b> " (list-post-data 9))))
 		(displayln "<br><br><p>" (format-for-web (list-post-data 4)) post-poll-data "</p>")
 		(if (= Rockets:UserId 0) (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete post</a>"))
 		(if (= Rockets:UserId 0) (displayln "<a class='btn btn-info' href='rockets-item.lsp?p=" (list-post-data 0) "&edit=yes#edit'>Edit post</a>"))

@@ -39,17 +39,21 @@
     (if (find "blogtopics" panel-type) (begin ; Popular posts
 
         (display "<h3>Topics</h3>")
-        (set 'blog-keywords (query "SELECT DISTINCT PostTags from Posts;"))
-        ;(displayln (flat blog-keywords))
+        (set 'blog-keywords (flat (query "SELECT DISTINCT PostTags from Posts;")))
+        ;(displayln blog-keywords)
         ;(displayln (nil? (first (flat blog-keywords))))
-        (if (not (nil? (first (flat blog-keywords)))) (begin
+        (if (not (nil? (last (flat blog-keywords)))) (begin
             (dolist (k blog-keywords)
-                (set 'comma-delim (parse (first k) ","))
-                (dolist (cd comma-delim)
-                    (push (title-case (trim cd)) blog-keywords-parsed -1))
+                (if (not (nil? k)) (begin
+                    ;(displayln "***>>>" k)
+                    (set 'comma-delim (parse k ","))
+                    (dolist (cd comma-delim)
+                        (push (title-case (trim cd)) blog-keywords-parsed -1))
+                ))
             )
             (set 'blog-keywords-parsed (sort (unique blog-keywords-parsed)))
             (dolist (b blog-keywords-parsed) (displayln "<br><a href='rockets-main.lsp?tags=" b "'>" b "</a>"))
+            (displayln "<p></p>")
         )
             (displayln "<p>No post topics defined. Add some!</p>")
         )

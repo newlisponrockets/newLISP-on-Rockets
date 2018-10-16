@@ -29,6 +29,7 @@
 			(set 'PostSubject ($POST "subjectline"))
 			(set 'PostContent ($POST "post"))
 			(set 'PostDate (date (date-value) 0 "%Y-%m-%d %H:%M:%S.000"))
+			(set 'PostTags ($POST "tags"))
 			(set 'PostPoll ($POST "polltopic")) ; for polls, adds text to post and info to database
 			(set 'PostPollValues ($POST "pollvalues"))
 			(displayln "Post Poll Values: " PostPoll ">>>")
@@ -47,7 +48,7 @@
 			(if (= post-type-trigger "Forum")
 				(set 'PostType "Forum post")
 				(set 'PostType "Blog post"))
-			(create-record "Posts" Id PosterId PostDate PostSubject PostContent PostType) ; It's the C in CRUD!
+			(create-record "Posts" Id PosterId PostDate PostSubject PostContent PostType PostTags) ; It's the C in CRUD!
 			; now update the user's postcount! postcount++!!
 			(set 'UserId Rockets:UserId)
 			(set 'UserPosts (++ Rockets:UserPosts))
