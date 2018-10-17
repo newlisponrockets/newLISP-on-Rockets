@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.992)    
+(constant (global '$ROCKETS_VERSION) 0.993)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -836,6 +836,15 @@
 (define (display-button str-button-title str-page-to-link)
 	(if (not (find ".lsp" str-page-to-link)) (extend str-page-to-link ".lsp"))
 	(displayln "<a class='btn' href='" str-page-to-link "'>" str-button-title "</a>")
+)
+
+;; Function: (display-button-blue)
+;; Usage: (display-button-blue "Button Title" "page-to-link")
+;; Returns: Displays a blue button that when clicked, loads the linked page.
+;; Note: The .lsp extension is optional.  If it is not entered, it will be added automatically
+(define (display-button-blue str-button-title str-page-to-link)
+	(if (not (find ".lsp" str-page-to-link)) (extend str-page-to-link ".lsp"))
+	(displayln "<a class='btn btn-primary' href='" str-page-to-link "'>" str-button-title "</a>")
 )
 
 ;; Function: (display-button-green)
