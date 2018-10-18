@@ -148,21 +148,45 @@
         )) ; end General Configuration section
         ; CUSTOM CONFIGURATION ------------------------------------------------------------------------
         (if (= ($GET "tab") "custom") (begin 
-        (displayln "<form name='admin' method='POST'>")
-        (displayln "<h3>Custom HTML box 1</h3>")
-        (displayln "<textarea name='post1' id='html1' class='field span9' rows='10'>")
-        (displayln "</textarea>")
-        (displayln "<h3>Custom HTML box 2</h3>")
-        (displayln "<textarea name='post2' id='html2' class='field span9' rows='10'>")
-        (displayln "</textarea>")
-        (displayln "<h3>Custom HTML box 3</h3>")
-        (displayln "<textarea name='post3' id='html3' class='field span9' rows='10'>")
-        (displayln "</textarea>")
-        (displayln "<h3>Custom HTML box 4</h3>")
-        (displayln "<textarea name='post4' id='html4' class='field span9' rows='10'>")
-        (displayln "</textarea>")
-        (displayln "<hr><p><input type='submit' value='Save changes'></p>")
-
+            (if ($GET "updated") (display-success "Settings updated."))
+            (displayln "<form name='admin' method='POST'>")
+            (displayln "<h3>Custom HTML box 1</h3>")
+            (displayln "<textarea name='post1' id='html1' class='field span9' rows='10'>")
+            (if (read-file "partials/panel1.html") (displayln (read-file "partials/panel1.html")))
+            (displayln "</textarea>")
+            (displayln "<h3>Custom HTML box 2</h3>")
+            (displayln "<textarea name='post2' id='html2' class='field span9' rows='10'>")
+            (if (read-file "partials/panel2.html") (displayln (read-file "partials/panel2.html")))
+            (displayln "</textarea>")
+            (displayln "<h3>Custom HTML box 3</h3>")
+            (displayln "<textarea name='post3' id='html3' class='field span9' rows='10'>")
+            (if (read-file "partials/panel3.html") (displayln (read-file "partials/panel3.html")))
+            (displayln "</textarea>")
+            (displayln "<h3>Custom HTML box 4</h3>")
+            (displayln "<textarea name='post4' id='html4' class='field span9' rows='10'>")
+            (if (read-file "partials/panel4.html") (displayln (read-file "partials/panel4.html")))
+            (displayln "</textarea>")
+            (displayln "<hr><p><input type='submit' value='Save changes'></p>")
+            (displayln "</form>")
+            ; note that we aren't doing any sanity checks on the HTML, because this page is only accessible to Admins
+            ; if the admin wants to do a script injection attack on their own site, that's up to them!
+    
+            (if ($POST) (begin
+                (if ($POST "post1") (begin 
+                    (write-file "partials/panel1.html" ($POST "post1"))
+                ))
+                (if ($POST "post2") (begin 
+                    (write-file "partials/panel2.html" ($POST "post2"))
+                    (displayln "POST2!!!!!!!!!!!!!!!!")
+                ))
+                (if ($POST "post3") (begin 
+                    (write-file "partials/panel3.html" ($POST "post3"))
+                ))
+                (if ($POST "post4") (begin 
+                    (write-file "partials/panel4.html" ($POST "post4"))
+                ))
+                (update-page)
+            ))
         )) ; end General Configuration section
 
         ; MEDIA CONFIGURATION ------------------------------------------------------------------------
