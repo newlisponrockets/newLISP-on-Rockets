@@ -191,6 +191,25 @@
 
         ; MEDIA CONFIGURATION ------------------------------------------------------------------------
         (if (= ($GET "tab") "media") (begin 
+            (if ($GET "image") 
+                (begin (displayln "<img src='images/" ($GET "image") "'>")
+                    (displayln "<p></p><br><br>") 
+                    (display-button "Return to image directory" "rockets-admin.lsp?tab=media")
+                )
+                (begin
+                    (setq image-files (directory "images"))
+                    (start-div "span12")
+                    (dolist (file image-files)
+                        (if (or (ends-with file ".jpg") (ends-with file ".png") (ends-with file ".gif") (ends-with file ".jpeg")) (begin 
+                            (start-div "span2")
+                            (displayln "<p><a href=rockets-admin.lsp?tab=media&image=" file "><img src='images/" file "' width=200></a></p>")
+                            (end-div)
+                        ))
+                    )
+                    (displayln "<p><br>")
+                    (end-div)
+            ))
+            
 
         )) ; end General Configuration section
 

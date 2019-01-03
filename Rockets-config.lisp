@@ -9,7 +9,7 @@
 
 (set 'HeaderImage "newlisp-rockets-2-logo.jpg")
 
-(set 'LeftPanel '("popposts" "recentposts" "blogtopics"))
+(set 'LeftPanel '("box1" "popposts" "recentposts" "blogtopics"))
 
 (set 'Name "The newLISP on Rockets 2.0 Blog")
 
