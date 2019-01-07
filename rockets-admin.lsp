@@ -194,7 +194,22 @@
             (if ($GET "image") 
                 (begin (displayln "<img src='images/" ($GET "image") "'>")
                     (displayln "<p></p><br><br>") 
-                    (display-button "Return to image directory" "rockets-admin.lsp?tab=media")
+                    (if ($GET "delete-confirm") (begin 
+                        (if (= ($GET "delete-confirm") "yes") (begin
+                                (displayln "deleting file...")
+                                (delete-file (string "images/" ($GET "image")))
+                                (page-redirect "rockets-admin.lsp?tab=media") 
+                            ) 
+                            (begin
+                                (display-button "Cancel deletion" (string "rockets-admin.lsp?tab=media&image=" ($GET "image")))
+                                (display-button-red "Confirm deletion" (string "rockets-admin.lsp?tab=media&delete-confirm=yes&image=" ($GET "image")))
+                            ))
+                    )
+                    (begin 
+                        (display-button-red "Delete image" (string "rockets-admin.lsp?tab=media&delete-confirm=confirm&image=" ($GET "image")))
+                        (displayln "<br><br>")
+                        (display-button "Return to image directory" "rockets-admin.lsp?tab=media")
+                    ))
                 )
                 (begin
                     (setq image-files (directory "images"))
@@ -206,8 +221,10 @@
                             (end-div)
                         ))
                     )
-                    (displayln "<p><br>")
                     (end-div)
+                    (displayln "<p><br><br>")
+                    (displayln "<h3>Add new image</h3>")
+                    (displayln "<form name='FileUpload' action='fileupload.lsp?media='yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='hidden' name='updateheaderimage' value='yes'><input type='submit' value='Upload' name='submit'></form>")                    
             ))
             
 
