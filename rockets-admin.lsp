@@ -232,6 +232,38 @@
 
         ; USERS CONFIGURATION ------------------------------------------------------------------------
         (if (= ($GET "tab") "users") (begin 
+            (if ($GET "delete") (begin 
+                (if (= ($GET "delete") "confirm") (begin 
+                    (set 'UserId (force-parameters 1 ($GET "user")))
+                    (displayln "Deleting user #" UserId)
+                    (set 'user-info (get-record "Users" UserId))  
+                    (displayln "<p>User name: " (user-info 0 7))
+                    (displayln "<p>User email: " (user-info 0 1)) 
+                    (displayln "<p>User postcount: " (user-info 0 4))
+                    (displayln "<p>User joinedate: " (user-info 0 11))
+                    (displayln "<p>User avatar: " (user-info 0 9))
+                    (displayln "<p>User achievements: " (user-info 0 5))
+                    (displayln "</p><br>")
+                    (display-button "Cancel deletion" (string "rockets-admin.lsp?tab=users"))
+                    (display-button-red "Confirm deletion" (string "rockets-admin.lsp?tab=users&delete=yes&user=" ($GET "user")))  
+                ))
+            )
+            (begin
+                (set 'user-list (query "SELECT * FROM Users"))
+
+                (dolist (x user-list)
+                        (displayln "<p>User #: " (x 0)) 
+                        (displayln "&nbsp<a href='rockets-admin.lsp?tab=users&delete=confirm&user=" (x 0) "'>Delete user</a>")
+                        (displayln "<p>User name: " (x 7))
+                        (displayln "<p>User email: " (x 1)) 
+                        (displayln "<p>User postcount: " (x 4))
+                        (displayln "<p>User joinedate: " (x 11))
+                        (displayln "<p>User avatar: " (x 9))
+                        (displayln "<p>User achievements: " (x 5))
+                        (displayln "<hr>"))
+
+                        (displayln "<br><br><br>")
+            ))
 
         )) ; end General Configuration section
 

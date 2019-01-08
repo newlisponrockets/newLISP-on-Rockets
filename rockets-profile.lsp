@@ -43,25 +43,7 @@
 	(displayln "<p>Avatar: <img src='images/avatars/" Rockets:UserAvatar "' width=64 height=64")
 	(displayln "<hr>")
 	(displayln "<p>Upload new avatar (all avatars scaled to 64x64 pixels): <form name='FileUpload' action='rockets-avatarupload.lsp' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='submit' value='Upload' name='submit'></form>")
-	(if (= Rockets:UserId 0) (begin ; admin-only section
-		(displayln "<p>User list:")
-		(set 'userlist (get-record "Users"))
-		(display-table '("User Id" "User Email" "Password Hash" "Salt" "Posts" "Achievements" "Read Posts" "User Name" "Cookie Salt" "User Avatar") userlist "hover")			
-		; show some table stuff
-		(displayln "<p><b>TABLES: ") (dolist (x (query "SELECT * from SQLITE_MASTER;")) (displayln "<br>* " x))
-		; TESTING FLUID LAYOUT THINGIES
-		(start-div "row-fluid")
-			(start-div "span4")
-				(displayln "Testing Column 1 ....................")
-			(end-div)
-			(start-div "span8")
-				(displayln "Testing Column 2 ....................")
-			(end-div)
-		(end-div)
-		;(displayln "Adding PostViews column to Posts table")
-		;(displayln (query "ALTER TABLE Posts ADD COLUMN PostViews TEXT"))
-		; --end admin-only section
-	))
+
 	) ; -- end section that shows if the user is signed in
 	(displayln "<p>You must be signed in to view your user profile.</p>")
 )
