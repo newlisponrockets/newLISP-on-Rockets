@@ -235,7 +235,7 @@
             (if ($GET "delete") (begin 
                 (if (= ($GET "delete") "confirm") (begin 
                     (set 'UserId (force-parameters 1 ($GET "user")))
-                    (displayln "Deleting user #" UserId)
+                    (displayln "<h3>Deleting user #" UserId "</h3>")
                     (set 'user-info (get-record "Users" UserId))  
                     (displayln "<p>User name: " (user-info 0 7))
                     (displayln "<p>User email: " (user-info 0 1)) 
@@ -246,14 +246,22 @@
                     (displayln "</p><br>")
                     (display-button "Cancel deletion" (string "rockets-admin.lsp?tab=users"))
                     (display-button-red "Confirm deletion" (string "rockets-admin.lsp?tab=users&delete=yes&user=" ($GET "user")))  
-                ))
+                )
+                    (begin
+                        (set 'UserId (force-parameters 1 ($GET "user")))
+                        (displayln "Actually deleting user " UserId)
+                        (displayln "Here's the result:")
+                        (displayln (delete-record "Users" UserId))
+                        (page-redirect "rockets-admin.lsp?tab=users")
+                    )
+                )
             )
             (begin
                 (set 'user-list (query "SELECT * FROM Users"))
 
                 (dolist (x user-list)
-                        (displayln "<p>User #: " (x 0)) 
-                        (displayln "&nbsp<a href='rockets-admin.lsp?tab=users&delete=confirm&user=" (x 0) "'>Delete user</a>")
+                        (displayln "<p>User #: " (x 0))  
+                        (if (not (= (x 0) 0)) (displayln "&nbsp<a href='rockets-admin.lsp?tab=users&delete=confirm&user=" (x 0) "'>Delete user</a>"))
                         (displayln "<p>User name: " (x 7))
                         (displayln "<p>User email: " (x 1)) 
                         (displayln "<p>User postcount: " (x 4))

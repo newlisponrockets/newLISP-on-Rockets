@@ -47,7 +47,7 @@
 			(set 'Rockets:UserBirthDate (string (slice Rockets:UserBirthDate 8 2) "-" (slice Rockets:UserBirthDate 5 2) "-" (slice Rockets:UserBirthDate 0 4))))
 		(if (nil? Rockets:UserAvatar) (set 'Rockets:UserAvatar "unknown.png"))
 		; set Admin flag if UserId=1 OR if Admin flag set in Achievements
-		(if (or (= Rockets:UserId 0) (find "A" Rockets:UserAchievements))
+		(if (or (= Rockets:UserId 0) (and Rockets:UserAchievements (find "A" Rockets:UserAchievements)))
 			(set 'Rockets:IsUserAdmin true)
 			(set 'Rockets:IsUserAdmin nil))
 	))

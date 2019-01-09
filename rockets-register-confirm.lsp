@@ -67,7 +67,7 @@
 (displayln (query (string "select * from Users")))
 ; set the cookie
 (set 'new-cookie (string UserId "|" CookieSalt))
-(set-cookie rocket-cookie-name new-cookie (date-value 2053 2 28))
+(set-cookie rocket-cookie-name new-cookie (+ (date-value) (* 60 60 24 365))) ; set cookie for one year from now
 
 ; one last thing, send a nice email welcoming the new user!
 (set 'welcome-email "Thank you for registering.  If you have any questions, please don't hesitate to email me or post a comment on the blog.\n\nSincerely,\n\nRocket Man")
