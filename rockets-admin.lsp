@@ -74,7 +74,20 @@
                 (if (= $idx RocketsConfig:FrontPageType) (display " selected"))
                 (displayln ">" c "</option>")
             )
-            (displayln "</select>")     
+            (displayln "</select>") 
+
+            (displayln "<h3>Individual Page configuration</h3>")    
+            ; this sets the default front page type if none was configured before
+            (if (nil? RocketsConfig:IndividualPageType) (setq RocketsConfig:IndividualPageType 1)) 
+            (setq page-choices '("Individual post by itself " "Two columns with custom left hand navbar content" "Three columns with custom left and right hand navbar content" ))
+            (displayln "<select name='individualpage' style='width: auto'>")
+            (dolist (c page-choices)
+                (display "<option value='" $idx "'")
+                (if (= $idx RocketsConfig:IndividualPageType) (display " selected"))
+                (displayln ">" c "</option>")
+            )
+            (displayln "</select>") 
+
 
             ; Left hand navigation options (only if you've enabled left-hand panel display)
             (if (or (= RocketsConfig:FrontPageType 2) (= RocketsConfig:FrontPageType 3)) (begin 
@@ -130,6 +143,8 @@
                 )            
                 ; check if main page layout has changed
                 (if ($POST "mainpage") (setq RocketsConfig:FrontPageType (int ($POST "mainpage"))))
+                ; check if individual page layout has changed
+                (if ($POST "individualpage") (setq RocketsConfig:IndividualPageType (int ($POST "individualpage"))))
                 ; check if left and/or right hand panel configuration has changed            
                 (if ($POST "leftpanel%5B%5D") (setq RocketsConfig:LeftPanel ($POST "leftpanel%5B%5D")))
                 (if ($POST "rightpanel%5B%5D") (setq RocketsConfig:RightPanel ($POST "rightpanel%5B%5D")))
