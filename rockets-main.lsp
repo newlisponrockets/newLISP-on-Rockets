@@ -36,17 +36,24 @@
 )
 
 (define (display-blog-posts)
+    ; get optional limiting tag
+    (set 'tag-name (force-parameters 1 ($GET "tags")))
+    (if tag-name (displayln "<h3> Showing topics tagged as: " tag-name "</h3>"))
     ; get all existing posts
-    (set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts WHERE PostType='Blog post'"))))))
-
+    (if tag-name 
+        (set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts WHERE PostType='Blog post' AND PostTags LIKE '%" tag-name "%'"))))))
+        (set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts WHERE PostType='Blog post'"))))))
+    )
     (set 'total-pages (/ total-posts Blog:posts-per-page))
     (if (>= (mod (float total-posts) (float Blog:posts-per-page)) 1) (inc total-pages)) ; fix number of pages if not evenly divisible
 
     (display-paging-links 1 total-pages current-page active-page)
 
     (set 'start-post-num (- (* current-page Blog:posts-per-page) Blog:posts-per-page))
-    (set 'posts-query-sql (string "SELECT * from Posts WHERE PostType='Blog post' ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
-
+    (if tag-name
+        (set 'posts-query-sql (string "SELECT * from Posts WHERE PostType='Blog post' AND PostTags LIKE '%" tag-name "%' ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
+        (set 'posts-query-sql (string "SELECT * from Posts WHERE PostType='Blog post' ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
+    )
     (set 'posts-result (query posts-query-sql))
     ; print out all posts
     (dolist (x posts-result)
