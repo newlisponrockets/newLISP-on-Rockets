@@ -27,6 +27,8 @@
 (load "Rockets-config.lisp") ; load configuration information
 (open-database RocketsConfig:Database)
 (query "ALTER TABLE Posts ADD PostTags TEXT;")
+(query "ALTER TABLE Posts ADD PostLastAuthor TEXT;")
+(query "ALTER TABLE Posts ADD PostLastDate INTEGER;")
 (close-database)
 (exit)
 
