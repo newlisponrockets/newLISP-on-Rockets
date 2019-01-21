@@ -63,6 +63,8 @@
 	(set 'post-replies (x 5)) (if (nil? post-replies) (set 'post-replies "0"))
 	(set 'post-type (x 6))
 	(set 'post-views (x 7))
+	(set 'post-lastauthor (x 10))
+	(set 'post-lastdate (x 11))
 	(if (nil? post-views) (set 'post-views 0)) ; needed because views was a late addition
         ; check to see if the user has read this post or not
         (if Rockets:UserReadPosts (begin
@@ -72,11 +74,11 @@
           )
           (set 'post-read " ")
         )
-	(push (list (string post-subject post-read) post-type post-author post-views post-replies) forum-post-table -1)
-	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil nil) forum-links-table -1)
+	(push (list (string post-subject post-read) post-type post-author post-views post-replies (string post-lastdate " by " post-lastauthor)) forum-post-table -1)
+	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil nil nil) forum-links-table -1)
 )
 
-(display-table '("Topic Subject" "Post Type" "Post Author" "Views" "Replies") forum-post-table "striped" forum-links-table)
+(display-responsive '("Topic Subject" "Post Type" "Post Author" "Views" "Replies" "Last Post") forum-post-table "striped" forum-links-table)
 
 (display-paging-links 1 total-pages current-page active-page) ; display them again
 

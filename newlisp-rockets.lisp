@@ -961,6 +961,61 @@
 	(displayln "</table>")
 )
 
+;; Function: (display-responsive)
+;; Usage: (display-responsive list-of-headers nested-list-of-data "optional form styling" '((optional) (nested) (list) (of) (links)))
+;; Example: (display-responsive '("First" "Last" "Email") '(("Joe" "McBain" "joe@joe.com") ("Bob" "McBain" "bob@bob.com")) "striped")
+;; Returns: Displays a responsive table with headers that will scale appropriately on mobile.  If no headers are provided (entered as nil) they will not display  
+;; Note: Styling options are as follows:
+;; striped - alternates rows in grey
+;; bordered - adds borders and rounded corners to the table
+;; hover - enables hover state on table rows when mousing over
+;; condensed - more condensed style of table
+;-----------------------------------------------------------------------------------------------------
+(define (display-responsive list-of-headers nested-list-of-data str-optional-styling list-optional-links)
+	;(if str-optional-styling (display " table-" str-optional-styling))
+	(start-div "row-fluid")
+	(start-div "span12")
+	(if list-of-headers (begin
+		(start-div "row-fluid")
+		(start-div "span12")
+		(dolist (th list-of-headers)
+			(if (= $idx 0) 
+				(start-div "span4")
+				(start-div "span1"))
+			(displayln "<b>" th "</b>")
+			(end-div))
+		(end-div)
+		(end-div)))
+	(if nested-list-of-data (begin		
+		(dolist (tr nested-list-of-data)
+			(start-div "row-fluid")
+			(start-div "span12")
+			(set 'temp-row-num $idx)			
+			(dolist (td tr)				
+				(if (= $idx 0) 
+					(start-div "span4")
+					(start-div "span1 "))
+				(if list-optional-links (begin
+					(if (list-optional-links temp-row-num) (begin ; this is in case there is an entire row of 'nil' in the list
+						(if (list-optional-links temp-row-num $idx) (begin
+							(display "<a href='" (list-optional-links temp-row-num $idx) "'>" td "</a>"))
+							(display td))
+						) ; -- end row of nil case
+						(display td)
+					)) ; -- end optional links existing case
+					(display td))
+				(displayln "")
+				(end-div)
+			)
+			(displayln ""))
+			(end-div)
+			(end-div)
+	))
+	(displayln "")
+	(end-div)
+	(end-div)
+)
+
 ;! ===== SOCIAL MEDIA, EMAIL AND RSS FUNCTIONS =====================================================
 ;; Function: (twitter-search)
 ;; Usage: (twitter-search "Key words" 10)
