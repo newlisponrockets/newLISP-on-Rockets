@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.994)    
+(constant (global '$ROCKETS_VERSION) 0.995)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -962,26 +962,27 @@
 )
 
 ;; Function: (display-responsive)
-;; Usage: (display-responsive list-of-headers nested-list-of-data "optional form styling" '((optional) (nested) (list) (of) (links)))
-;; Example: (display-responsive '("First" "Last" "Email") '(("Joe" "McBain" "joe@joe.com") ("Bob" "McBain" "bob@bob.com")) "striped")
+;; Usage: (display-responsive list-of-headers nested-list-of-data "optional form styling" '((optional) (nested) (list) (of) (links)) '((optional) (nested) (list) (of) (numerical) (widths))')
+;; Example: (display-responsive '("First" "Last" "Email") '(("Joe" "McBain" "joe@joe.com") '("Bob" "McBain" "bob@bob.com")) "striped" '(3 3 6))
 ;; Returns: Displays a responsive table with headers that will scale appropriately on mobile.  If no headers are provided (entered as nil) they will not display  
 ;; Note: Styling options are as follows:
 ;; striped - alternates rows in grey
 ;; bordered - adds borders and rounded corners to the table
 ;; hover - enables hover state on table rows when mousing over
 ;; condensed - more condensed style of table
+;; Note: Widths are numerical integers that must total to less than 12 (the maximum width of a desktop display).
+;; On mobile, the display will format differently. Usually only one column will fill the display and they will stack.
 ;-----------------------------------------------------------------------------------------------------
-(define (display-responsive list-of-headers nested-list-of-data str-optional-styling list-optional-links)
+(define (display-responsive list-of-headers nested-list-of-data str-optional-styling list-optional-links list-optional-widths)
 	;(if str-optional-styling (display " table-" str-optional-styling))
+	(if (nil? list-optional-widths) (set 'list-optional-widths (dup 1 (length list-of-headers))))
 	(start-div "row-fluid")
 	(start-div "span12")
 	(if list-of-headers (begin
 		(start-div "row-fluid")
-		(start-div "span12")
+		(displayln "<div class=span12 style ='background-color: #8DBBEF;'>")
 		(dolist (th list-of-headers)
-			(if (= $idx 0) 
-				(start-div "span4")
-				(start-div "span1"))
+			(start-div (string "span" (list-optional-widths $idx)))
 			(displayln "<b>" th "</b>")
 			(end-div))
 		(end-div)
@@ -989,12 +990,16 @@
 	(if nested-list-of-data (begin		
 		(dolist (tr nested-list-of-data)
 			(start-div "row-fluid")
-			(start-div "span12")
+			; hacky striping replacement
+			(if (= str-optional-styling "striped")
+				(if (= (mod $idx 2) 0) 
+					(displayln "<div class=span12 style ='background-color: #DCDBDD;'>")
+					(displayln "<div class=span12 style ='background-color: #EFEFEF;'>"))
+				(start-div "span12")
+			)
 			(set 'temp-row-num $idx)			
 			(dolist (td tr)				
-				(if (= $idx 0) 
-					(start-div "span4")
-					(start-div "span1 "))
+				(start-div (string "span" (list-optional-widths $idx)))
 				(if list-optional-links (begin
 					(if (list-optional-links temp-row-num) (begin ; this is in case there is an entire row of 'nil' in the list
 						(if (list-optional-links temp-row-num $idx) (begin
@@ -1007,13 +1012,15 @@
 				(displayln "")
 				(end-div)
 			)
-			(displayln ""))
+			(displayln "")
 			(end-div)
 			(end-div)
+		)
 	))
 	(displayln "")
 	(end-div)
 	(end-div)
+
 )
 
 ;! ===== SOCIAL MEDIA, EMAIL AND RSS FUNCTIONS =====================================================

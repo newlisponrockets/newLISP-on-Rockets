@@ -78,7 +78,7 @@
 	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil nil nil) forum-links-table -1)
 )
 
-(display-responsive '("Topic Subject" "Post Type" "Post Author" "Views" "Replies" "Last Post") forum-post-table "striped" forum-links-table)
+(display-responsive '("Topic Subject" "Post Type" "Post Author" "Views" "Replies" "Last Post") forum-post-table "striped" forum-links-table '(4 2 2 1 1 2))
 
 (display-paging-links 1 total-pages current-page active-page) ; display them again
 
