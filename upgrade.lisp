@@ -28,7 +28,21 @@
 (open-database RocketsConfig:Database)
 (query "ALTER TABLE Posts ADD PostTags TEXT;")
 (query "ALTER TABLE Posts ADD PostLastAuthor TEXT;")
-(query "ALTER TABLE Posts ADD PostLastDate INTEGER;")
+(query "ALTER TABLE Posts ADD PostLastDate DATE;")
+
+; go through all posts and find the last author and last author date
+(set 'all-posts (query "SELECT * FROM Posts;"))
+(dolist (p all-posts)
+    (set 'replies (query (string "SELECT * FROM Comments WHERE PostId=" (p 0))))    
+    (println p)
+    (if replies (begin
+        (println replies)
+
+    )
+    )
+)
+
+
 (close-database)
 (exit)
 
