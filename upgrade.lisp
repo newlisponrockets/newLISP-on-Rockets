@@ -34,12 +34,22 @@
 (set 'all-posts (query "SELECT * FROM Posts;"))
 (dolist (p all-posts)
     (set 'replies (query (string "SELECT * FROM Comments WHERE PostId=" (p 0))))    
-    (println p)
     (if replies (begin
-        (println replies)
-
-    )
-    )
+        (setq final-reply (last replies))
+        (print "FINAL AUTHOR: " (final-reply 2))
+        (setq final-author (query (string "SELECT UserName from Users WHERE UserId=" (final-reply 2))))
+        (print "FINAL AUTHOR: " final-author)
+        (setq last-author (first (first final-author)))
+        (setq last-date (final-reply 3))
+        (println "LAST AUTHOR **COMMENT**:::>>>>>>>>>" last-author)
+        (println "LAST DATE **COMMENT**:::>>>>>>>>>" last-date)
+    ) (begin
+        (setq last-author (first (first (query (string "SELECT UserName from Users WHERE UserId=" (p 1))))))
+        (setq last-date (p 2))
+        (println "LAST AUTHOR:::>>>>>>>>>" last-author)
+        (println "LAST DATE:::>>>>>>>>>" last-date)
+    ))
+    (query (string "UPDATE Posts SET PostLastAuthor = '" last-author "', PostLastDate = '" last-date "' WHERE Id=" (p 0)))
 )
 
 
