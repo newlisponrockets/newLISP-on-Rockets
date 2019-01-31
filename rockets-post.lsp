@@ -10,6 +10,7 @@
 ; Posts!
 (open-database RocketsConfig:Database)
 (display-partial "rockets-checksignin") ; checks to see if user is signed in
+(display-partial "rockets-common-functions") ; add functions common to the blog but not the Rockets framework itself
 
 (if Rockets:UserId (begin ; must be a registered user to post anything
 
@@ -26,9 +27,11 @@
 			(set 'post-type-trigger ($POST "optionalhidden")) ; this is a hidden value to make forum posts, not blog posts
 			(set 'Id (+ max-posts 1))
 			(set 'PosterId Rockets:UserId) ; Any registered user may post, but only Admin may post blog posts
+			(set 'PostLastAuthor (author-name PosterId true))
 			(set 'PostSubject ($POST "subjectline"))
 			(set 'PostContent ($POST "post"))
 			(set 'PostDate (date (date-value) 0 "%Y-%m-%d %H:%M:%S.000"))
+			(set 'PostLastDate PostDate)
 			(set 'PostTags ($POST "tags"))
 			(set 'PostPoll ($POST "polltopic")) ; for polls, adds text to post and info to database
 			(set 'PostPollValues ($POST "pollvalues"))
@@ -48,7 +51,7 @@
 			(if (= post-type-trigger "Forum")
 				(set 'PostType "Forum post")
 				(set 'PostType "Blog post"))
-			(create-record "Posts" Id PosterId PostDate PostSubject PostContent PostType PostTags) ; It's the C in CRUD!
+			(create-record "Posts" Id PosterId PostDate PostSubject PostContent PostType PostTags PostLastAuthor PostLastDate) ; It's the C in CRUD!
 			; now update the user's postcount! postcount++!!
 			(set 'UserId Rockets:UserId)
 			(set 'UserPosts (++ Rockets:UserPosts))

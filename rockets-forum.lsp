@@ -48,7 +48,7 @@
 (display-paging-links 1 total-pages current-page active-page)
 
 (set 'start-post-num (- (* current-page Blog:forum-posts-per-page) Blog:forum-posts-per-page))
-(set 'posts-query-sql (string "SELECT * from Posts ORDER BY Id DESC LIMIT " start-post-num "," Blog:forum-posts-per-page ";"))
+(set 'posts-query-sql (string "SELECT * from Posts ORDER BY PostLastDate DESC LIMIT " start-post-num "," Blog:forum-posts-per-page ";"))
 
 (set 'posts-result (query posts-query-sql))
 

@@ -122,14 +122,18 @@
 )
 
 ; Get the user's name given the user Id
-(define (author-name str-author-id)
+(define (author-name str-author-id bool-no-html)
 	(set 'str-author-id (int str-author-id))
 	(set 'get-user-name-query (query (string "SELECT UserName FROM Users WHERE UserId=" str-author-id ";")))
 	(if (nil? get-user-name-query)
 		(set 'result-name "Unknown User"))
-	(if (= str-author-id 0)
-		(set 'result-name (string "<span class='text-error'>" (first (first get-user-name-query)) "</span>")) ; red names for admin.  It's funny that admin gets error styled text!
-		(set 'result-name (string "<span class='text-info'>" (first (first get-user-name-query)) "</span>")) ; blue names for everyone else (at the moment)
+	(if (nil? bool-no-html) (begin ; sometimes you don't want styled text
+		(if (= str-author-id 0)
+			(set 'result-name (string "<span class='text-error'>" (first (first get-user-name-query)) "</span>")) ; red names for admin.  It's funny that admin gets error styled text!
+			(set 'result-name (string "<span class='text-info'>" (first (first get-user-name-query)) "</span>")) ; blue names for everyone else (at the moment)
+		)
+	)
+		(set 'result-name (first (first get-user-name-query))) ; this is the plain unstyled version, suitable for updating last post author
 	)
 )
 
