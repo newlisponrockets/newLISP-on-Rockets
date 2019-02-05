@@ -61,7 +61,10 @@
 		(set 'post-comments (get-record "Comments" PostId))
 		(if post-comments (begin
 			(dolist (p post-comments)
-				(push (list (string "<img src='images/avatars/" (author-avatar (p 2)) "' width=64 height=64><br>"(author-name (p 2)) "<h6>Posts: " (author-posts (p 2)) "</h6>") (string "<h5 style='text-align:right'>Posted on: " (p 3) "</h5>" (format-for-web (p 5)))) post-data -1)) ; add each comment to the thread
+				(if Rockets:IsUserAdmin 
+					(set 'edit-link (string "<a href='rockets-item.lsp?edit-comment=true&pid=" (p 0) "'> Edit</a> ") )
+					(set 'edit-link ""))
+				(push (list (string "<img src='images/avatars/" (author-avatar (p 2)) "' width=64 height=64><br>"(author-name (p 2)) "<h6>Posts: " (author-posts (p 2)) "</h6>") (string "<h5 style='text-align:right'>Posted on: " (p 3) edit-link "</h5>" (format-for-web (p 5)))) post-data -1)) ; add each comment to the thread
 		))
 		(display-responsive header-list post-data "striped" nil '(2 10)) 
 		(if (= Rockets:UserId 0) (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete this thread</a>"))
@@ -86,13 +89,16 @@
 				(set 'PostId (int (list-post-data 0)))
 				(set 'post-comments (get-record "Comments" PostId))
 				(dolist (p post-comments)
+					(if Rockets:IsUserAdmin 
+						(set 'edit-link (string "<a href='rockets-item.lsp?edit-comment=true&pid=" (p 0) "'> Edit</a> ") )
+						(set 'edit-link ""))
 					(start-div "media")
 					(displayln "  <a class=\"pull-left\" href=\"#\">")
 					(displayln "    <img class=\"media-object\" src=\"images/avatars/" (author-avatar (p 2)) "\" width=64 height=64>")
 					(displayln "  </a>")
 					(start-div "media-body")
-					(displayln "<h4 class=\"media-heading\">" (author-name (p 2)) " on " (p 3) "</h4>")
-					(displayln "<i>" (format-for-web (p 5)) "</i>")
+					(displayln "<h4 class=\"media-heading\">" (author-name (p 2)) " on " (p 3) edit-link "</h4>")
+					(displayln "" (format-for-web (p 5)) "")
 					(end-div) 
 					(end-div)
 					(displayln "<hr>")

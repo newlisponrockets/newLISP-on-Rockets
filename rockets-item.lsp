@@ -9,6 +9,7 @@
 (set 'Id (integer (force-parameters 1 ($GET "p"))))
 (set 'edit-post (force-parameters 1 ($GET "edit")))
 (set 'forum-view-post (force-parameters 1 ($GET "f")))
+(set 'edit-comment (force-parameters 1 ($GET "edit-comment")))
 
 (if Id (extend active-page (string ".lsp?p=" Id))) ; in case user logs in and wants to return to this exact page
 (if forum-view-post (extend active-page (string "&f=true")))
@@ -29,15 +30,23 @@
 						(update-record "Users" UserId UserReadPosts)
 					))
 			)))
-			(displayln "<p>Sorry! We couldn't find that post."))
+			(displayln "<p>Sorry! We couldn't find that post.</p>"))
 		)
-		(displayln "<p>Sorry! We couldn't process your request, probably due to a timeout.  Please refresh the page and try again.")
+		(displayln "") ; we used to apologize for not showing a post, but if you're editing a comment you won't see it anyway.
 	)
 
-	(if edit-post (begin
+	(if (and edit-post Rockets:IsUserAdmin) (begin ; only Admins can edit posts for now.
 		(displayln "<a name='edit'></a>")
 		(set 'post-content (first post-content))
 		(display-post-box "Edit post..." "postsomething" "rockets-edit-post" "subjectline" "replybox" "Update Message" Id (post-content 3) (post-content 4))
+	))
+
+	(if (and edit-comment Rockets:IsUserAdmin) (begin ; only Admins can edit comments for now.
+		(set 'Id (force-parameters 1 ($GET "pid")))
+		(set 'comment-content (get-record "Comments" Id))
+		(displayln "<a name='edit'></a>")
+		(set 'comment-content (first comment-content))
+		(display-post-box "Edit comment..." "commentsomething" "rockets-edit-post" "subjectline" "replybox" "Update Message" Id (comment-content 4) (comment-content 5) "comment")
 	))
 )
 
