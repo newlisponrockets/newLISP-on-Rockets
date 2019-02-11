@@ -59,6 +59,8 @@
 		(set 'PostId (int (list-post-data 0)))
 		(set 'post-data (list post-data)) ; okay these two lines of code are duplicated... I can live with it for now
 		(set 'post-comments (get-record "Comments" PostId))
+		(set 'PostType (list-post-data 6))
+		(displayln "<h4>" PostType "</h4>")
 		(if post-comments (begin
 			(dolist (p post-comments)
 				(if Rockets:IsUserAdmin 
@@ -72,6 +74,7 @@
 	(begin ;  ------ begin blog view of post + comments
 		(displayln "<h4><a href='rockets-item.lsp?p=" (list-post-data 0) "'>" (list-post-data 3) "</a></h4>")
 		(displayln "<br><b>Post #:</b> " (list-post-data 0) )
+		(displayln "<br><b>Post type:</b> " (list-post-data 6) )
 		(displayln "<BR><B>Date:</b> " (list-post-data 2) "")
 		(displayln "<br><B>Author:</b> " (author-name (list-post-data 1)) "")
 		(if (> (length list-post-data) 8) (if (list-post-data 9) (displayln "<br><b>Tags:</b> " (list-post-data 9))))

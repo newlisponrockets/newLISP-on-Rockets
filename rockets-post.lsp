@@ -27,6 +27,7 @@
 			(set 'post-type-trigger ($POST "optionalhidden")) ; this is a hidden value to make forum posts, not blog posts
 			(set 'Id (+ max-posts 1))
 			(set 'PosterId Rockets:UserId) ; Any registered user may post, but only Admin may post blog posts
+			(set 'PostType ($POST "posttype"))
 			(set 'PostLastAuthor (author-name PosterId true))
 			(set 'PostSubject ($POST "subjectline"))
 			(set 'PostContent ($POST "post"))
@@ -48,9 +49,13 @@
 				)
 				(set 'PostContent (string poll-prepend-text " [/poll]\n\n\n " PostContent))
 			))
-			(if (= post-type-trigger "Forum")
-				(set 'PostType "Forum post")
-				(set 'PostType "Blog post"))
+			(displayln "Post Type (before): " PostType)
+			(if (nil? PostType) (begin ; regular users can make Forum Posts but nothing else, admins can make multiple PostTypes
+				(if (= post-type-trigger "Forum")
+					(set 'PostType "Forum post")
+					(set 'PostType "Blog post"))
+			))
+			(displayln "Post Type (after): " PostType)
 			(create-record "Posts" Id PosterId PostDate PostSubject PostContent PostType PostTags PostLastAuthor PostLastDate) ; It's the C in CRUD!
 			; now update the user's postcount! postcount++!!
 			(set 'UserId Rockets:UserId)
@@ -62,8 +67,8 @@
 
 )) ; end check to see if user is signed in
 
-;(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>")
-(if (= PostType "Blog post")
+;(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>") ; for debugging
+if (= PostType "Blog post")
 	(page-redirect "rockets-main.lsp")
 	(page-redirect "rockets-forum.lsp"))
 (display-page)

@@ -36,6 +36,8 @@
 )
 
 (define (display-blog-posts)
+    ; admin anchor link for posting
+    (if Rockets:IsUserAdmin (displayln "<p><a href='#postbox'>Jump to post box</a></p>"))
     ; get optional limiting tag
     (set 'tag-name (force-parameters 1 ($GET "tags")))
     (if tag-name (displayln "<h3> Showing topics tagged as: " tag-name "</h3>"))
@@ -64,7 +66,8 @@
 
     ; print post entry box
     (if Rockets:IsUserAdmin (begin
-    	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil nil true "tags")
+        (displayln "<a id='postbox'></a>") ; anchor link for post box
+    	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil nil true "tags" '("Blog post" "Page" "Podcast" "Comic"))
     )) ; only the site administrator may make new blog posts at the moment
 )
 
