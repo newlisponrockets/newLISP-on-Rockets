@@ -49,7 +49,7 @@
 
 ; everything checked out, let's register this person!
 (displayln (query "pragma table_info('Users')"))
-(set 'UserId (+ (int (first (first (query "select count(*) from Users")))) 1))
+(set 'UserId (+ (int (first (first (query "select MAX(UserId) from Users")))) 1))
 (displayln "<br>UserId: " UserId)
 (displayln "<br>UserEmail: " UserEmail)
 (displayln "<br>UserPassword: " UserPassword)

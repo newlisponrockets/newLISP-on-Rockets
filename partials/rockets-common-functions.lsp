@@ -43,20 +43,28 @@
 	(extend return-result (string "</table><br><br>"))
 )
 
+; this function replaces certain tags that are admin-only
+(define (update-admin-tags str-post-content int-post-id)
+	(replace "[image]" str-post-content (string "<form name='FileUpload' action='fileupload.lsp?updateblogpost=" int-post-id "' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='submit' value='Upload' name='submit'></form>"))
+	(replace "[IMAGE]" str-post-content (string "<form name='FileUpload' action='fileupload.lsp?updateblogpost=" int-post-id "' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='submit' value='Upload' name='submit'></form>"))
+)
+
 ; this function displays an individual post with headers and the post itself
 ; also shows comments if bool-show-comments is true, and allows a logged-in user to reply
 ; also allows post to be shown in forum view if forum-view-post=true
-(define (display-individual-post list-post-data bool-show-comments str-linkback-id)
+(define (display-individual-post list-post-data bool-show-comments str-linkback-id bool-hide-headers, post-body)
 	; POLL STUFF
 	(if (> (length list-post-data) 7) ; only with databases that contain PostPoll in Posts
 		(if (list-post-data 8) (set 'post-poll-data (display-poll-results (list-post-data 8) (list-post-data 4))))
 	)
 	(if (nil? post-poll-data) (set 'post-poll-data "")) ; if no poll just leave blank
+	(set 'PostId (int (list-post-data 0)))
+	(set 'post-body (format-for-web (list-post-data 4))) ; main body of message
+	(if Rockets:IsUserAdmin (set 'post-body (update-admin-tags post-body PostId))) ; update admin tags if user is an admin
 	(if forum-view-post (begin ; ---- begin forum view of post + comments
 		(displayln "<h3>" (list-post-data 3) "</h3>")
 		(set 'header-list '("Author" "Message"))
-		(set 'post-data (list (string "<img src='images/avatars/" (author-avatar (list-post-data 1)) "' width=64 height=64><br>" (author-name (list-post-data 1)) "<h6>Posts: " (author-posts (list-post-data 1)) "</h6>") (string "<h5 style='text-align:right'>Posted on: " (list-post-data 2) "</h5>" (format-for-web (list-post-data 4)) post-poll-data)))
-		(set 'PostId (int (list-post-data 0)))
+		(set 'post-data (list (string "<img src='images/avatars/" (author-avatar (list-post-data 1)) "' width=64 height=64><br>" (author-name (list-post-data 1)) "<h6>Posts: " (author-posts (list-post-data 1)) "</h6>") (string "<h5 style='text-align:right'>Posted on: " (list-post-data 2) "</h5>" post-body post-poll-data)))
 		(set 'post-data (list post-data)) ; okay these two lines of code are duplicated... I can live with it for now
 		(set 'post-comments (get-record "Comments" PostId))
 		(set 'PostType (list-post-data 6))
@@ -73,12 +81,14 @@
 	)
 	(begin ;  ------ begin blog view of post + comments
 		(displayln "<h4><a href='rockets-item.lsp?p=" (list-post-data 0) "'>" (list-post-data 3) "</a></h4>")
-		(displayln "<br><b>Post #:</b> " (list-post-data 0) )
-		(displayln "<br><b>Post type:</b> " (list-post-data 6) )
-		(displayln "<BR><B>Date:</b> " (list-post-data 2) "")
-		(displayln "<br><B>Author:</b> " (author-name (list-post-data 1)) "")
-		(if (> (length list-post-data) 8) (if (list-post-data 9) (displayln "<br><b>Tags:</b> " (list-post-data 9))))
-		(displayln "<br><br><p>" (format-for-web (list-post-data 4)) post-poll-data "</p>")
+		(if (nil? bool-hide-headers) (begin ; can only hide headers in regular view mode, suitable for comics
+			(displayln "<br><b>Post #:</b> " (list-post-data 0) )
+			(displayln "<br><b>Post type:</b> " (list-post-data 6) )
+			(displayln "<BR><B>Date:</b> " (list-post-data 2) "")
+			(displayln "<br><B>Author:</b> " (author-name (list-post-data 1)) "")
+			(if (> (length list-post-data) 8) (if (list-post-data 9) (displayln "<br><b>Tags:</b> " (list-post-data 9))))
+		))
+		(displayln "<br><br><p>" post-body post-poll-data "</p>")
 		(if (= Rockets:UserId 0) (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete post</a>"))
 		(if (= Rockets:UserId 0) (displayln "<a class='btn btn-info' href='rockets-item.lsp?p=" (list-post-data 0) "&edit=yes#edit'>Edit post</a>"))
 		; print reply button if we're not on main page and if valid account is logged in
@@ -117,6 +127,7 @@
 			(if (nil? PostViews) (set 'PostViews 0) (set 'PostViews (int PostViews)))
 			(++ PostViews)
 			; but we only should bump the database if we are in forum or blog view
+			(setq Id PostId)
 			(if (or bool-show-comments forum-view-post) (update-record "Posts" Id PostViews))
 			(displayln "<br><br><p>Views: " PostViews "</p><hr>")
 			(if bool-show-comments (begin				; but don't show it on the main page
