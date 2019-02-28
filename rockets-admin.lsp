@@ -26,6 +26,7 @@
         ("custom" (page-redirect "rockets-admin.lsp?tab=custom&updated=true"))
         ("users" (page-redirect "rockets-admin.lsp?tab=users&updated=true"))
         ("media" (page-redirect "rockets-admin.lsp?tab=media&updated=true"))
+        ("podcast" (page-redirect "rockets-admin.lsp?tab=podcast&updated=true"))
     )
 )
 
@@ -43,6 +44,7 @@
         (if (= ($GET "tab") "custom") (display-button-blue "Custom Configuration" "rockets-admin.lsp?tab=custom") (display-button "Custom Configuration" "rockets-admin.lsp?tab=custom"))
         (if (= ($GET "tab") "media") (display-button-blue "Media Configuration" "rockets-admin.lsp?tab=media") (display-button "Media Configuration" "rockets-admin.lsp?tab=media"))
         (if (= ($GET "tab") "users") (display-button-blue "User Configuration" "rockets-admin.lsp?tab=users") (display-button "User Configuration" "rockets-admin.lsp?tab=users"))
+        (if (= ($GET "tab") "podcast") (display-button-blue "Podcast Configuration" "rockets-admin.lsp?tab=podcast") (display-button "Podcast Configuration" "rockets-admin.lsp?tab=podcast"))        
         (displayln "<p></p>")
         ; GENERAL CONFIGURATION ------------------------------------------------------------------------
         (if (nil? ($GET "tab")) (begin 
@@ -202,10 +204,11 @@
                 ))
                 (update-page)
             ))
-        )) ; end General Configuration section
+        )) ; end Custom Configuration section
 
         ; MEDIA CONFIGURATION ------------------------------------------------------------------------
         (if (= ($GET "tab") "media") (begin 
+        (displayln "<h3>Media configuration</h3>")
             (if ($GET "image") 
                 (begin (displayln "<img src='images/" ($GET "image") "'>")
                     (displayln "<p></p><br><br>") 
@@ -239,14 +242,15 @@
                     (end-div)
                     (displayln "<p><br><br>")
                     (displayln "<h3>Add new image</h3>")
-                    (displayln "<form name='FileUpload' action='fileupload.lsp?media='yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='hidden' name='updateheaderimage' value='yes'><input type='submit' value='Upload' name='submit'></form>")                    
+                    (displayln "<form name='FileUpload' action='fileupload.lsp?media='yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='submit' value='Upload' name='submit'></form>")                    
             ))
             
 
-        )) ; end General Configuration section
+        )) ; end Media Configuration section
 
         ; USERS CONFIGURATION ------------------------------------------------------------------------
         (if (= ($GET "tab") "users") (begin 
+            (displayln "<h3>User configuration</h3>")
             (if ($GET "delete") (begin 
                 (if (= ($GET "delete") "confirm") (begin 
                     (set 'UserId (force-parameters 1 ($GET "user")))
@@ -288,8 +292,22 @@
                         (displayln "<br><br><br>")
             ))
 
-        )) ; end General Configuration section
+        )) ; end User Configuration section
 
+        ; PODCAST CONFIGURATION ------------------------------------------------------------------------
+        (if (= ($GET "tab") "podcast") (begin 
+
+            (displayln "<h3>Podcast configuration</h3>")
+            (displayln "<p><i>Note: To create a podcast feed, you must first configure the options here, then add podcast posts to your blog with the same tag and with the 'Podcast' post type.</i></p>")
+            (if (nil? RocketsConfig:PodcastList) (setq RocketsConfig:PodcastList '(("Podcast Tag" "Podcast Title" "Podcast Copyright" "Podcast Subtitle" "Podcast Author" "Podcast Summary" "Podcast Owner" "Podcast Email" "Podcast Image" "Podcast Category" "Podcast Subcategory")))) ; default options
+            (dolist (x RocketsConfig:PodcastList)
+                (displayln "<p>")
+                (dolist (y x)
+                    (displayln "   " y "         ")
+                )
+            )
+
+        ))
 
     )
 	(displayln "<p>Sorry, you must be signed in to an admin account to access this page.</p><p><a href='rockets-main.lsp'>Return to main page.</a></p>")

@@ -27,26 +27,10 @@
 	(begin
 		(displayln "<br><p> List of comics on this site: ")
 		(dolist (x total-comics-list)
-			(displayln "<p>&nbsp;&nbsp;&nbsp;<a href='rockets-comic.lsp?c=" (first x) "'><img src='includes/images/monarch/comics/" (first x) ".jpg'></a>")
+			(displayln "<p>&nbsp;&nbsp;&nbsp;<a href='rockets-comic.lsp?c=" (first x) "'><img src='images/" (first x) ".jpg'></a>")
 			(displayln "<p>&nbsp;&nbsp;&nbsp;<a href='rockets-comic.lsp?c=" (first x) "'>" (first x) "</a>"))
 	))
 )
-
-; function to print out a comment box form
-(define (print-post-comment-box)
-	(displayln "<h4>Post comment</h4>")
-	(displayln "<p><form name='comment' action='m-comment.cgi'><textarea name='post' cols='50' rows='10'></textarea><input type='hidden' name='r' value='comic?c=" comic-string "&i'><input type='hidden' name='i' value=" current-comic-num "><p><input type=submit value='Post'></form>"))
-
-; function to display comments (again may be separate function later)
-(define (display-comments list-comments)
-	(displayln "<p><h4>Comments:</h4>")
-	(dolist (x list-comments)
-		(displayln "<P><i>By " (x 1) " on " (date (integer (x 3)))"</i>")
-		(set 'thing-to-display (x 4))
-		(set 'thing-to-display (replace (char 13) thing-to-display "<br>"))
-		(set 'thing-to-display (replace "<script" thing-to-display ""))
-		(set 'thing-to-display (replace "</script>" thing-to-display ""))
-		(displayln "<p>" thing-to-display)))
 
 ; function to display all comics in a series with forward/back/next/prev buttons
 (define (display-comic comic-string comic-item)
