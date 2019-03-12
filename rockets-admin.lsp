@@ -298,14 +298,61 @@
         (if (= ($GET "tab") "podcast") (begin 
 
             (displayln "<h3>Podcast configuration</h3>")
+            ; if we made changes and updated the page, show success
+            (if ($GET "updated") (display-success "Settings updated."))
             (displayln "<p><i>Note: To create a podcast feed, you must first configure the options here, then add podcast posts to your blog with the same tag and with the 'Podcast' post type.</i></p>")
-            (if (nil? RocketsConfig:PodcastList) (setq RocketsConfig:PodcastList '(("Podcast Tag" "Podcast Title" "Podcast Copyright" "Podcast Subtitle" "Podcast Author" "Podcast Summary" "Podcast Owner" "Podcast Email" "Podcast Image" "Podcast Category" "Podcast Subcategory")))) ; default options
+            (setq default-podcast-settings '("Podcast Tag" "Podcast Title" "Podcast Copyright" "Podcast Subtitle" "Podcast Author" "Podcast Summary" "Podcast Owner" "Podcast Email" "Podcast Image" "Podcast Category" "Podcast Subcategory"))
+            (if (nil? RocketsConfig:PodcastList) (setq RocketsConfig:PodcastList (list default-podcast-settings))) ; default options
+            (displayln "<p><form name='podcastadmin' method='POST'>")
             (dolist (x RocketsConfig:PodcastList)
-                (displayln "<p>")
-                (dolist (y x)
-                    (displayln "   " y "         ")
-                )
+                (displayln "<hr><p>Podcast #: " $idx "</p>")
+                (displayln "<p>Tag: <input type='text' name='podcasttag" $idx "' value='" ((RocketsConfig:PodcastList $idx) 0) "'></p>")
+                (displayln "<p>Title: <input type='text' name='podcasttitle" $idx "' value='" ((RocketsConfig:PodcastList $idx) 1) "'>")
+                (displayln "<p>Copyright: <input type='text' name='podcastcopyright" $idx "' value='" ((RocketsConfig:PodcastList $idx) 2) "'>")
+                (displayln "<p>Subtitle: <input type='text' name='podcastsubtitle" $idx "' value='" ((RocketsConfig:PodcastList $idx) 3) "'>")
+                (displayln "<p>Author: <input type='text' name='podcastauthor" $idx "' value='" ((RocketsConfig:PodcastList $idx) 4) "'>")
+                (displayln "<p>Summary: <input type='text' name='podcastsummary" $idx "' value='" ((RocketsConfig:PodcastList $idx) 5) "'>")
+                (displayln "<p>Owner: <input type='text' name='podcastowner" $idx "' value='" ((RocketsConfig:PodcastList $idx) 6) "'>")
+                (displayln "<p>Email: <input type='text' name='podcastemail" $idx "' value='" ((RocketsConfig:PodcastList $idx) 7) "'>")
+                (displayln "<p>Image: <input type='text' name='podcastimage" $idx "' value='" ((RocketsConfig:PodcastList $idx) 8) "'>")
+                (displayln " <img src='images/" ((RocketsConfig:PodcastList $idx) 8) "'>")
+                (displayln "<p>Category: <input type='text' name='podcastcategory" $idx "' value='" ((RocketsConfig:PodcastList $idx) 9) "'>")
+                (displayln "<p>Subcategory: <input type='text' name='podcastsubcategory" $idx "' value='" ((RocketsConfig:PodcastList $idx) 10) "'>")                
+                (displayln "<p><b>Podcast feed URL:</b> " RocketsConfig:SiteURL "/podcast/" ((RocketsConfig:PodcastList $idx) 0) ".xml</p>")
+                (if (> $idx 0) (display-button-red "Delete" (string "rockets-admin.lsp?tab=podcast&del=" $idx)))
+
             )
+            (displayln "<hr><p><input type='submit' value='Save changes'></p>")
+            (displayln "</form>")
+            (display-button-green "Add new podcast" (string "rockets-admin.lsp?tab=podcast&add=true"))
+            ; if we've changed any of the podcast parameters, save them 
+            (if ($POST) (begin
+                (setq podcast-length (length RocketsConfig:PodcastList))
+                (displayln "Podcast length: " podcast-length)  
+                (dolist (p RocketsConfig:PodcastList)
+                    (if ($POST (string "podcasttag" $idx)) (setf ((RocketsConfig:PodcastList $idx) 0) ($POST (string "podcasttag" $idx))))
+                    (if ($POST (string "podcasttitle" $idx)) (setf ((RocketsConfig:PodcastList $idx) 1) ($POST (string "podcasttitle" $idx))))
+                    (if ($POST (string "podcastcopyright" $idx)) (setf ((RocketsConfig:PodcastList $idx) 2) ($POST (string "podcastcopyright" $idx))))
+                    (if ($POST (string "podcastsubtitle" $idx)) (setf ((RocketsConfig:PodcastList $idx) 3) ($POST (string "podcastsubtitle" $idx))))
+                    (if ($POST (string "podcastauthor" $idx)) (setf ((RocketsConfig:PodcastList $idx) 4) ($POST (string "podcastauthor" $idx))))
+                    (if ($POST (string "podcastsummary" $idx)) (setf ((RocketsConfig:PodcastList $idx) 5) ($POST (string "podcastsummary" $idx))))
+                    (if ($POST (string "podcastowner" $idx)) (setf ((RocketsConfig:PodcastList $idx) 6) ($POST (string "podcastowner" $idx))))
+                    (if ($POST (string "podcastemail" $idx)) (setf ((RocketsConfig:PodcastList $idx) 7) ($POST (string "podcastemail" $idx))))
+                    (if ($POST (string "podcastimage" $idx)) (setf ((RocketsConfig:PodcastList $idx) 8) ($POST (string "podcastimage" $idx))))
+                    (if ($POST (string "podcastcategory" $idx)) (setf ((RocketsConfig:PodcastList $idx) 9) ($POST (string "podcastcategory" $idx))))
+                    (if ($POST (string "podcastsubcategory" $idx)) (setf ((RocketsConfig:PodcastList $idx) 10) ($POST (string "podcastsubcategory" $idx))))
+                )           
+                (update-page)
+            ))
+            ; if we've added or deleted a podcast, extend or trim the list
+            (if ($GET "add") (begin 
+                (extend RocketsConfig:PodcastList (list default-podcast-settings))
+                (update-page)
+            ))
+            (if ($GET "del") (begin 
+                (pop RocketsConfig:PodcastList (int ($GET "del")))
+                (update-page)                
+            ))
 
         ))
 

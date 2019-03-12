@@ -68,7 +68,7 @@
 )) ; end check to see if user is signed in
 
 ;(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>") ; for debugging
-if (= PostType "Blog post")
-	(page-redirect "rockets-main.lsp")
-	(page-redirect "rockets-forum.lsp"))
+if (= PostType "Forum post")
+	(page-redirect "rockets-forum.lsp")
+	(page-redirect "rockets-main.lsp"))
 (display-page)
