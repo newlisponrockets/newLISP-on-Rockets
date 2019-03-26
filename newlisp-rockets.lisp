@@ -184,6 +184,8 @@
 	(replace "[/IMG]" str-input-for-web "'>")
 	(replace "[mono]" str-input-for-web "<div style='font-family:Courier'>")
 	(replace "[/mono]" str-input-for-web "</div>")
+	(replace "[MONO]" str-input-for-web "<div style='font-family:Courier'>")
+	(replace "[/MONO]" str-input-for-web "</div>")
 	; replace html links with clickable links
   	(set 'h "(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
   	(replace h str-input-for-web (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)

@@ -25,7 +25,26 @@
         (setq RocketsConfig:HeaderImage file-name)
         (save "Rockets-config.lisp" 'RocketsConfig)
     ))
+
+    (displayln "<p>==================</p>")
+    ; if we've updated a blog post with an image, update the body with an <img> link to that new image
+    (if ($GET "updateblogpost") (begin 
+        (set 'Id (int ($GET "updateblogpost")))
+        (display "Updating blog post..." Id)
+        (set 'post-record (first (get-record "Posts" Id)))
+        (display post-record)
+        (set 'PostContent (post-record 4))
+        (set 'text-to-replace (string "[image]"))
+        (set 'replace-text (string "[img]images/" file-name "[/img]"))
+        (replace text-to-replace PostContent replace-text)
+        (displayln "New text: " PostContent)
+        (update-record "Posts" Id PostContent)
+    ))
 )) ; end admin-only section
+
+(if ($GET "updateblogpost")
+    (page-redirect (string "rockets-item.lsp?p=" ($GET "updateblogpost")))
+)
 
 (if ($GET "media")
     (page-redirect "rockets-admin.lsp?tab=media")
