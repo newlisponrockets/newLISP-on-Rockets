@@ -37,6 +37,10 @@
         (set 'text-to-replace (string "[image]"))
         (set 'replace-text (string "[img]images/" file-name "[/img]"))
         (replace text-to-replace PostContent replace-text)
+        # audio section for podcasts
+        (set 'text-to-replace (string "[audio]"))
+        (set 'replace-text (string "[mp3]images/" file-name "[/mp3]"))
+        (replace text-to-replace PostContent replace-text)
         (displayln "New text: " PostContent)
         (update-record "Posts" Id PostContent)
     ))

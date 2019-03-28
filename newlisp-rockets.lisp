@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 0.996)    
+(constant (global '$ROCKETS_VERSION) 1.901)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -182,6 +182,8 @@
 	(replace "[/img]" str-input-for-web "'>")
 	(replace "[IMG]" str-input-for-web "<img src='")
 	(replace "[/IMG]" str-input-for-web "'>")
+	(replace "[mp3]" str-input-for-web "<audio controls><source src='")
+	(replace "[/mp3]" str-input-for-web "' type='audio/mpeg'>")
 	(replace "[mono]" str-input-for-web "<div style='font-family:Courier'>")
 	(replace "[/mono]" str-input-for-web "</div>")
 	(replace "[MONO]" str-input-for-web "<div style='font-family:Courier'>")
