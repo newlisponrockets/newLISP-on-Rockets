@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 1.901)    
+(constant (global '$ROCKETS_VERSION) 1.902)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -191,6 +191,9 @@
 	; replace html links with clickable links
   	(set 'h "(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
   	(replace h str-input-for-web (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)
+  	; replace url links
+  	(replace "\\[url=(.*)\\](.*)\\]" str-input-for-web (string "<a href='" $1 "'>" $2) 0)
+  	(replace "[/url" str-input-for-web "</a>") ; note the lack of trailing ] is because it got truncated by the $2 above
 	; replace youtube links
 	(replace "[youtube]" str-input-for-web "<iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/")
 	(replace "[YOUTUBE]" str-input-for-web "<iframe width=\"560\" height=\"315\" src=\"http://www.youtube.com/embed/")
