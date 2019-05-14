@@ -8,7 +8,7 @@
 ; Without Dragonfly I would have been unable to do Rockets at all.  Some parts of Rockets contain
 ; snippets of Dragonfly code.  Also thanks to Lutz Mueller, the author of newLISP at http://www.newlisp.org 
 ;
-; Copyright 2012 - 2018 by Jeremy Reimer (aka Rocket Man)
+; Copyright 2012 - 2019 by Jeremy Reimer (aka Rocket Man)
 ;
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 1.902)    
+(constant (global '$ROCKETS_VERSION) 1.903)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -280,7 +280,7 @@
 		(displayln "                  <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\">Welcome, " Rockets:UserName "&nbsp;<b class=\"caret\"></b></a>")
 		(displayln "                  <ul class=\"dropdown-menu\"><li><a href=\"rockets-profile.lsp\">Edit Profile</a></li>")
 		; display Admin page link if admin user
-		(if (= Rockets:UserId 0) (displayln "                                              <li><a href=\"rockets-admin.lsp\">Admin page</a></li>"))
+		(if Rockets:IsUserAdmin (displayln "                                              <li><a href=\"rockets-admin.lsp\">Admin page</a></li>"))
 		(displayln "                                              <li><a href=\"rockets-signout.lsp\">Sign Out</a></li></ul>")
 		(displayln "                </li>")
 		(displayln "              </ul>")
