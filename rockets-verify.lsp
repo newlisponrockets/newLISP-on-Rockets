@@ -47,12 +47,12 @@
 		(page-redirect page-to-redirect) 
 	)
 		(begin 
-		(page-redirect page-to-redirect "e=signin") ; tell the application that the username was not recognized.
+		(page-redirect page-to-redirect "e=signin-p") ; tell the application that the password was not recognized.
 		)
 	)
 )
 (begin
-	(page-redirect page-to-redirect "e=signin") ; tell the application that the username was not recognized.
+	(page-redirect page-to-redirect "e=signin-u") ; tell the application that the username was not recognized.
 ))
 
 (close-database)

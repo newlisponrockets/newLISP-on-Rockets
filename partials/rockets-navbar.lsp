@@ -13,8 +13,10 @@
 
 ; display any error messages, welcome messsages, etc.
 (set 'error-messages ($GET "e"))
-(if (= error-messages "signin") 
-	(display-warning "<strong>Warning!</strong> Username or password not found.  Please try signing in again.  <a href=rockets-forgotpassword.lsp>Forgot your password?</a>"))
+(if (= error-messages "signin-p") 
+	(display-warning "<strong>Warning!</strong> Password incorrect.  Please try signing in again.  <a href=rockets-forgotpassword.lsp>Forgot your password?</a>"))
+(if (= error-messages "signin-u") 
+    (display-warning "<strong>Warning!</strong> User name not found.  Please sign in with your email address.  <a href=rockets-forgotpassword.lsp>Forgot your password?</a>"))
 (if (= error-messages "newuser")
 	(display-success (string "Thank you for registering on " RocketsConfig:Name "!  You are now signed in.")))
 (if (= error-messages "resetpassword")
