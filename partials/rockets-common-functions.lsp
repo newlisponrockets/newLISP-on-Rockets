@@ -55,7 +55,6 @@
 ; also allows post to be shown in forum view if forum-view-post=true
 (define (display-individual-post list-post-data bool-show-comments str-linkback-id bool-hide-headers, post-body)
         ; POLL STUFF
-        (if (= (list-post-data 8) "nil") (setf (list-post-data 8) nil))
         (if (> (length list-post-data) 7) ; only with databases that contain PostPoll in Posts
 		(if (list-post-data 8) (set 'post-poll-data (display-poll-results (list-post-data 8) (list-post-data 4))))
 	)
