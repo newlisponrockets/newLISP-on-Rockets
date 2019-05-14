@@ -45,16 +45,18 @@
 
 ; this function replaces certain tags that are admin-only
 (define (update-admin-tags str-post-content int-post-id)
+	; NOTE: lower-case ONLY!
 	(replace "[image]" str-post-content (string "<form name='FileUpload' action='fileupload.lsp?updateblogpost=" int-post-id "' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='submit' value='Upload' name='submit'></form>"))
-	(replace "[IMAGE]" str-post-content (string "<form name='FileUpload' action='fileupload.lsp?updateblogpost=" int-post-id "' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='submit' value='Upload' name='submit'></form>"))
+	(replace "[audio]" str-post-content (string "<form name='FileUpload' action='fileupload.lsp?updateblogpost=" int-post-id "' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='submit' value='Upload' name='submit'></form>"))
 )
 
 ; this function displays an individual post with headers and the post itself
 ; also shows comments if bool-show-comments is true, and allows a logged-in user to reply
 ; also allows post to be shown in forum view if forum-view-post=true
 (define (display-individual-post list-post-data bool-show-comments str-linkback-id bool-hide-headers, post-body)
-	; POLL STUFF
-	(if (> (length list-post-data) 7) ; only with databases that contain PostPoll in Posts
+        ; POLL STUFF
+        (if (= (list-post-data 8) "nil") (setf (list-post-data 8) nil))
+        (if (> (length list-post-data) 7) ; only with databases that contain PostPoll in Posts
 		(if (list-post-data 8) (set 'post-poll-data (display-poll-results (list-post-data 8) (list-post-data 4))))
 	)
 	(if (nil? post-poll-data) (set 'post-poll-data "")) ; if no poll just leave blank
