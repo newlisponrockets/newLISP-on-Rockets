@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 1.903)    
+(constant (global '$ROCKETS_VERSION) 1.95)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -678,14 +678,21 @@
 	;(displayln "<P>TABLE NAME: " temp-table-name)
 	;(displayln "<P>SYMBOLS: " (symbols DB))
 	;(displayln "<BR>VALUES: " temp-record-values)
-	(dolist (d (symbols DB)) (extend temp-sql-query (rest (rest (rest (rest (rest (string d)))))) ", "))
+    (dolist (d (symbols DB))
+        (if (not (or (nil? (temp-record-values $idx)) (= (temp-record-values $idx) "nil"))) ; only add this to the query if the value is not nil or 'nil'
+            (extend temp-sql-query (rest (rest (rest (rest (rest (string d)))))) ", ")
+        )
+    )
 	(set 'temp-sql-query (chop (chop temp-sql-query)))
 	(extend temp-sql-query ") VALUES (")
-	(dolist (q temp-record-values)
-		(if (string? q) (extend temp-sql-query "'")) ; only quote if value is non-numeric
-		(extend temp-sql-query (string (safe-for-sql q)))
-		(if (string? q) (extend temp-sql-query "'")) ; close quote if value is non-numeric
-		(extend temp-sql-query ", ")) ; all values are sanitized to avoid SQL injection
+    (dolist (q temp-record-values)
+        (if (not (or (nil? q) (= q "nil"))) (begin ; only add the value if it's not nil or 'nil'
+            (if (string? q) (extend temp-sql-query "'")) ; only quote if value is non-numeric
+            (extend temp-sql-query (string (safe-for-sql q)))
+            (if (string? q) (extend temp-sql-query "'")) ; close quote if value is non-numeric
+            (extend temp-sql-query ", ")
+        ))
+    ) ; all values are sanitized to avoid SQL injection
 	(set 'temp-sql-query (chop (chop temp-sql-query)))
 	(extend temp-sql-query ");")
 	;(displayln "<p>***** SQL QUERY: " temp-sql-query)
