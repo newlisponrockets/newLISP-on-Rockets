@@ -44,7 +44,7 @@
     ; get all existing posts
     (if tag-name 
         (set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts WHERE PostType='Blog post' AND PostTags LIKE '%" tag-name "%'"))))))
-        (set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts WHERE PostType='Blog post'"))))))
+        (set 'total-posts (int (first (first (query (string "SELECT Count(*) FROM Posts WHERE PostType='Blog post' OR PostType='Podcast'"))))))
     )
     (set 'total-pages (/ total-posts Blog:posts-per-page))
     (if (>= (mod (float total-posts) (float Blog:posts-per-page)) 1) (inc total-pages)) ; fix number of pages if not evenly divisible
@@ -54,7 +54,7 @@
     (set 'start-post-num (- (* current-page Blog:posts-per-page) Blog:posts-per-page))
     (if tag-name
         (set 'posts-query-sql (string "SELECT * from Posts WHERE PostType='Blog post' AND PostTags LIKE '%" tag-name "%' ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
-        (set 'posts-query-sql (string "SELECT * from Posts WHERE PostType='Blog post' ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
+        (set 'posts-query-sql (string "SELECT * from Posts WHERE PostType='Blog post' OR PostType='Podcast' ORDER BY Id DESC LIMIT " start-post-num "," Blog:posts-per-page ";"))
     )
     (set 'posts-result (query posts-query-sql))
     ; print out all posts
