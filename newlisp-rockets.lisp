@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 1.95)    
+(constant (global '$ROCKETS_VERSION) 1.96)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -178,6 +178,9 @@
 		(replace (string "[" (upper-case u) "]") str-input-for-web (string "<" u ">"))
 		(replace (string "[/" u "]") str-input-for-web (string "</" u ">"))
 		(replace (string "[/" (upper-case u) "]") str-input-for-web (string "</" u ">")))
+	; replace html links with clickable links but NOT if it starts with "]" because that's an IMG tag or MP3 tab, etc.
+  	(set 'h "(?!\\])(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
+  	(replace h str-input-for-web (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)
 	(replace "[img]" str-input-for-web "<img src='")
 	(replace "[/img]" str-input-for-web "'>")
 	(replace "[IMG]" str-input-for-web "<img src='")
@@ -188,9 +191,6 @@
 	(replace "[/mono]" str-input-for-web "</div>")
 	(replace "[MONO]" str-input-for-web "<div style='font-family:Courier'>")
 	(replace "[/MONO]" str-input-for-web "</div>")
-	; replace html links with clickable links
-  	(set 'h "(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
-  	(replace h str-input-for-web (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)
   	; replace url links
   	(replace "\\[url=(.*)\\](.*)\\]" str-input-for-web (string "<a href='" $1 "'>" $2) 0)
   	(replace "[/url" str-input-for-web "</a>") ; note the lack of trailing ] is because it got truncated by the $2 above
