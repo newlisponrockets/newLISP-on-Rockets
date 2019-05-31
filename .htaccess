@@ -1,0 +1,24 @@
+AddDefaultCharset UTF-8
+Options -Indexes +FollowSymLinks
+
+# Prevent database backup files from being accessed
+<Files ~ "\.bak$">
+Order allow,deny
+Deny from all
+</Files>
+
+# Prevent database files from being accessed
+<Files ~ "\.db$">
+Order allow,deny
+Deny from all
+</Files>
+
+# Prevent framework source from being accessed
+<Files ~ "\.lisp$">
+Order allow,deny
+Deny from all
+</Files>
+
+# 404 document page
+ErrorDocument 404 /rockets-404.lsp
+
