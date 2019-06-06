@@ -68,7 +68,7 @@
 (module "crypto.lsp")
 (module "sqlite3.lsp") ; loads the SQLite3 database module
 
-(set 'table1 "CREATE TABLE Posts (Id INTEGER PRIMARY KEY, PosterId TEXT, PostDate DATE, PostSubject TEXT, PostContent TEXT, PostComments INTEGER, PostType TEXT, PostViews INTEGER, PostPoll TEXT, PostLastAuthor TEXT, PostLastDate DATE)")
+(set 'table1 "CREATE TABLE Posts (Id INTEGER PRIMARY KEY, PosterId TEXT, PostDate DATE, PostSubject TEXT, PostContent TEXT, PostComments INTEGER, PostType TEXT, PostViews INTEGER, PostPoll TEXT, PostTags TEXT, PostLastAuthor TEXT, PostLastDate DATE)")
 (set 'table2 "CREATE TABLE Users (UserId INTEGER PRIMARY KEY, UserEmail TEXT, UserPasswordHash TEXT, UserSalt TEXT, UserPosts INTEGER, UserAchievements TEXT, UserReadPosts TEXT, UserName TEXT, CookieSalt TEXT, UserAvatar TEXT, UserBirthdate DATE, UserJoinedDate DATE, UserPollsVoted TEXT)")
 (set 'table3 "CREATE TABLE Comments (Id INTEGER PRIMARY KEY, PostId INTEGER, CommenterId INTEGER, CommentDate DATE, CommentSubject TEXT, CommentContent TEXT)")
 
@@ -130,10 +130,12 @@
 (set 'PostSubject "This is a test post")
 (set 'PostContent "This is a test post to make sure the blog code works from scratch.  After you have added a new post yourself, you can delete this one.")
 (set 'PostType "Blog post")
-(create-record "Posts" Id PosterId PostDate PostSubject PostContent PostType)
+(set 'PostLastDate PostDate)
+(set 'PostLastAuthor "Rocket Man")
+(create-record "Posts" Id PosterId PostDate PostSubject PostContent PostType PostLastDate PostLastAuthor)
 
 ; check to see if it worked!
-(set 'user-table (query "select * from Users"))
+(set 'user-table (query "select * from Posts"))
 (println "User data: " user-table)
 (close-database)
 (exit)
