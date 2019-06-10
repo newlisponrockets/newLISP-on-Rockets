@@ -48,6 +48,21 @@
         (displayln "<p></p>")
         ; GENERAL CONFIGURATION ------------------------------------------------------------------------
         (if (nil? ($GET "tab")) (begin 
+
+            ; add form for uploading a main image for the blog
+            (displayln "<p>Blog header image:")
+            (if RocketsConfig:HeaderImage 
+                (displayln "<img src='images/" RocketsConfig:HeaderImage "' width=300 height=200>") 
+                (displayln "Default image"))
+            (displayln "<form name='FileUpload' action='fileupload.lsp?updateheader=yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='hidden' name='updateheaderimage' value='yes'><input type='submit' value='Upload' name='submit'></form>")    
+ 
+             ; add form for uploading a discussion image for the blog
+            (displayln "<p>Discussion header image:")
+            (if RocketsConfig:DiscussionImage 
+                (displayln "<img src='images/" RocketsConfig:DiscussionImage "' width=300 height=200>") 
+                (displayln "Default image"))
+            (displayln "<form name='FileUpload2' action='fileupload.lsp?updatediscussion=yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='hidden' name='updatediscussionimage' value='yes'><input type='submit' value='Upload' name='submit'></form>")    
+ 
             ; if we made changes and updated the page, show success
             (if ($GET "updated") (display-success "Settings updated."))
             ; display the form to make changes
@@ -55,6 +70,8 @@
             (displayln "<h3>Site configuration</h3>")
             (displayln "<p>Site short name: <input type='text' name='shortname' value='" RocketsConfig:ShortName "'></p>")
             (displayln "<p>Site full name: <input type='text' name='longname' value='" RocketsConfig:Name "'></p>")
+            (if (nil? RocketsConfig:ForumSubtitle) (setq RocketsConfig:ForumSubtitle "Discussions on all topics."))
+            (displayln "<p>Forum subtitle: <input type='text' name='forumsubtitle' value='" RocketsConfig:ForumSubtitle "'></p>")
             (displayln "<h3>Top menu navigation</h3>")
             ; display all navigation
 
@@ -119,20 +136,6 @@
             (displayln "<hr><p><input type='submit' value='Save changes'></p>")
             (displayln "</form>")    
 
-            ; add form for uploading a main image for the blog
-            (displayln "<p>Blog header image:")
-            (if RocketsConfig:HeaderImage 
-                (displayln "<img src='images/" RocketsConfig:HeaderImage "' width=300 height=200>") 
-                (displayln "Default image"))
-            (displayln "<form name='FileUpload' action='fileupload.lsp?updateheader=yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='hidden' name='updateheaderimage' value='yes'><input type='submit' value='Upload' name='submit'></form>")    
- 
-             ; add form for uploading a discussion image for the blog
-            (displayln "<p>Discussion header image:")
-            (if RocketsConfig:DiscussionImage 
-                (displayln "<img src='images/" RocketsConfig:DiscussionImage "' width=300 height=200>") 
-                (displayln "Default image"))
-            (displayln "<form name='FileUpload2' action='fileupload.lsp?updatediscussion=yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='hidden' name='updatediscussionimage' value='yes'><input type='submit' value='Upload' name='submit'></form>")    
- 
 
             ; if we've made changes to any items, save them.
             (if ($POST) (begin
@@ -144,6 +147,10 @@
                 (setq get-long-name ($POST "longname"))
                 (if get-long-name (begin 
                     (setq RocketsConfig:Name get-long-name)))
+                (setq get-forumsubtitle ($POST "forumsubtitle"))
+                (if get-forumsubtitle (begin 
+                    (setq RocketsConfig:ForumSubtitle get-forumsubtitle)
+                ))
                 ; check to see if links have changed
                 (dolist (m RocketsNavigation:navbar-list)
                     (setq item ($POST (string "menuname" $idx)))

@@ -23,7 +23,7 @@
 		(display-image "newlisp-rockets-picture-small" 480 270)
 	)
 	(displayln "<h2>The " RocketsConfig:ShortName " Discussion Forum</h2>")
-	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
+	(if RocketsConfig:ForumSubtitle (displayln "<P>" RocketsConfig:ForumSubtitle "</p>"))
 (end-div)
 
 ; If user has selected "Mark All As Read" then, well, mark all as read!
