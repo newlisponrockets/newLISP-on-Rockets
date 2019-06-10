@@ -18,7 +18,10 @@
 (display-partial "rockets-navbar") ; shows the navigation bar with Rockets blog menus
 
 (start-div "hero-unit")
-	(display-image "newlisp-rockets-picture-small" 480 270)
+	(if RocketsConfig:DiscussionImage 
+		(display-image RocketsConfig:DiscussionImage)
+		(display-image "newlisp-rockets-picture-small" 480 270)
+	)
 	(displayln "<h2>The " RocketsConfig:ShortName " Discussion Forum</h2>")
 	(displayln "<P>Currently running newLISP on Rockets version: " $ROCKETS_VERSION "</p>")
 (end-div)

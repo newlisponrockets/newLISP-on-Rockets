@@ -26,6 +26,13 @@
         (save "Rockets-config.lisp" 'RocketsConfig)
     ))
 
+    ; if we've updated the forum header image, change the image in the config file
+    (if ($GET "updatediscussion") (begin
+        (displayln "<p>Updating discussion image with: " file-name)
+        (setq RocketsConfig:DiscussionImage file-name)
+        (save "Rockets-config.lisp" 'RocketsConfig)
+    ))
+
     (displayln "<p>==================</p>")
     ; if we've updated a blog post with an image, update the body with an <img> link to that new image
     (if ($GET "updateblogpost") (begin 

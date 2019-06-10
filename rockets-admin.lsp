@@ -125,7 +125,15 @@
                 (displayln "<img src='images/" RocketsConfig:HeaderImage "' width=300 height=200>") 
                 (displayln "Default image"))
             (displayln "<form name='FileUpload' action='fileupload.lsp?updateheader=yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='hidden' name='updateheaderimage' value='yes'><input type='submit' value='Upload' name='submit'></form>")    
-        
+ 
+             ; add form for uploading a discussion image for the blog
+            (displayln "<p>Discussion header image:")
+            (if RocketsConfig:DiscussionImage 
+                (displayln "<img src='images/" RocketsConfig:DiscussionImage "' width=300 height=200>") 
+                (displayln "Default image"))
+            (displayln "<form name='FileUpload2' action='fileupload.lsp?updatediscussion=yes' method='POST' enctype='multipart/form-data'><input type='file' id='uploadName' name='uploaded_data' onChange='this.form.textname.value = this.value'><input type='hidden' name='textname'><input type='hidden' name='updatediscussionimage' value='yes'><input type='submit' value='Upload' name='submit'></form>")    
+ 
+
             ; if we've made changes to any items, save them.
             (if ($POST) (begin
                  ; check to see if name has changed
@@ -301,7 +309,7 @@
             ; if we made changes and updated the page, show success
             (if ($GET "updated") (display-success "Settings updated."))
             (displayln "<p><i>Note: To create a podcast feed, you must first configure the options here, then add podcast posts to your blog with the same tag and with the 'Podcast' post type.</i></p>")
-            (setq default-podcast-settings '("Podcast Tag" "Podcast Title" "Podcast Copyright" "Podcast Subtitle" "Podcast Author" "Podcast Summary" "Podcast Owner" "Podcast Email" "Podcast Image" "Podcast Category" "Podcast Subcategory"))
+            (setq default-podcast-settings '("podcast" "Podcast Title" "Podcast Copyright" "Podcast Subtitle" "Podcast Author" "Podcast Summary" "Podcast Owner" "Podcast Email" "Podcast Image" "Podcast Category" "Podcast Subcategory"))
             (if (nil? RocketsConfig:PodcastList) (setq RocketsConfig:PodcastList (list default-podcast-settings))) ; default options
             (displayln "<p><form name='podcastadmin' method='POST'>")
             (dolist (x RocketsConfig:PodcastList)
