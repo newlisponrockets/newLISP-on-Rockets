@@ -78,7 +78,7 @@
           (set 'post-read " ")
         )
 	(push (list (string post-subject post-read) post-type post-author post-views post-replies (string post-lastdate " by " post-lastauthor)) forum-post-table -1)
-	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil nil nil) forum-links-table -1)
+	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil nil (string "rockets-item.lsp?p=" post-num "&f=true#reply")) forum-links-table -1)
 )
 
 (display-responsive '("Topic Subject" "Post Type" "Post Author" "Views" "Replies" "Last Post") forum-post-table "striped" forum-links-table '(4 2 2 1 1 2))
