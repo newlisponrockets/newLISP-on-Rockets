@@ -72,16 +72,20 @@
         ; check to see if the user has read this post or not
         (if Rockets:UserReadPosts (begin
 	  (if (or (find (string post-num "-") Rockets:UserReadPosts) (nil? Rockets:UserId)) ; if you're not logged in OR if you are, and you've read the post
-		(set 'post-read " ")
-		(set 'post-read (string " <img src=images/new-icon.png>")))
+		(set 'post-read (string " <img src=images/read-msg.png> "))
+		(set 'post-read (string " <img src=images/unread-msg.png> ")))
           )
           (set 'post-read " ")
         )
-	(push (list (string post-subject post-read) post-type post-author post-views post-replies (string post-lastdate " by " post-lastauthor)) forum-post-table -1)
-	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil nil (string "rockets-item.lsp?p=" post-num "&f=true#reply")) forum-links-table -1)
+	(push (list (string "<h4>" post-read post-subject "</h4>") 
+		        (string "<h5>" post-type "</h5>")
+		        (string "<h5>" post-author "</h5>")
+		        (string "<h5>" post-views " views / " post-replies " replies</h5>")
+		        (string "<h5>" post-lastdate " by " post-lastauthor "</h5>")) forum-post-table -1)
+	(push (list (string "rockets-item.lsp?p=" post-num "&f=true") nil nil nil (string "rockets-item.lsp?p=" post-num "&f=true#reply")) forum-links-table -1)
 )
 
-(display-responsive '("Topic Subject" "Post Type" "Post Author" "Views" "Replies" "Last Post") forum-post-table "striped" forum-links-table '(4 2 2 1 1 2))
+(display-responsive '("Topic Subject" "Post Type" "Post Author" "Views / Replies" "Last Post") forum-post-table "striped" forum-links-table '(4 2 2 2 2))
 
 (display-paging-links 1 total-pages current-page active-page) ; display them again
 
