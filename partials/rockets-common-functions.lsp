@@ -77,7 +77,7 @@
 					(set 'edit-link ""))
 				(push (list (string "<img src='images/avatars/" (author-avatar (p 2)) "' width=64 height=64><br>"(author-name (p 2)) "<h6>Posts: " (author-posts (p 2)) "</h6>") (string "<h5 style='text-align:right'>Posted on: " (p 3) edit-link "</h5>" (format-for-web (p 5)))) post-data -1)) ; add each comment to the thread
 		))
-		(display-responsive header-list post-data "striped" nil '(2 10)) 
+		(display-responsive header-list post-data "striped" nil '(3 9)) 
 		(if (= Rockets:UserId 0) (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete this thread</a>"))
 	)
 	(begin ;  ------ begin blog view of post + comments
@@ -90,8 +90,8 @@
 			(if (> (length list-post-data) 8) (if (list-post-data 9) (displayln "<br><b>Tags:</b> " (list-post-data 9))))
 		))
 		(displayln "<br><br><p>" post-body post-poll-data "</p>")
-		(if (= Rockets:UserId 0) (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete post</a>"))
-		(if (= Rockets:UserId 0) (displayln "<a class='btn btn-info' href='rockets-item.lsp?p=" (list-post-data 0) "&edit=yes#edit'>Edit post</a>"))
+		(if Rockets:IsUserAdmin (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete post</a>"))
+		(if Rockets:IsUserAdmin (displayln "<a class='btn btn-info' href='rockets-item.lsp?p=" (list-post-data 0) "&edit=yes#edit'>Edit post</a>"))
 		; print reply button if we're not on main page and if valid account is logged in
 		(if (and Rockets:UserId (not bool-show-comments)) (begin
 			(displayln "<a class='btn btn-primary' href='rockets-item.lsp?p=" (list-post-data 0) "&r=1#reply'>Reply to post</a>")))
