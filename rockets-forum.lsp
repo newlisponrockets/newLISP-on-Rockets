@@ -51,9 +51,14 @@
 (display-paging-links 1 total-pages current-page active-page)
 
 (set 'start-post-num (- (* current-page Blog:forum-posts-per-page) Blog:forum-posts-per-page))
-(set 'posts-query-sql (string "SELECT * from Posts ORDER BY PostLastDate DESC LIMIT " start-post-num "," Blog:forum-posts-per-page ";"))
+; get all Forum Notices
+(set 'posts-query-notices-sql (string "SELECT * from Posts WHERE PostType='Forum notice' ORDER BY PostLastDate DESC LIMIT " start-post-num "," Blog:forum-posts-per-page ";"))
+; get all posts of all types EXCEPT Forum Notices
+(set 'posts-query-sql (string "SELECT * from Posts WHERE PostType!='Forum notice' ORDER BY PostLastDate DESC LIMIT " start-post-num "," Blog:forum-posts-per-page ";"))
 
+(set 'posts-result-notices (query posts-query-notices-sql))
 (set 'posts-result (query posts-query-sql))
+(if posts-result-notices (set 'posts-result (append posts-result-notices posts-result)))
 
 ; print out all posts
 (dolist (x posts-result)
@@ -69,14 +74,16 @@
 	(set 'post-lastauthor (x 10))
 	(set 'post-lastdate (x 11))
 	(if (nil? post-views) (set 'post-views 0)) ; needed because views was a late addition
-        ; check to see if the user has read this post or not
-        (if Rockets:UserReadPosts (begin
+    ; check to see if the user has read this post or not
+    (if Rockets:UserReadPosts (begin
 	  (if (or (find (string post-num "-") Rockets:UserReadPosts) (nil? Rockets:UserId)) ; if you're not logged in OR if you are, and you've read the post
 		(set 'post-read (string " <img src=images/read-msg.png> "))
-		(set 'post-read (string " <img src=images/unread-msg.png> ")))
-          )
-          (set 'post-read " ")
-        )
+		(set 'post-read (string " <img src=images/unread-msg.png> "))
+      ))
+        (set 'post-read (string " <img src=images/read-msg.png> "))
+    )
+    ; if the post is a forum notice, then make sure the icon is always an exclamation point
+    (if (= post-type "Forum notice") (set 'post-read (string " <img src=images/forum-notice.png> ")))
 	(push (list (string "<h4>" post-read post-subject "</h4>") 
 		        (string "<h5>" post-type "</h5>")
 		        (string "<h5>" post-author "</h5>")

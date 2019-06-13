@@ -67,8 +67,8 @@
     ; print post entry box
     (if Rockets:IsUserAdmin (begin
         (displayln "<a id='postbox'></a>") ; anchor link for post box
-    	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil nil true "tags" '("Blog post" "Page" "Podcast" "Comic"))
-    )) ; only the site administrator may make new blog posts at the moment
+    	(display-post-box "Post something..." "postsomething" "rockets-post.lsp" "subjectline" "replybox" "Post Message" nil nil nil nil true "tags" '("Blog post" "Page" "Podcast" "Comic" "Forum notice"))
+    )) ; only an administrator may make new blog posts 
 )
 
 (case RocketsConfig:FrontPageType
