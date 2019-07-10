@@ -78,7 +78,7 @@
 				(push (list (string "<img src='images/avatars/" (author-avatar (p 2)) "' width=64 height=64><br>"(author-name (p 2)) "<h6>Posts: " (author-posts (p 2)) "</h6>") (string "<h5 style='text-align:right'>Posted on: " (p 3) edit-link "</h5>" (format-for-web (p 5)))) post-data -1)) ; add each comment to the thread
 		))
 		(display-responsive header-list post-data "striped" nil '(3 9)) 
-		(if (= Rockets:UserId 0) (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete this thread</a>"))
+		(if Rockets:IsUserAdmin (displayln "<br><a class='btn btn-danger' href='rockets-delete.lsp?post=" (list-post-data 0) "'>Delete this thread</a>"))
 	)
 	(begin ;  ------ begin blog view of post + comments
 		(displayln "<h4><a href='rockets-item.lsp?p=" (list-post-data 0) "'>" (list-post-data 3) "</a></h4>")

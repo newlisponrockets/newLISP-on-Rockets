@@ -52,7 +52,7 @@
 
 (set 'start-post-num (- (* current-page Blog:forum-posts-per-page) Blog:forum-posts-per-page))
 ; get all Forum Notices
-(set 'posts-query-notices-sql (string "SELECT * from Posts WHERE PostType='Forum notice' ORDER BY PostLastDate DESC LIMIT " start-post-num "," Blog:forum-posts-per-page ";"))
+(set 'posts-query-notices-sql (string "SELECT * from Posts WHERE PostType='Forum notice' ORDER BY PostLastDate DESC;"))
 ; get all posts of all types EXCEPT Forum Notices
 (set 'posts-query-sql (string "SELECT * from Posts WHERE PostType!='Forum notice' ORDER BY PostLastDate DESC LIMIT " start-post-num "," Blog:forum-posts-per-page ";"))
 

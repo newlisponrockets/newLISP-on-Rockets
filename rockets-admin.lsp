@@ -10,6 +10,7 @@
 ; Written 2018 by Jeremy Reimer
 
 (load "Rockets-config.lisp") ; load configuration information
+(load "Rockets-navbar.lisp") ; load navbar config information
 
 (display-header (string RocketsConfig:Name " - Admin Page"))
 (open-database RocketsConfig:Database)
