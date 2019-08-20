@@ -46,7 +46,7 @@
         (set 'blog-keywords (flat (query "SELECT DISTINCT PostTags from Posts;")))
         ;(displayln blog-keywords)
         ;(displayln (nil? (first (flat blog-keywords))))
-        (if (not (nil? (last (flat blog-keywords)))) (begin
+        (if (> (length blog-keywords) 1) (begin
             (dolist (k blog-keywords)
                 (if (not (nil? k)) (begin
                     ;(displayln "***>>>" k)

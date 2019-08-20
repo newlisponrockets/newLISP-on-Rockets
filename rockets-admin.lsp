@@ -10,7 +10,6 @@
 ; Written 2018 by Jeremy Reimer
 
 (load "Rockets-config.lisp") ; load configuration information
-(load "Rockets-navbar.lisp") ; load navbar config information
 
 (display-header (string RocketsConfig:Name " - Admin Page"))
 (open-database RocketsConfig:Database)
@@ -33,8 +32,10 @@
 
 (define (checked str-panel str-item)
     (setq checkedvalue "")
-    (if (= str-panel "left") (if (find str-item RocketsConfig:LeftPanel) (setq checkedvalue " checked='checked'")))
-    (if (= str-panel "right") (if (find str-item RocketsConfig:RightPanel) (setq checkedvalue " checked='checked'")))
+    (if RocketsConfig:LeftPanel
+       (if (= str-panel "left") (if (find str-item RocketsConfig:LeftPanel) (setq checkedvalue " checked='checked'"))))
+    (if RocketsConfig:RightPanel
+       (if (= str-panel "right") (if (find str-item RocketsConfig:RightPanel) (setq checkedvalue " checked='checked'"))))
     (setq return-value checkedvalue)
 )
 
