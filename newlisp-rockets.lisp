@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 1.99)    
+(constant (global '$ROCKETS_VERSION) 1.991)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -182,7 +182,7 @@
   	(set 'h "(?!\\])(?!\\')(?!\\=)(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
   	(replace h str-input-for-web (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)
 	(replace "[ul]" str-input-for-web "<ul>")
-	(replace "[/ul]" str-input-for-web "<ul>")
+	(replace "[/ul]" str-input-for-web "</ul>")
 	(replace "[ol]" str-input-for-web "<ol>")
 	(replace "[/ol]" str-input-for-web "</ol>")
 	(replace "[li]" str-input-for-web "<li>")
