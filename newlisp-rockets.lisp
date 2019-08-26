@@ -32,7 +32,7 @@
 
 ;!===== GLOBAL VARIABLES ========================================================
 ;;* $ROCKETS_VERSION - current version of Rockets
-(constant (global '$ROCKETS_VERSION) 1.96)    
+(constant (global '$ROCKETS_VERSION) 1.99)    
 ;;* $MAX_POST_LENGTH - maximum size of data you are allowed to POST
 (constant (global '$MAX_POST_LENGTH) 83886080) 
 ;;* $BASE_PATH - the absolute path for the installation (default is /)
@@ -179,8 +179,14 @@
 		(replace (string "[/" u "]") str-input-for-web (string "</" u ">"))
 		(replace (string "[/" (upper-case u) "]") str-input-for-web (string "</" u ">")))
 	; replace html links with clickable links but NOT if it starts with "]" because that's an IMG tag or MP3 tab, etc.
-  	(set 'h "(?!\\])(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
+  	(set 'h "(?!\\])(?!\\')(?!\\=)(?:^|[^=])((ftp|http|https|file):\\/\\/[\\S]+(\\b|$))")
   	(replace h str-input-for-web (string " <a href='" $1 "' target='new'>" $1 "</a>") 0)
+	(replace "[ul]" str-input-for-web "<ul>")
+	(replace "[/ul]" str-input-for-web "<ul>")
+	(replace "[ol]" str-input-for-web "<ol>")
+	(replace "[/ol]" str-input-for-web "</ol>")
+	(replace "[li]" str-input-for-web "<li>")
+	(replace "[/li]" str-input-for-web "</li>")
 	(replace "[img]" str-input-for-web "<img src='")
 	(replace "[/img]" str-input-for-web "'>")
 	(replace "[IMG]" str-input-for-web "<img src='")
