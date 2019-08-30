@@ -111,7 +111,7 @@
 
 
             ; Left hand navigation options (only if you've enabled left-hand panel display)
-            (if (or (= RocketsConfig:FrontPageType 2) (= RocketsConfig:FrontPageType 3)) (begin 
+            (if (or (= RocketsConfig:FrontPageType 2) (= RocketsConfig:FrontPageType 3) (= RocketsConfig:IndividualPageType 1) (= RocketsConfig:IndividualPageType 2)) (begin 
                 (displayln "<h3>Left-hand panel configuration</h3>")
                 (displayln "<input type='checkbox' name='leftpanel[]' value='box1'" (checked "left" "box1") ">Custom HTML display box 1<br>")
                 (displayln "<input type='checkbox' name='leftpanel[]' value='popposts'" (checked "left" "popposts") ">Most popular blog posts<br>")
@@ -122,7 +122,7 @@
                 (displayln "<input type='checkbox' name='leftpanel[]' value='blogtopics'" (checked "left" "blogtopics") ">Blog topics<br>")
                 (displayln "<input type='checkbox' name='leftpanel[]' value='box4'" (checked "left" "box4") ">Custom HTML display box 4<br>")
             ))
-            (if (= RocketsConfig:FrontPageType 3) (begin 
+            (if (or (= RocketsConfig:FrontPageType 3) (= RocketsConfig:IndividualPageType 2)) (begin 
                 (displayln "<h3>Right-hand panel configuration</h3>")
                 (displayln "<input type='checkbox' name='rightpanel[]' value='box1'" (checked "right" "box1") ">Custom HTML display box 1<br>")
                 (displayln "<input type='checkbox' name='rightpanel[]' value='popposts'" (checked "right" "popposts") ">Most popular blog posts<br>")
