@@ -29,7 +29,7 @@ To install Rockets, you will need a Linux operating system. This can be either:
 2. A version of Linux running on a virtual machine (such as VirtualBox)
 3. A version of Linux installed on a cloud service provider, such as Amazon AWS or Linode
 
-If you are just experimenting at home, the first two options are fine. If you want to run Rockets as a public website,  
+If you are just experimenting at home, the first two options are fine. If you want to run Rockets as a public website,
 choose the third option. Most home Internet service providers don't allow you to run public websites from your home computer.
 
 For step-by-step instructions, click one of the links below:
