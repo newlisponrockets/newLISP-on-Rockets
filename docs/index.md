@@ -11,7 +11,9 @@ Rockets 2.0 is a full-featured blog application written in the newLISP on Rocket
 
 # Installing Rockets
 
-# Features of your new Rockets blog
+# Running your Rockets blog
+
+# Customizing your Rockets blog
 
 # How Rockets Works
 
