@@ -5,11 +5,9 @@ title: Rockets 2.0 Documentation
 
 # Introduction
 
-Rockets 2.0 is a full-featured blog application written in the newLISP on Rockets web application framework.
+Rockets is a fast, fun, and customizable blog application that is open source. It runs on the Linux platform.
 
 # Why Rockets?
-
-Rockets is a fast, fun, and customizable blog application that is open source. It runs on the Linux platform.
 
 You may be interested in running Rockets if you:
 
@@ -22,6 +20,22 @@ If you are looking for a full-featured blog application with tons of available t
 
 # Installing Rockets
 
+To install Rockets, you will need a Linux operating system. This can be:
+
+* A version of Linux installed on your home computer as the main operating system
+* A version of Linux running on a virtual machine (such as VirtualBox)
+* A version of Linux installed on a cloud service provider, such as Amazon AWS or Linode
+
+If you are just experimenting at home, the first two options are fine. If you want to run Rockets as a public website, you will need to 
+choose the third option. Most home Internet service providers don't allow you to run public websites from your home computer.
+
+For step-by-step instructions, click one of the links below:
+
+* Automated installation guide for Rockets on Ubuntu 20.04 (recommended for experimentation)
+* Manual installation guide for Rockets on non-Ubuntu operating systems 
+* Step-by step installation guide using the Linode cloud provider (recommended for public websites)
+
+
 # Running your Rockets blog
 
 # Customizing your Rockets blog
@@ -33,5 +47,7 @@ If you are looking for a full-featured blog application with tons of available t
 # Developing for Rockets
 
 # The Future of Rockets
+
+# Rockets API reference
 
 (work in progress)
