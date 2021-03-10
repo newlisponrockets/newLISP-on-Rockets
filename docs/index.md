@@ -19,7 +19,9 @@ title: Rockets 2.0 Documentation
 
 ## Introduction <a name="introduction"></a>
 
-Rockets is a fast, fun, and customizable blog application that is open source. It runs on the Linux platform.
+Rockets is a fast, fun, and customizable blog application that is open source. It's also an easy-to-learn web application development framework.
+
+It runs on the Linux platform.
 
 ## Why Rockets? <a name="section1"></a>
 
