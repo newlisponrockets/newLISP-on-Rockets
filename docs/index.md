@@ -9,6 +9,17 @@ Rockets 2.0 is a full-featured blog application written in the newLISP on Rocket
 
 # Why Rockets?
 
+Rockets is a fast, fun, and customizable blog application that is open source. It runs on the Linux platform.
+
+You may be interested in running Rockets if you:
+
+* Like to experiment with an easy-to-learn web application framework
+* Are interested in LISP and LISP-like languages
+* Want to try something different
+
+If you are looking for a full-featured blog application with tons of available themes and plugins, you should probably look into installing something like 
+WordPress instead.
+
 # Installing Rockets
 
 # Running your Rockets blog
