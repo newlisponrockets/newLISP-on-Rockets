@@ -5,12 +5,23 @@ title: Rockets 2.0 Documentation
 
 ![Rockets Logo](images/newlisp-rockets-picture-small.jpg)
 
+# Table of contents
+1. [Introduction](#introduction)
+2. [Why Rockets?](#section1)
+3. [Installing Rockets](#section2)
+4. [Running your Rockets blog](#section3)
+5. [Customizing your Rockets blog](#section4)
+6. [How Rockets works](#section5)
+7. [Extending Rockets](#section6)
+8. [Developing for Rockets](#section7)
+9. [The future of Rockets](#section8)
+10. [Rockets API reference]](#section9)
 
-# Introduction
+## Introduction <a name="introduction"></a>
 
 Rockets is a fast, fun, and customizable blog application that is open source. It runs on the Linux platform.
 
-# Why Rockets?
+## Why Rockets? <a name="section1"></a>
 
 You may be interested in running Rockets if you:
 
@@ -21,7 +32,7 @@ You may be interested in running Rockets if you:
 If you are looking for a full-featured blog application with tons of available themes and plugins, you probably want something like 
 [WordPress](wordpress.org) instead.
 
-# Installing Rockets
+## Installing Rockets <a name="section2"></a>
 
 To install Rockets, you will need a Linux operating system. This can be either:
 
@@ -38,18 +49,18 @@ For step-by-step instructions, click one of the links below:
 * Installation guide using the Linode cloud provider (recommended for public websites)
 * Manual installation guide for Rockets on non-Ubuntu Linux operating systems 
 
-# Running your Rockets blog
+## Running your Rockets blog <a name="section3"></a>
 
-# Customizing your Rockets blog
+## Customizing your Rockets blog <a name="section4"></a>
 
-# How Rockets Works
+## How Rockets works <a name="section5"></a>
 
-# Extending Rockets
+## Extending Rockets <a name="section6"></a>
 
-# Developing for Rockets
+## Developing for Rockets <a name="section7"></a>
 
-# The Future of Rockets
+## The future of Rockets <a name="section8"></a>
 
-# Rockets API reference
+## Rockets API reference <a name="section9"></a>
 
-(work in progress)
+
