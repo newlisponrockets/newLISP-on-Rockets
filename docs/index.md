@@ -15,7 +15,7 @@ title: Rockets 2.0 Documentation
 7. [Extending Rockets](#section6)
 8. [Developing for Rockets](#section7)
 9. [The future of Rockets](#section8)
-10. [Rockets API reference]](#section9)
+10. [Rockets API reference](#section9)
 
 ## Introduction <a name="introduction"></a>
 
