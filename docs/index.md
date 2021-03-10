@@ -33,7 +33,7 @@ For step-by-step instructions, click one of the links below:
 
 * Automated installation guide for Rockets on Ubuntu 20.04 (recommended for experimentation)
 * Manual installation guide for Rockets on non-Ubuntu operating systems 
-* Step-by step installation guide using the Linode cloud provider (recommended for public websites)
+* Detailed nstallation guide using the Linode cloud provider (recommended for public websites)
 
 
 # Running your Rockets blog
