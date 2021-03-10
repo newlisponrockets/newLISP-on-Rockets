@@ -14,9 +14,9 @@ Rockets is a fast, fun, and customizable blog application that is open source. I
 
 You may be interested in running Rockets if you:
 
-* Like to experiment with an easy-to-learn web application framework
+* Want to experiment with an easy-to-learn web application framework
 * Are interested in LISP and LISP-like languages
-* Want to try something different
+* Feel like trying something different
 
 If you are looking for a full-featured blog application with tons of available themes and plugins, you probably want something like 
 [WordPress](wordpress.org) instead.
