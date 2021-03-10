@@ -34,7 +34,7 @@ choose the third option. Most home Internet service providers don't allow you to
 
 For step-by-step instructions, click one of the links below:
 
-* Installation guide for Rockets on Ubuntu 20.04 (recommended for experimentation)
+* Installation guide for Rockets on Ubuntu 20.04 Linux (recommended for experimentation)
 * Installation guide using the Linode cloud provider (recommended for public websites)
 * Manual installation guide for Rockets on non-Ubuntu Linux operating systems 
 
