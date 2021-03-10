@@ -3,6 +3,9 @@ layout: default
 title: Rockets 2.0 Documentation
 ---
 
+![Rockets Logo](../images/newlisp-rockets-picture-small.jpg)
+
+
 # Introduction
 
 Rockets is a fast, fun, and customizable blog application that is open source. It runs on the Linux platform.
