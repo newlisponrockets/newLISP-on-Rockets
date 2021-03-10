@@ -18,7 +18,7 @@ You may be interested in running Rockets if you:
 * Want to try something different
 
 If you are looking for a full-featured blog application with tons of available themes and plugins, you should probably look into installing something like 
-WordPress instead.
+[WordPress](wordpress.org) instead.
 
 # Installing Rockets
 
