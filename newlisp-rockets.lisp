@@ -8,7 +8,7 @@
 ; Without Dragonfly I would have been unable to do Rockets at all.  Some parts of Rockets contain
 ; snippets of Dragonfly code.  Also thanks to Lutz Mueller, the author of newLISP at http://www.newlisp.org 
 ;
-; Copyright 2012 - 2019 by Jeremy Reimer (aka Rocket Man)
+; Copyright 2012 - 2021 by Jeremy Reimer (aka Rocket Man)
 ;
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
