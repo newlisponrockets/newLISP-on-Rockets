@@ -135,10 +135,13 @@
 	)
 	)) ; end "if continue" check
 
+	; Generate a full RSS feed XML file for the blog
+	(display-partial "rockets-generate-rss")
+
 )) ; end check to see if user is signed in
 
-;(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>") ; for debugging
-(if (= PostType "Forum post")
-	(page-redirect "rockets-forum.lsp")
-	(page-redirect "rockets-main.lsp"))
+(displayln "<a href='rockets-main.lsp'>Click here to return to the main page.</a>") ; for debugging
+;(if (= PostType "Forum post")
+;	(page-redirect "rockets-forum.lsp")
+;	(page-redirect "rockets-main.lsp"))
 (display-page)

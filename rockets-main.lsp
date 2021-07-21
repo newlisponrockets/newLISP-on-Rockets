@@ -29,6 +29,8 @@
         )        
         (displayln "<h2>" RocketsConfig:Name "</h2>")
     (end-div)
+    ; add an RSS feed link
+    (displayln "<p><a href=blog-feed.xml><img src=images/rss.png>&nbsp;RSS Feed for this blog</a></p>")
 )
 
 (define (display-custom-content)
