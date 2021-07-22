@@ -26,12 +26,17 @@
                                         (dolist (x blog-feed)
                                                 ; add the XML for each episode of the podcast
                                                 (displayln "<p>Processing result for post #: " $idx "</p>")
+						(set 'post-content (x 4))
+						(replace "<" post-content "&lt;")
+						(replace ">" post-content "&gt;")
+						(replace cr post-content "&lt;br&gt;")
+						(replace "/" post-content "&#x2F;")
                                                 (set 'silly-string (extend silly-string cr "  <item>"))
                                                 (set 'silly-string (extend silly-string cr "    <title>" (x 3) "</title>"))
 						(set 'temp-link (append "http://" RocketsConfig:SiteURL "/rockets-item.lsp?p=" (string (x 0))))
                                                 (set 'silly-string (extend silly-string cr "    <link>" temp-link "</link>"))
 						(set 'silly-string (extend silly-string cr "    <guid>" temp-link "</guid>"))
-                                                (set 'silly-string (extend silly-string cr "    <description>" (x 4) "</description>"))
+                                                (set 'silly-string (extend silly-string cr "    <description>" post-content "</description>"))
 						(set 'silly-string (extend silly-string cr "  </item>"))
                                         )
                                         (set 'silly-string (extend silly-string cr "</channel>"))
@@ -43,4 +48,3 @@
                                 ))
 
 ; end of blog feed
-
