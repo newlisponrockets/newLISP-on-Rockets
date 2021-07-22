@@ -42,6 +42,8 @@
             )
         )
     )
+    ; update RSS feed
+    (display-partial "rockets-generate-rss")
 ))
 (displayln "Id: " Id)
 ;(displayln "<a href='rockets-item.lsp?p=" Id "'>Click here to return to the main page.</a>")
