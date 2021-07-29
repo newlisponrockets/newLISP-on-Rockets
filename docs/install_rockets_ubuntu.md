@@ -125,3 +125,7 @@ Open a web browser tab (on your main PC and enter in the address you got from th
 `10.40.1.3`
 
 Hit Enter and you should see your new Rockets website!
+
+## Troubleshooting
+
+This is a long list of steps, and things can go wrong at any point. Don't get discouraged! If you are having difficulties. just post a message in the Newlisp on Rockets forum here: https://newlisponrockets.com/rockets-forum.lsp describing your problem and what error messages, if any, you received.
