@@ -53,9 +53,40 @@ For step-by-step instructions, click one of the links below:
 
 ## Running your Rockets blog <a name="section3"></a>
 
+Rockets works like most blogs. It displays a list of blog posts with the most recent displayed first.  However, Rockets has a few unique features. 
+
+Specifically, Rockets contains a **blog** and a **forum**, but they are connected to a single user login and a single database.
+
+All new blog posts appear in the forum under a different view, but only Admins can create new blog posts. Any registered user can create new forum threads, however, or reply to blogs or to other forum threads.
+
+To learn more about running a Rockets blog, click here: [Running a Rockets blog](running_rockets_blog.md)
+
 ## Customizing your Rockets blog <a name="section4"></a>
 
+Rockets is customizable out-of-the box using the built-in Admin menu.
+
+Specifically, you can change the following things:
+
+* Whether the main page contains a single column, two columns, or three columns, or custom content
+* What information appears in each column, including custom HTML
+* The page links (name and destinations) that appear on the top menu
+* The main graphic that appears at the top of the site
+
+For more information on this customization, click here: [Customizing your Rockets blog](customizing_rockets_blog.md)
+
+For greater customizability, see the Developing for Rockets section below.
+
 ## How Rockets works <a name="section5"></a>
+
+Rockets is an application written in [newLISP](newlisp.org), a dialect of the LISP language.
+
+Pages that have the extension .lsp instead of the default .html are parsed by the newLISP interpreter, which generates HTML that gets sent to a web server (Apache) running on the same server. The web server sends the HTML to the user's web browser, which then displays the page.
+
+Data about users, blog post and forum post content, is stored in a [SQLite](sqlite.org) database, running on the same server.
+
+Configuration options for the blog are stored in text files with the .lisp extension, which are set to be non-viewable by the public.
+
+For more information about how Rockets works, click here: [How Rockets works](how_rockets_works.md)
 
 ## Extending Rockets <a name="section6"></a>
 
@@ -65,4 +96,7 @@ For step-by-step instructions, click one of the links below:
 
 ## Rockets API reference <a name="section9"></a>
 
+For a full and up-to-date Rockets application programming interface (API) reference, click here:
+
+[Rockets API reference page](https://newlisponrockets.com/rockets-documentation.lsp)
 
