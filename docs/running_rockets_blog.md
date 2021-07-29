@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Rockets 2.0 Documentation - Installing Rockets on Ubuntu Linux
+title: Rockets 2.0 Documentation - Running your Rockets Blog
 ---
 
 # Running your Rockets Blog
