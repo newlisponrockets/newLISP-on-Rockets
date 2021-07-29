@@ -3,6 +3,8 @@ layout: default
 title: Rockets 2.0 Documentation - Running your Rockets Blog
 ---
 
+[Back to the main page](index.md)
+
 # Running your Rockets Blog
 
 ## Sign in as the Admin user
@@ -62,3 +64,5 @@ Find your new user and click the "Delete" link.  **WARNING: There is no confirma
 Enjoy your new Rockets blog! Have fun with it!
 
 If you ever forget your Admin password, you can recover it with the "Forgot password?" link that appears when you enter an invalid password.
+
+[Back to the main page](index.md)
