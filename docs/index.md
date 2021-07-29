@@ -74,7 +74,7 @@ Specifically, you can change the following things:
 
 For more information on this customization, click here: [Customizing your Rockets blog](customizing_rockets_blog.md)
 
-For greater customizability, see the **Developing for Rockets** section below.
+For greater customizability, see the **Extending Rockets** section below.
 
 ## How Rockets works <a name="section5"></a>
 
