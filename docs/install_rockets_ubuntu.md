@@ -15,7 +15,7 @@ title: Rockets 2.0 Documentation - Installing Rockets on Ubuntu Linux
 
 First, you need an installation of Ubuntu 20.04 LTS. You can download an .ISO (a file that simulates a DVD-ROM install disc) here:
 
-https://ubuntu.com/download/server
+[https://ubuntu.com/download/server](https://ubuntu.com/download/server)
 
 1. Click on "Option 2 - Manual Server Installation"
 2. Click on the big green "Download Ubuntu Server 20.04.2 LTS" button
@@ -134,4 +134,4 @@ Hit Enter and you should see your new Rockets website!
 
 ## Troubleshooting
 
-This is a long list of steps, and things can go wrong at any point. Don't get discouraged! If you are having difficulties. just post a message in the Newlisp on Rockets forum here: https://newlisponrockets.com/rockets-forum.lsp describing your problem and what error messages, if any, you received.
+This is a long list of steps, and things can go wrong at any point. Don't get discouraged! If you are having difficulties. just post a message in the Newlisp on Rockets forum here: [https://newlisponrockets.com/rockets-forum.lsp](https://newlisponrockets.com/rockets-forum.lsp) describing your problem and what error messages, if any, you received.
