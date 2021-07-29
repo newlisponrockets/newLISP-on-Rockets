@@ -27,7 +27,7 @@ It runs on the Linux platform.
 
 You may be interested in running Rockets if you:
 
-* Want to experiment with an easy-to-learn web application framework
+* Want to experiment with a website that you can customize and extend in any way you like
 * Are interested in LISP and LISP-like languages
 * Feel like trying something different
 
