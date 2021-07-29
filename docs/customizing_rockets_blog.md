@@ -89,9 +89,7 @@ This page contains all the images that you or your users have uploaded to your b
   
 ## User configuration
   
-This lists all registered users on your blog, and allows you to delete them if you want.
-  
-**NOTE: There is no confirmation on deleting users at the moment, so be careful. You cannot delete the Admin user, however.**
+This lists all registered users on your blog, and allows you to delete them if you want. Clicking "Delete user" brings you to a confirmation page, showing the user's details, and allowing you to confirm the deletion or cancel.
   
 ## Podcast configuration
   
