@@ -5,7 +5,7 @@ title: Rockets 2.0 Documentation - Installing Rockets on Ubuntu Linux
 
 # Installing Rockets on Ubuntu Linux
 
-## Step 1
+## Step 1: Get Ubuntu
 
 First, you need an installation of Ubuntu 20.04 LTS. You can download an .ISO (a file that simulates a DVD-ROM install disc) here:
 
@@ -16,7 +16,7 @@ https://ubuntu.com/download/server
 
 Save the .ISO file somewhere on your computer, such as your "Downloads" directory.
 
-## Step 2
+## Step 2: Install Ubuntu
 
 Second, you need to install Ubuntu Linux somewhere.
 
@@ -35,6 +35,10 @@ OR
 * Install it on a USB Thumb Drive by double-clicking the .ISO and dragging the contents to your thumb drive in Windows Explorer
 
 Then reboot your spare PC and hit Delete (or sometimes another key, like F8) in the boot-up process to enter the BIOS menu, enter the "Boot" menu, and select "Boot from DVD" or "Boot from USB"
+
+The PC will book from the Ubuntu DVD ISO and start installing Ubuntu. Choose all standard settings (basically hit Enter a bunch of times until it is installed, but you will also choose a default user name and password here)
+
+Log into the PC with the user name and password you chose in the last step.
 
 ### For option 2, you need to:
 
@@ -58,7 +62,7 @@ Then reboot your spare PC and hit Delete (or sometimes another key, like F8) in 
 15. Make sure "Enable Network Adapter" is checked, and select "Bridged Adapter" from the "Attached to:" dropdown menu. **This last step is important! You won't be able to browse your Rockets website from your PC unless you select this option.**
 16. Click OK to save all settings
 17. Click the "Run" button to start your Virtual PC
-18. THe PC will book from the Ubuntu DVD ISO and start installing Ubuntu. Choose all standard settings (basically hit Enter a bunch of times until it is installed, but you will also choose a default user name and password here)
+18. The PC will book from the Ubuntu DVD ISO and start installing Ubuntu. Choose all standard settings (basically hit Enter a bunch of times until it is installed, but you will also choose a default user name and password here)
 19. Log into your new Virtual PC with the user account name and password that you chose in the last step
 20. Linux is now installed. You can access it from the VirtualBox console.
 
