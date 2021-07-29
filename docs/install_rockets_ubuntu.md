@@ -122,7 +122,7 @@ If your Virtual PC is in a cloud, it can have both a private and public IP addre
 
 Open a web browser tab (on your main PC and enter in the address you got from the last step, like this:
 
-`10.40.1.3`
+`10.40.1.3` (your number will be different)
 
 Hit Enter and you should see your new Rockets website!
 
