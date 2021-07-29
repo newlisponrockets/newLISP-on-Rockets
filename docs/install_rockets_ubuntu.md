@@ -137,3 +137,5 @@ Hit Enter and you should see your new Rockets website!
 ## Troubleshooting
 
 This is a long list of steps, and things can go wrong at any point. Don't get discouraged! If you are having difficulties. just post a message in the Newlisp on Rockets forum here: [https://newlisponrockets.com/rockets-forum.lsp](https://newlisponrockets.com/rockets-forum.lsp) describing your problem and what error messages, if any, you received.
+
+[Back to the main page](index.md)
