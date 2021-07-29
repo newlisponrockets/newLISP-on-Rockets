@@ -81,7 +81,7 @@ You edit these custom HTML display boxes by clicking the "Custom Configuration" 
 
 These are the custom HTML display boxes described above.
 
-You can put any raw HTML you want in here, including HTML that contains Javascript (usually using the <script> tag). However, any Javascript files referenced by a custom HTML snippet must actually exist somewhere on the web. This could include your own website, but you would need to manually upload them to your site and reference them by a valid URL.
+You can put any raw HTML you want in here, including HTML that contains Javascript (usually using the `<script>` tag). However, any Javascript files referenced by a custom HTML snippet must actually exist somewhere on the web. This could include your own website, but you would need to manually upload them to your site and reference them by a valid URL.
   
 Since these boxes can contain literally any HTML, you should be careful what you copy and paste into here, and make sure that only people you trust have access to the Admin account for your blog.
 
