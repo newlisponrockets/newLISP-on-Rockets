@@ -57,7 +57,9 @@ From the dropdown menu that appears, click "Admin page".
 
 Click the "User Configuration" tab.
 
-Find your new user and click the "Delete" link.  **WARNING: There is no confirmation prompt at present. This will be added in version 2.1.**
+Find your new user and click the "Delete" link.  
+
+Review the user details and click "Delete" to confirm the deletion of the user.
 
 ## Experiment and play around
 
