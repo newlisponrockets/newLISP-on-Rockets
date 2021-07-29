@@ -83,4 +83,8 @@ You can put any raw HTML you want in here, including HTML that contains Javascri
   
 Since these boxes can contain literally any HTML, you should be careful what you copy and paste into here, and make sure that only people you trust have access to the Admin account for your blog.
 
+## Media configuration
   
+This page contains all the images that you or your users have uploaded to your blog.  You can add new images, view images in full size by clicking on them, or delete images by clicking on the "Delete" button when the image is full-size.
+  
+
