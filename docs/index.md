@@ -80,7 +80,7 @@ For greater customizability, see the Developing for Rockets section below.
 
 Rockets is an application written in [newLISP](http://newlisp.org), a dialect of the LISP language.
 
-Pages that have the extension .lsp instead of the default .html are parsed by the newLISP interpreter, which generates HTML that gets sent to a web server (Apache) running on the same server. The web server sends the HTML to the user's web browser, which then displays the page.
+The web server application [Apache](https://apache.org) takes pages that have the extension .lsp instead of the default .html, and sends them to be parsed by the newLISP interpreter. newLISP generates custom HTML for each page based on the code in that .lsp file.  The web server then sends the HTML to the user's web browser.
 
 Data about users, blog post and forum post content, is stored in a [SQLite](https://sqlite.org) database, running on the same server.
 
