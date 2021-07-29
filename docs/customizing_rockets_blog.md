@@ -3,6 +3,8 @@ layout: default
 title: Rockets 2.0 Documentation - Customizing your Rockets Blog
 ---
 
+[Back to the main page](index.md)
+
 # Customizing your Rockets Blog
 
 To customize your Rockets blog, you must log in as the Admin user. See [Running your Rockets blog](running_rockets_blog) for details.
@@ -96,3 +98,5 @@ This lists all registered users on your blog, and allows you to delete them if y
 This allows you to configure multiple podcasts on your site. You can configure the podcast name, description, email, image, and other tags that will be used when adding a new podcast post.
   
 **NOTE: This section is experimental and may not work. Use with caution**.
+  
+[Back to the main page](index.md)
