@@ -90,7 +90,17 @@ For more information about how Rockets works, click here: [How Rockets works](ho
 
 ## Extending Rockets <a name="section6"></a>
 
+Rockets is designed to be easily extendable. What does this mean? It's **extremely easy** to make a new page on your blog that behaves differently from all other pages. 
+
+To learn more, click here: [Extending Rockets](extending_rockets.md)
+
 ## Developing for Rockets <a name="section7"></a>
+
+Rockets is open source, which means that anyone can contribute ideas and code to the framework and blog application.
+
+To view the code, and submit comments, change requests, or new code, click here:
+
+[https://github.com/newlisponrockets/newLISP-on-Rockets](https://github.com/newlisponrockets/newLISP-on-Rockets)
 
 ## The future of Rockets <a name="section8"></a>
 
