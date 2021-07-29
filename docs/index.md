@@ -104,6 +104,14 @@ To view the code, and submit comments, change requests, or new code, click here:
 
 ## The future of Rockets <a name="section8"></a>
 
+Rockets started out as way for me to learn how make custom websites. The blog application eventually grew to the point where I could replace my own personal blog [jeremyreimer.com](https://jeremyreimer.com) with Rockets. 
+
+This version became Rockets 2.0, which you are reading about now.
+
+In the future, I want to work on Rockets 3.0, which will include new features that aren't standard in typical blogs. My vision is to create a kind of "virtual space" on the web that can grow and change with the owner and their own community. Like a home where you would invite guests and play fun little games, or design something new together.
+
+This is a long-term project and I have no deadlines or milestones for Rockets 3.0 at the moment. Stay tuned!
+
 ## Rockets API reference <a name="section9"></a>
 
 For a full and up-to-date Rockets application programming interface (API) reference, click here:
