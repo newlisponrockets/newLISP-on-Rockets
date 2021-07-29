@@ -33,7 +33,7 @@ To change blog and header forum images, click "Choose File", select a file from 
 
 To customize the top menu, enter in the menu name and target page name in the box. You can also delete menu items individually, or add new blank ones.
 
-**NOTE: The page name doesn't have to include the ".lsp" extension, unless it is a specific page, such as "rockets-item.lsp?p=127"**
+**NOTE: The page name doesn't have to include the ".lsp" extension, unless it is a numbered page, such as "rockets-item.lsp?p=127"**
 
 ### Changing page layouts
 
