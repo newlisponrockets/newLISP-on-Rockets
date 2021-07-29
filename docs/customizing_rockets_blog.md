@@ -87,4 +87,14 @@ Since these boxes can contain literally any HTML, you should be careful what you
   
 This page contains all the images that you or your users have uploaded to your blog.  You can add new images, view images in full size by clicking on them, or delete images by clicking on the "Delete" button when the image is full-size.
   
-
+## User configuration
+  
+This lists all registered users on your blog, and allows you to delete them if you want.
+  
+**NOTE: There is no confirmation on deleting users at the moment, so be careful. You cannot delete the Admin user, however.**
+  
+## Podcast configuration
+  
+This allows you to configure multiple podcasts on your site. You can configure the podcast name, description, email, image, and other tags that will be used when adding a new podcast post.
+  
+**NOTE: This section is experimental and may not work. Use with caution**.
