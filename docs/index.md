@@ -57,7 +57,7 @@ Rockets works like most blogs. It displays a list of blog posts with the most re
 
 Specifically, Rockets contains a **blog** and a **forum**, but they are connected to a single user login and a single database.
 
-All new blog posts appear in the forum under a different view, but only Admins can create new blog posts. Any registered user can create new forum threads, however, or reply to blogs or to other forum threads.
+All new blog posts appear in the forum under a different view, but only Admins can create new blog posts. Any registered user can create new forum threads, reply to blogs, or reply to other forum threads.
 
 To learn more about running a Rockets blog, click here: [Running a Rockets blog](running_rockets_blog.md)
 
