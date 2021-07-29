@@ -5,6 +5,12 @@ title: Rockets 2.0 Documentation - Installing Rockets on Ubuntu Linux
 
 # Installing Rockets on Ubuntu Linux
 
+# Table of contents
+1. [Step 1: Get Ubuntu](#step1)
+2. [Step 2: Install Ubuntu](#step2)
+3. [Step 3: Install Rockets](#step3)
+4. [Step 4: View your new Rockets site](#step4)
+
 ## Step 1: Get Ubuntu
 
 First, you need an installation of Ubuntu 20.04 LTS. You can download an .ISO (a file that simulates a DVD-ROM install disc) here:
@@ -72,7 +78,7 @@ Log into the PC with the user name and password you chose in the last step.
 2. Follow the instructions for making a new Virtual PC (on Amazon this is called an EC2 Instance, on Linode it is called a Node)
 3. Install Linux on your new cloud Virtual PC
 
-## Step 3
+## Step 3: Install Rockets
 
 Now you're ready to install Rockets on your Linux PC. 
 
@@ -106,7 +112,7 @@ When it is finished, the script will clear the screen and ask you some questions
 
 If everything goes well, Rockets will be installed!
 
-## Step 4
+## Step 4: View your new Rockets site
 
 To view your site, you need to know the IP address of the Linux PC, so you can point your web browser to it.
 
