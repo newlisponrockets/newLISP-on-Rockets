@@ -104,7 +104,7 @@ To view the code, and submit comments, change requests, or new code, click here:
 
 ## The future of Rockets <a name="section8"></a>
 
-Rockets started out as way for me to learn how make custom websites. The blog application eventually grew to the point where I could replace my own personal blog [jeremyreimer.com](https://jeremyreimer.com) with Rockets. 
+Rockets started out as way for me to learn how make custom websites. The blog application eventually grew to the point where I could replace my own personal blog at [jeremyreimer.com](https://jeremyreimer.com) with Rockets. 
 
 This version became Rockets 2.0, which you are reading about now.
 
