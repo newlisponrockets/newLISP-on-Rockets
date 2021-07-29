@@ -29,7 +29,7 @@ You may be interested in running Rockets if you:
 
 * Want to experiment with a website that you can extend any way you like
 * Are interested in LISP and LISP-like languages
-* Feel like trying something different
+* Feel like trying something fast, fun, and different
 
 If you are looking for a full-featured blog application with tons of available themes and plugins, you probably want something like 
 [WordPress](wordpress.org) instead.
