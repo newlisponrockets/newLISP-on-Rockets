@@ -3,7 +3,7 @@ layout: default
 title: Rockets 2.0 Documentation
 ---
 
-# newLISP on Rockets 2.0 Documentation
+# Rockets 2.0 Documentation
 
 ![Rockets Logo](images/newlisp-rockets-picture-small.jpg)
 
