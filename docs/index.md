@@ -88,7 +88,7 @@ For more information about how Rockets works, click here: [How Rockets works](ho
 
 ## Extending Rockets <a name="section6"></a>
 
-Rockets is designed to be easily extendable. What does this mean? It's **extremely easy** to make a new page on your blog that behaves differently from all other pages. 
+Rockets is designed to be easily extendable. What does this mean? It's **very simple** to make a new page on your blog that behaves differently from all other pages. 
 
 To learn more, click here: [Extending Rockets](extending_rockets.md)
 
