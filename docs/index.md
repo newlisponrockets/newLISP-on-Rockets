@@ -49,7 +49,7 @@ choose the second option. Most home Internet service providers don't allow you t
 For step-by-step instructions, click one of the links below:
 
 * [Installation guide for Rockets on Ubuntu 20.04](install_rockets_ubuntu.md) (recommended for **experimentation**)
-* Installation guide using the Linode cloud provider (recommended for **public websites**)
+* [Installation guide using the Linode cloud provider](install_rockets_linode.md) (recommended for **public websites**)
 
 ## Running your Rockets blog <a name="section3"></a>
 
