@@ -3,9 +3,11 @@ layout: default
 title: Rockets 2.0 Documentation
 ---
 
+# newLISP on Rockets 2.0 Documentation
+
 ![Rockets Logo](images/newlisp-rockets-picture-small.jpg)
 
-# Table of contents
+## Table of contents
 1. [Introduction](#introduction)
 2. [Why Rockets?](#section1)
 3. [Installing Rockets](#section2)
