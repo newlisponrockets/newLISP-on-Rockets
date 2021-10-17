@@ -1,15 +1,13 @@
-newLISP-on-Rockets
-==================
+newLISP-on-Rockets 2.0
+======================
 
 ![Rockets Logo](images/newlisp-rockets-picture-small.jpg)
-
-*Note: This Readme is being updated to prepare for the Rockets 2.0 release on July 31, 2021.*
 
 newLISP on Rockets is a fast, fun, and customizable blog application that is open source. It runs on the Linux platform.
 
 Rockets is written by [Jeremy Reimer](https://jeremyreimer.com).
 
-To see the docs in progress, visit: http://newlisponrockets.github.io/newLISP-on-Rockets/
+Read the documentation here: http://newlisponrockets.github.io/newLISP-on-Rockets/
 
 Source code for both the newLISP on Rockets framework and an example application, a blog that runs on Rockets.
 
