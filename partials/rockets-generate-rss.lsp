@@ -2,7 +2,7 @@
 ; 
 ; Written July 21, 2021 by Jeremy Reimer
 ;
-; called from: rockets-post.lsp, rockets-post-edit.lsp
+; called from: rockets-post.lsp, rockets-post-edit.lsp 
 ;
 
 (displayln "<p>Hello! We are creating a RSS XML file here...</p>")
