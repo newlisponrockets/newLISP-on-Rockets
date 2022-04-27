@@ -15,7 +15,7 @@
 (set 'Id (integer ($GET "post")))	
 (set 'PostId Id) ; for deleting comments	
 													
-(if (= Rockets:UserId 0) (begin	; only an admin can delete posts
+(if Rockets:IsUserAdmin (begin	; only an admin can delete posts
 	(displayln "<br>")
 	(display-h1 "Confirm post deletion")
 	(displayln "Are you sure you want to delete this post?")
