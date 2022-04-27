@@ -1,7 +1,6 @@
 newLISP-on-Rockets 2.0
 ======================
 
-=======
 ![Rockets Logo](images/newlisp-rockets-picture-small.jpg)
 
 newLISP on Rockets is a fast, fun, and customizable blog application that is open source. It runs on the Linux platform.
