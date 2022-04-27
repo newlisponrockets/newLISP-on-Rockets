@@ -2,7 +2,7 @@
 ; 
 ; Written July 21, 2021 by Jeremy Reimer
 ;
-; called from: rockets-post.lsp, rockets-post-edit.lsp
+; called from: rockets-post.lsp, rockets-post-edit.lsp 
 ;
 
 (displayln "<p>Hello! We are creating a RSS XML file here...</p>")
@@ -28,10 +28,10 @@
                                                 ; add the XML for each episode of the podcast
                                                 (displayln "<p>Processing result for post #: " $idx "</p>")
 						(set 'post-content (x 4))
-						(replace "<" post-content "&amp;lt;")
-						(replace ">" post-content "&amp;gt;")
-						(replace cr post-content "&amp;lt;br&amp;gt;")
-						(replace "/" post-content "&amp;#x2F;")
+						;(replace "<" post-content "&amp;lt;")
+						;(replace ">" post-content "&amp;gt;")
+						;(replace cr post-content "&amp;lt;br&amp;gt;")
+						;(replace "/" post-content "&amp;#x2F;")
 						(set 'temp-date (date (date-parse (x 2) "%Y-%m-%d %H:%M:%S.000") 0 "%a, %d %b %Y %H:%M:%S +0000"))
                                                 (set 'silly-string (extend silly-string cr "  <item>"))
                                                 (set 'silly-string (extend silly-string cr "    <title>" (x 3) "</title>"))
@@ -39,7 +39,7 @@
                                                 (set 'silly-string (extend silly-string cr "    <link>" temp-link "</link>"))
 						(set 'silly-string (extend silly-string cr "    <guid>" temp-link "</guid>"))
 						(set 'silly-string (extend silly-string cr "    <pubDate>" temp-date "</pubDate>"))
-                                                (set 'silly-string (extend silly-string cr "    <description>" post-content "</description>"))
+                                                (set 'silly-string (extend silly-string cr "    <description> <![CDATA[ " (format-for-web post-content) " ]]></description>"))
 						(set 'silly-string (extend silly-string cr "  </item>"))
                                         )
                                         (set 'silly-string (extend silly-string cr "</channel>"))
