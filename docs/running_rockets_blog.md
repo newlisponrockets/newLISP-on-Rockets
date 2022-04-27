@@ -37,7 +37,7 @@ Optionally, you can add a poll title and poll options that will allow registered
 
 ## Delete a blog post
 
-The red button underneath a blog post will delete that post. **WARNING: There is no confirmation prompt at present. This will be added in version 2.1.**
+The red button underneath a blog post will delete that post. You will receive a confirmation message asking if you really do want to delete that post.
 
 ## Add a new user
 
