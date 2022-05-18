@@ -9,7 +9,7 @@ Rockets is written by [Jeremy Reimer](https://jeremyreimer.com).
 
 Read the documentation here: http://newlisponrockets.github.io/newLISP-on-Rockets/
 
-Source code for both the newLISP on Rockets framework and an example application, a blog that runs on Rockets.
+This repo contains the source code for both the newLISP on Rockets framework and a blog that runs on Rockets.
 
 Please check the [Rockets blog](https://newlisponrockets.com) for updates on the status of the project.
 
