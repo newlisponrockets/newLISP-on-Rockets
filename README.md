@@ -18,7 +18,9 @@ DISCLAIMER: In no way should this software be used to control actual rockets.
 What is newLISP-on-Rockets?
 ---------------------------
 
-It's a very simple web application framework running on newLISP.  My goal is to simplify the applications I am already writing in newLISP by consolidating a bunch of useful functions for both front-end (jQuery) and back-end (SQLite) operations.  The emphasis is on simplicity and code conciseness.
+Rockets started as a very simple web application framework running on newLISP.  My goal was to simplify the applications I was already writing in newLISP by consolidating a bunch of useful functions for both front-end (jQuery) and back-end (SQLite) operations.  The emphasis was on simplicity and code conciseness.
+
+Over time, I've adapted Rockets for use on my own personal blog, as well as other web projects I'm working on. This meant that the development framework and the blog have merged into a simple yet easily extensible blog application. 
 
 Documentation is available at: http://newlisponrockets.github.io/newLISP-on-Rockets/
 
