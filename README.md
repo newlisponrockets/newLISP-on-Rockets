@@ -22,7 +22,7 @@ Rockets started as a very simple web application framework running on newLISP.  
 
 Over time, I've adapted Rockets for use as my own personal blog, as well as other web projects I'm working on. This meant that the development framework and the blog have merged into a simple yet easily extensible blog application. 
 
-Documentation is available at: http://newlisponrockets.github.io/newLISP-on-Rockets/
+Documentation is available at: https://newlisponrockets.github.io/newLISP-on-Rockets/
 
 You can view how the blog looks in a live environment by visiting: https://newlisponrockets.com
 
