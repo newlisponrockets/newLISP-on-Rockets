@@ -26,3 +26,11 @@ Documentation is available at: https://newlisponrockets.github.io/newLISP-on-Roc
 
 You can view how the blog looks in a live environment by visiting: https://newlisponrockets.com
 
+Rockets 3.0 development
+-----------------------
+
+Currently I'm working on a very experimental 3.0 version of Rockets, that adds HTML5 Canvas support.
+
+More info about this soon!
+
+
