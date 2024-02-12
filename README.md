@@ -7,7 +7,7 @@ newLISP on Rockets is a fast, fun, and customizable blog application that is ope
 
 Rockets is written by [Jeremy Reimer](https://jeremyreimer.com).
 
-Read the documentation here: http://newlisponrockets.github.io/newLISP-on-Rockets/
+Read the documentation here: https://newlisponrockets.github.io/newLISP-on-Rockets/
 
 This repo contains the source code for both the newLISP on Rockets framework and a blog that runs on Rockets.
 
