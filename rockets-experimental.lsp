@@ -12,7 +12,41 @@
 # Canvas functions (will be moved to a partial file later)
 (define (init-canvas canvas-id canvas-width canvas-height)
 
-  (displayln "<canvas id=\"" canvas-id "\" width=\"" canvas-width "\" height=\"" canvas-height "\"></canvas>")
+  (displayln "<canvas id=\"" canvas-id "\" width=\"" canvas-width "\" height=\"" canvas-height "\">")
+  (displayln "<p>Sorry, we're unable to render this content. Please navigate back to the <a href='/'>home page</a> to continue.</p>")
+  (displayln "</canvas>")
+  (displayln "<script>")
+  (displayln "function draw() {")
+  (displayln "  const canvas = document.getElementById(\"" canvas-id "\");")
+  (displayln "  if (canvas.getContext) {")
+  (displayln "    const ctx = canvas.getContext(\"2d\");")
+)
+
+(define (close-canvas)
+  (displayln "  }")
+  (displayln "}")
+  (displayln "draw();")
+  (displayln "</script>")
+)
+
+(define (draw-rectangle x y width height filled)
+  (if filled
+    (displayln "    ctx.fillRect(" x ", " y ", " width ", " height ");")
+    (displayln "    ctx.strokeRect(" x ", " y ", " width ", " height ");")
+  )
+)
+
+(define (draw-text x y text font size serif filled)
+  (if filled
+    (begin
+       (displayln "    ctx.font = \"" size "px " font "\";")
+       (displayln "    ctx.fillText(\"" text "\", " x ", " y ");")
+    )
+    (begin
+       (displayln "    ctx.font = \"" size "px " font "\";")
+       (displayln "    ctx.strokeText(\"" text "\", " x ", " y ");")
+    )
+  )
 )
 
 (load "Rockets-config.lisp") ; load configuration information
@@ -34,7 +68,9 @@
 (setq canvas-height 600)
 (setq canvas-id "test1")
 (init-canvas canvas-id canvas-width canvas-height)
-
+(draw-rectangle 25 25 300 100)
+(draw-text 50 75 "Hello, World!" "serif" 48 false)
+(close-canvas)
 
 (displayln "<p>STUFF GOES HERE...</p>")
 
