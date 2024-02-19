@@ -35,8 +35,8 @@
             		(set 'PosterId Rockets:UserId) ; ONLY I MAY POST FOR NOW
             		(set 'PostSubject ($POST "subjectline"))
             		(set 'PostContent ($POST "post"))
-            		(set 'PostDate (date (date-value) 0 "%Y-%m-%d %H:%M:%S.000"))
-            		(update-record "Posts" Id PosterId PostDate PostSubject PostContent) ; It's the U in CRUD!
+            		;(set 'PostDate (date (date-value) 0 "%Y-%m-%d %H:%M:%S.000"))
+            		(update-record "Posts" Id PosterId PostSubject PostContent) ; It's the U in CRUD!
             		;(displayln "<B>Posting disabled for the moment...</b>")
             	)
             )
