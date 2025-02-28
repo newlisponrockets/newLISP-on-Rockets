@@ -146,16 +146,19 @@
 (define (author-name str-author-id bool-no-html)
 	(set 'str-author-id (int str-author-id))
 	(set 'get-user-name-query (query (string "SELECT UserName FROM Users WHERE UserId=" str-author-id ";")))
-	(if (nil? get-user-name-query)
-		(set 'result-name "Unknown User"))
-	(if (nil? bool-no-html) (begin ; sometimes you don't want styled text
-		(if (= str-author-id 0)
-			(set 'result-name (string "<span class='text-error'>" (first (first get-user-name-query)) "</span>")) ; red names for admin.  It's funny that admin gets error styled text!
-			(set 'result-name (string "<span class='text-info'>" (first (first get-user-name-query)) "</span>")) ; blue names for everyone else (at the moment)
-		)
-	)
-		(set 'result-name (first (first get-user-name-query))) ; this is the plain unstyled version, suitable for updating last post author
-	)
+	;(displayln get-user-name-query)
+        (if (nil? get-user-name-query)
+		(set 'result-name "Unknown User")
+                (set 'result-name (first (first get-user-name-query))))
+	;(if (nil? bool-no-html) (begin ; sometimes you don't want styled text
+	;	(if (= str-author-id 0)
+	;		(set 'result-name (string "<span class='text-error'>" (first (first get-user-name-query)) "</span>")) ; red names for admin.  It's funny that admin gets error styled text!
+	;		(set 'result-name (string "<span class='text-info'>" (first (first get-user-name-query)) "</span>")) ; blue names for everyone else (at the moment)
+	;	)
+	;)
+	;	(set 'result-name (first (first get-user-name-query))) ; this is the plain unstyled version, suitable for updating last post author
+	;)
+        ;(setq result-name "test testy")
 )
 
 ; Get the user's postcount given the user Id
@@ -163,8 +166,8 @@
 	(set 'str-author-id (int str-author-id))
 	(set 'get-user-posts-query (query (string "SELECT UserPosts FROM Users WHERE UserId=" str-author-id ";")))
 	(if (nil? get-user-posts-query)
-		(set 'result-name "0"))
-	(set 'result-name (first (first get-user-posts-query)))	
+		(set 'result-name "0")
+          	(set 'result-name (first (first get-user-posts-query))))	
 )
 
 ; Get the user's avatar given the user Id
